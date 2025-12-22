@@ -21,7 +21,7 @@
     "lint": "eslint src --max-warnings 0"
   },
   "peerDependencies": {
-    "react": "^19"
+    "react": "^19.2.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -31,6 +31,6 @@
     "@types/react": "^19.1.0",
     "eslint": "^9.39.1",
     "tailwindcss": "^4.1.5",
-    "typescript": "5.9.2"
+    "typescript": "^5.9.2"
   }
 }

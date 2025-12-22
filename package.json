@@ -6,15 +6,23 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "check-types": "turbo run check-types",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "-- syncpack": "# check if packages are in sync",
+    "sync:fix": "syncpack fix-mismatches",
+    "sync:list": "syncpack list-mismatches",
+    "-- end": "# end"
   },
   "devDependencies": {
     "prettier": "^3.6.0",
     "prettier-plugin-tailwindcss": "^0.7.1",
+    "syncpack": "^13.0.4",
     "turbo": "^2.7.1"
   },
   "packageManager": "pnpm@10.19.0",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "worktree-env-sync": "^2.0.8"
   }
 }
