@@ -1,0 +1,44 @@
+windows:
+  - name: main
+    layout: tiled
+    panes:
+      # Row 1 - Monorepo root (2 terminals)
+      - name: monorepo-1
+        commands:
+          - nvm use
+      - name: monorepo-2
+        commands:
+          - nvm use
+
+      # Row 2 - ifm1 worktree (2 terminals)
+      - name: ifm1-terminal
+        commands:
+          - cd ../dsm1
+          - nvm use
+      - name: dsm1-dev
+        commands:
+          - cd ../dsm1
+          - nvm use
+          - pnpm dev
+
+      # Row 3 - ifm2 worktree (2 terminals)
+      - name: ifm2-terminal
+        commands:
+          - cd ../dsm2
+          - nvm use
+      - name: ifm2-dev
+        commands:
+          - cd ../dsm2
+          - nvm use
+          - pnpm dev
+
+      # Row 4 - ifm3 worktree (2 terminals)
+      - name: ifm3-terminal
+        commands:
+          - cd ../dsm3
+          - nvm use
+      - name: ifm3-dev
+        commands:
+          - cd ../dsm3
+          - nvm use
+          - pnpm dev

@@ -1,0 +1,10 @@
+{
+  "template": ".env.template",
+  "inputFilesToFolders": {
+    ".env.dsm1": "../dsm1",
+    ".env.dsm2": "../dsm2",
+    ".env.dsm3": "../dsm3"
+  },
+  "outputFile": ".env.local",
+  "symlinksToOuputFile": ["apps/web/.env.local"]
+}
