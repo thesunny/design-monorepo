@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Textfit } from "react-textfit";
 import { fontCategories, type Subcategory, type Font } from "../data/fontCategories";
 
 export default function Page() {
@@ -109,7 +110,15 @@ function FontPreview({ font, isLoaded }: { font: Font; isLoaded: boolean }) {
 
   return (
     <div className="px-4 py-4 hover:bg-neutral-50 transition-colors cursor-pointer">
-      <div className="flex items-center justify-between mb-2">
+      <Textfit
+        mode="single"
+        max={200}
+        className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
+        style={{ fontFamily: `"${font.name}", sans-serif`, height: "1.2em" }}
+      >
+        {previewText}
+      </Textfit>
+      <div className="flex items-center justify-between mt-2">
         <div className="flex items-center gap-2">
           <span className="text-sm text-neutral-400">{font.name}</span>
           {font.variable && (
@@ -126,12 +135,6 @@ function FontPreview({ font, isLoaded }: { font: Font; isLoaded: boolean }) {
         <span className="text-xs text-neutral-400">
           {font.weights.join(" ")}
         </span>
-      </div>
-      <div
-        className={`text-2xl leading-relaxed transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
-        style={{ fontFamily: `"${font.name}", sans-serif` }}
-      >
-        {previewText}
       </div>
     </div>
   );
