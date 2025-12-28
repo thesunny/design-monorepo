@@ -45,7 +45,7 @@ export default function Page() {
   return (
     <main className="flex h-screen bg-white">
       {/* Column 1: Category Browser */}
-      <div className="w-64 flex-shrink-0 border-r border-neutral-200 dark:border-neutral-800 overflow-y-auto p-4">
+      <div className="w-48 flex-shrink-0 border-r border-neutral-200 dark:border-neutral-800 overflow-y-auto p-4">
         {fontCategories.map((category) => (
           <div key={category.id} className="mb-6">
             <h2 className="text-sm font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide mb-2">

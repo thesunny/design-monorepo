@@ -32,7 +32,7 @@ export const fontCategories: Category[] = [
     subcategories: [
       {
         id: "old-style-humanist",
-        name: "Old Style / Humanist",
+        name: "Old Style",
         fonts: [
           { id: "lora", name: "Lora", weights: [400, 500, 600, 700], styles: ["normal", "italic"], variable: true },
           { id: "cardo", name: "Cardo", weights: [400, 700], styles: ["normal", "italic"], variable: false },
@@ -48,7 +48,7 @@ export const fontCategories: Category[] = [
       },
       {
         id: "transitional-modern",
-        name: "Transitional / Modern",
+        name: "Transitional",
         fonts: [
           { id: "merriweather", name: "Merriweather", weights: [300, 400, 500, 600, 700, 800, 900], styles: ["normal", "italic"], variable: true },
           { id: "playfair-display", name: "Playfair Display", weights: [400, 500, 600, 700, 800, 900], styles: ["normal", "italic"], variable: true },
@@ -244,7 +244,7 @@ export const fontCategories: Category[] = [
   },
   {
     id: "display-decorative",
-    name: "Display & Decorative",
+    name: "Display",
     subcategories: [
       {
         id: "modern-display",
@@ -264,7 +264,7 @@ export const fontCategories: Category[] = [
       },
       {
         id: "retro-vintage",
-        name: "Retro / Vintage",
+        name: "Retro",
         fonts: [
           { id: "limelight", name: "Limelight", weights: [400], styles: ["normal"], variable: false },
           { id: "righteous", name: "Righteous", weights: [400], styles: ["normal"], variable: false },
