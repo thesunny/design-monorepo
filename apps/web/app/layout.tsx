@@ -1,7 +1,9 @@
+import "@mantine/core/styles.css";
 import "@repo/ui/styles.css";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { MantineProvider, ColorSchemeScript } from "@mantine/core";
 
 const geist = Geist({ subsets: ["latin"] });
 
@@ -16,8 +18,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={geist.className}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <ColorSchemeScript />
+      </head>
+      <body className={geist.className}>
+        <MantineProvider>{children}</MantineProvider>
+      </body>
     </html>
   );
 }

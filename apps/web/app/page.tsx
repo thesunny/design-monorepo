@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Textfit } from "react-textfit";
+import { Slider } from "@mantine/core";
 import { fontCategories, type Subcategory, type Font } from "../data/fontCategories";
 
 export default function Page() {
@@ -107,44 +108,73 @@ export default function Page() {
                   />
                 </button>
               </div>
-              <div className="flex items-center gap-3 mb-3">
+              <div className="flex items-center gap-3 mb-6">
                 <span className="text-xs text-neutral-500 w-20">Weight</span>
-                <input
-                  type="range"
-                  min="100"
-                  max="900"
-                  step="100"
+                <Slider
                   value={selectedWeight}
-                  onChange={(e) => setSelectedWeight(parseInt(e.target.value))}
-                  className="flex-1 h-1 bg-neutral-200 rounded-lg appearance-none cursor-pointer"
+                  onChange={setSelectedWeight}
+                  min={100}
+                  max={900}
+                  step={100}
+                  marks={[
+                    { value: 100, label: '100' },
+                    { value: 200, label: '200' },
+                    { value: 300, label: '300' },
+                    { value: 400, label: '400' },
+                    { value: 500, label: '500' },
+                    { value: 600, label: '600' },
+                    { value: 700, label: '700' },
+                    { value: 800, label: '800' },
+                    { value: 900, label: '900' },
+                  ]}
+                  size="sm"
+                  color="dark"
+                  className="flex-1"
+                  styles={{ markLabel: { fontSize: '12px' } }}
                 />
-                <span className="text-xs text-neutral-400 w-12 text-right">{selectedWeight}</span>
               </div>
-              <div className="flex items-center gap-3 mb-3">
+              <div className="flex items-center gap-3 mb-6">
                 <span className="text-xs text-neutral-500 w-20">Line Height</span>
-                <input
-                  type="range"
-                  min="0.8"
-                  max="2.5"
-                  step="0.1"
+                <Slider
                   value={lineHeight}
-                  onChange={(e) => setLineHeight(parseFloat(e.target.value))}
-                  className="flex-1 h-1 bg-neutral-200 rounded-lg appearance-none cursor-pointer"
+                  onChange={setLineHeight}
+                  min={0.8}
+                  max={2.5}
+                  step={0.1}
+                  marks={[
+                    { value: 0.8, label: '0.8' },
+                    { value: 1.0, label: '1.0' },
+                    { value: 1.2, label: '1.2' },
+                    { value: 1.5, label: '1.5' },
+                    { value: 2.0, label: '2.0' },
+                    { value: 2.5, label: '2.5' },
+                  ]}
+                  size="sm"
+                  color="dark"
+                  className="flex-1"
+                  styles={{ markLabel: { fontSize: '12px' } }}
                 />
-                <span className="text-xs text-neutral-400 w-12 text-right">{lineHeight.toFixed(1)}</span>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 mb-6">
                 <span className="text-xs text-neutral-500 w-20">Tracking</span>
-                <input
-                  type="range"
-                  min="-0.1"
-                  max="0.3"
-                  step="0.01"
+                <Slider
                   value={letterSpacing}
-                  onChange={(e) => setLetterSpacing(parseFloat(e.target.value))}
-                  className="flex-1 h-1 bg-neutral-200 rounded-lg appearance-none cursor-pointer"
+                  onChange={setLetterSpacing}
+                  min={-0.1}
+                  max={0.3}
+                  step={0.01}
+                  marks={[
+                    { value: -0.1, label: '-0.1' },
+                    { value: 0, label: '0' },
+                    { value: 0.1, label: '0.1' },
+                    { value: 0.2, label: '0.2' },
+                    { value: 0.3, label: '0.3' },
+                  ]}
+                  size="sm"
+                  color="dark"
+                  className="flex-1"
+                  styles={{ markLabel: { fontSize: '12px' } }}
                 />
-                <span className="text-xs text-neutral-400 w-12 text-right">{letterSpacing.toFixed(2)}em</span>
               </div>
             </div>
             <div className="divide-y divide-neutral-100">
