@@ -80,11 +80,10 @@ export default function Page() {
       </div>
 
       {/* Column 2: Font List */}
-      <div className="flex-1 border-r border-neutral-200 overflow-y-auto">
+      <div className="basis-3/5 border-r border-neutral-200 overflow-y-auto">
         {displayedSubcategory ? (
           <div>
             <div className="sticky top-0 bg-white border-b border-neutral-200 px-4 py-3">
-              <h2 className="font-semibold mb-3">{displayedSubcategory.name}</h2>
               <textarea
                 value={previewText}
                 onChange={(e) => setPreviewText(e.target.value)}
@@ -178,7 +177,7 @@ export default function Page() {
                 />
               </div>
             </div>
-            <div className="divide-y divide-neutral-100">
+            <div className="divide-y divide-neutral-200">
               {displayedSubcategory.fonts.map((font) => (
                 <FontPreview key={font.id} font={font} isLoaded={loadedFonts.has(font.id)} selectedWeight={selectedWeight} showAllWeights={showAllWeights} previewText={previewText} lineHeight={lineHeight} letterSpacing={letterSpacing} />
               ))}
@@ -192,7 +191,7 @@ export default function Page() {
       </div>
 
       {/* Column 3: Font Preview */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="basis-2/5 overflow-y-auto p-4">
         <p className="text-neutral-500 dark:text-neutral-400 text-sm">
           Select a font to preview
         </p>
@@ -241,7 +240,7 @@ function FontPreview({ font, isLoaded, selectedWeight, showAllWeights, previewTe
   const isInexactMatch = specificWeight && !specificWeight.isExact;
 
   return (
-    <div className={`px-4 py-4 transition-colors cursor-pointer ${isInexactMatch ? "bg-neutral-100" : "hover:bg-neutral-50"}`}>
+    <div className={`px-8 py-4 transition-colors cursor-pointer ${isInexactMatch ? "bg-neutral-100" : "hover:bg-neutral-50"}`}>
       {showAllWeights && displayWeights.length > 0 ? (
         <div className="space-y-2">
           {displayWeights.map((weight) => (
