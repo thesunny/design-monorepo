@@ -178,8 +178,10 @@ function FontPreview({ font, isLoaded, selectedWeight }: { font: Font; isLoaded:
     ? getClosestWeight(font.weights, selectedWeight)
     : null;
 
+  const isInexactMatch = specificWeight && !specificWeight.isExact;
+
   return (
-    <div className="px-4 py-4 hover:bg-neutral-50 transition-colors cursor-pointer">
+    <div className={`px-4 py-4 transition-colors cursor-pointer ${isInexactMatch ? "bg-neutral-100" : "hover:bg-neutral-50"}`}>
       {selectedWeight === "all" && displayWeights.length > 0 ? (
         <div className="space-y-2">
           {displayWeights.map((weight) => (
@@ -203,7 +205,7 @@ function FontPreview({ font, isLoaded, selectedWeight }: { font: Font; isLoaded:
           <Textfit
             mode="single"
             max={200}
-            className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"} ${specificWeight && !specificWeight.isExact ? "text-neutral-300" : ""}`}
+            className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
             style={{
               fontFamily: `"${font.name}", sans-serif`,
               fontWeight: specificWeight?.weight,
@@ -216,7 +218,7 @@ function FontPreview({ font, isLoaded, selectedWeight }: { font: Font; isLoaded:
       )}
       <div className="flex items-center justify-between mt-2">
         <div className="flex items-center gap-2">
-          <span className={`text-sm ${specificWeight && !specificWeight.isExact ? "text-neutral-300" : "text-neutral-400"}`}>{font.name}</span>
+          <span className="text-sm text-neutral-400">{font.name}</span>
           {font.variable && (
             <span className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded">
               Variable
@@ -228,7 +230,7 @@ function FontPreview({ font, isLoaded, selectedWeight }: { font: Font; isLoaded:
             </span>
           )}
         </div>
-        <span className={`text-xs ${specificWeight && !specificWeight.isExact ? "text-neutral-300" : "text-neutral-400"}`}>
+        <span className="text-xs text-neutral-400">
           {font.weights.join(" ")}
         </span>
       </div>
