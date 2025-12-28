@@ -85,8 +85,8 @@ export const fontCategories: Category[] = [
     name: "Sans Serif",
     subcategories: [
       {
-        id: "neo-grotesque",
-        name: "Neo-Grotesque",
+        id: "modern-sans",
+        name: "Modern Sans",
         fonts: [
           { id: "roboto", name: "Roboto", weights: [100, 200, 300, 400, 500, 600, 700, 800, 900], styles: ["normal", "italic"], variable: true },
           { id: "open-sans", name: "Open Sans", weights: [300, 400, 500, 600, 700, 800], styles: ["normal", "italic"], variable: true },

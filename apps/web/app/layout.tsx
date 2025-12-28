@@ -2,10 +2,10 @@ import "@mantine/core/styles.css";
 import "@repo/ui/styles.css";
 import "./globals.css";
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Noto_Sans } from "next/font/google";
 import { MantineProvider, ColorSchemeScript } from "@mantine/core";
 
-const geist = Geist({ subsets: ["latin"] });
+const notoSans = Noto_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
 
 export const metadata: Metadata = {
   title: "Create Turborepo",
@@ -22,7 +22,7 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
       </head>
-      <body className={geist.className}>
+      <body className={notoSans.className}>
         <MantineProvider>{children}</MantineProvider>
       </body>
     </html>

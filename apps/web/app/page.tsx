@@ -49,11 +49,11 @@ export default function Page() {
 
   return (
     <main className="flex h-screen bg-white">
-      {/* Column 1: Category Browser */}
-      <div className="w-48 flex-shrink-0 border-r border-neutral-200 dark:border-neutral-800 overflow-y-auto p-4">
+      {/* Column 1: Category Browser - Slack-style dark sidebar */}
+      <div className="w-48 flex-shrink-0 bg-[#3F0E40] overflow-y-auto p-4">
         {fontCategories.map((category) => (
           <div key={category.id} className="mb-6">
-            <h2 className="text-sm font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide mb-2">
+            <h2 className="font-semibold text-[#C4B3C5] uppercase tracking-wide mb-2 px-2" style={{ fontSize: 11 }}>
               {category.name}
             </h2>
             <ul>
@@ -63,11 +63,12 @@ export default function Page() {
                     onClick={() => setSelectedSubcategory(subcategory)}
                     onMouseEnter={() => setHoveredSubcategory(subcategory)}
                     onMouseLeave={() => setHoveredSubcategory(null)}
-                    className={`w-full text-left px-2 py-1.5 text-sm rounded transition-colors ${
+                    className={`w-full text-left px-2 py-1 rounded transition-colors ${
                       selectedSubcategory?.id === subcategory.id
-                        ? "bg-neutral-900 text-white"
-                        : "hover:bg-neutral-100"
+                        ? "bg-[#E8DFE8] text-[#3F0E40] font-semibold"
+                        : "text-[#BCB3BD] hover:bg-[#522653]"
                     }`}
+                    style={{ fontSize: 15 }}
                   >
                     {subcategory.name}
                   </button>
