@@ -99,33 +99,33 @@ export default function Page() {
 }
 
 function FontPreview({ font, isLoaded }: { font: Font; isLoaded: boolean }) {
-  const previewText = "The quick brown fox jumps over the lazy dog";
+  const previewText = "The Quick Brown Fox Jumps";
 
   return (
-    <div className="px-4 py-4 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors cursor-pointer">
+    <div className="px-4 py-4 hover:bg-neutral-50 transition-colors cursor-pointer">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium">{font.name}</span>
         <div className="flex items-center gap-2">
+          <span className="text-sm text-neutral-400">{font.name}</span>
           {font.variable && (
-            <span className="text-xs px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded">
+            <span className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded">
               Variable
             </span>
           )}
           {font.styles.includes("italic") && (
-            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 rounded">
+            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
               Italic
             </span>
           )}
         </div>
+        <span className="text-xs text-neutral-400">
+          {font.weights.join(" ")}
+        </span>
       </div>
       <div
         className={`text-2xl leading-relaxed transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
         style={{ fontFamily: `"${font.name}", sans-serif` }}
       >
         {previewText}
-      </div>
-      <div className="mt-2 text-xs text-neutral-400 dark:text-neutral-500">
-        {font.weights.length} weight{font.weights.length !== 1 ? "s" : ""}: {font.weights.join(", ")}
       </div>
     </div>
   );
