@@ -52,7 +52,7 @@ export default function Page() {
   return (
     <main className="flex h-screen bg-white">
       {/* Column 1: Category Browser - Slack-style dark sidebar */}
-      <div className="w-48 flex-shrink-0 bg-[#3F0E40] overflow-y-auto p-4">
+      <div className="w-40 flex-shrink-0 bg-[#3F0E40] overflow-y-auto p-4">
         {fontCategories.map((category) => (
           <div key={category.id} className="mb-6">
             <h2 className="font-semibold text-[#C4B3C5] uppercase tracking-wide mb-2 px-2" style={{ fontSize: 11 }}>
@@ -281,10 +281,10 @@ function FontPreview({ font, isLoaded, selectedWeight, showAllWeights, previewTe
         </div>
       )}
       <div className="flex items-center justify-between mt-2">
+        <span className="text-sm text-neutral-400">{font.name}</span>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-neutral-400">{font.name}</span>
           {font.variable && (
-            <span className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded">
+            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
               Variable
             </span>
           )}
@@ -293,10 +293,10 @@ function FontPreview({ font, isLoaded, selectedWeight, showAllWeights, previewTe
               Italic
             </span>
           )}
+          <span className="text-xs text-neutral-400">
+            {font.weights.join(" ")}
+          </span>
         </div>
-        <span className="text-xs text-neutral-400">
-          {font.weights.join(" ")}
-        </span>
       </div>
     </div>
   );
