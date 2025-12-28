@@ -5,6 +5,12 @@ import { Textfit } from "react-textfit";
 import { Slider } from "@mantine/core";
 import { IconHeading, IconAlignLeft, IconCode } from "@tabler/icons-react";
 import {
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
+import {
   fontCategories,
   type Subcategory,
   type Font,
@@ -115,6 +121,28 @@ export default function Page() {
               </ul>
             </div>
           ))}
+        </div>
+        {/* User Section */}
+        <div className="mt-auto px-4 py-3 border-t border-[#522653]">
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button className="w-full px-3 py-2 text-sm text-[#E8DFE8] bg-[#522653] hover:bg-[#6B3A6D] rounded transition-colors">
+                Login
+              </button>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            <div className="flex items-center gap-2">
+              <UserButton
+                appearance={{
+                  elements: {
+                    avatarBox: "w-8 h-8",
+                  },
+                }}
+              />
+              <span className="text-sm text-[#C4B3C5] truncate">Logged in</span>
+            </div>
+          </SignedIn>
         </div>
       </div>
 

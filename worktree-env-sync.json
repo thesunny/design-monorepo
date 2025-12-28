@@ -1,10 +1,8 @@
 {
   "template": ".env.template",
   "inputFilesToFolders": {
-    ".env.dsm1": "../dsm1",
-    ".env.dsm2": "../dsm2",
-    ".env.dsm3": "../dsm3"
+    ".env.root": "../design-monorepo"
   },
   "outputFile": ".env.local",
-  "symlinksToOuputFile": ["apps/web/.env.local"]
+  "symlinksToOuputFile": ["apps/web/.env.local", "packages/convex/.env.local"]
 }

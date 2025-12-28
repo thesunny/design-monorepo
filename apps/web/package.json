@@ -11,6 +11,7 @@
     "check-types": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.36.5",
     "@mantine/core": "^8.3.10",
     "@mantine/hooks": "^8.3.10",
     "@repo/ui": "workspace:*",
