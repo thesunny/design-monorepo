@@ -190,7 +190,7 @@ export const fontCategories: Category[] = [
   },
   {
     id: "handwriting-script",
-    name: "Handwriting & Script",
+    name: "Handwriting",
     subcategories: [
       {
         id: "casual",

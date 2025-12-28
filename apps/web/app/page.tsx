@@ -110,14 +110,16 @@ function FontPreview({ font, isLoaded }: { font: Font; isLoaded: boolean }) {
 
   return (
     <div className="px-4 py-4 hover:bg-neutral-50 transition-colors cursor-pointer">
-      <Textfit
-        mode="single"
-        max={200}
-        className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
-        style={{ fontFamily: `"${font.name}", sans-serif`, height: "1.2em" }}
-      >
-        {previewText}
-      </Textfit>
+      <div className="w-[80%]">
+        <Textfit
+          mode="single"
+          max={200}
+          className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
+          style={{ fontFamily: `"${font.name}", sans-serif`, height: "1.2em" }}
+        >
+          {previewText}
+        </Textfit>
+      </div>
       <div className="flex items-center justify-between mt-2">
         <div className="flex items-center gap-2">
           <span className="text-sm text-neutral-400">{font.name}</span>
