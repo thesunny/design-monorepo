@@ -2,10 +2,11 @@ import "@mantine/core/styles.css";
 import "@repo/ui/styles.css";
 import "./globals.css";
 import type { Metadata } from "next";
-import { Noto_Sans } from "next/font/google";
+import { Noto_Sans, Poppins } from "next/font/google";
 import { MantineProvider, ColorSchemeScript } from "@mantine/core";
 
 const notoSans = Noto_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
+const poppins = Poppins({ subsets: ["latin"], weight: "800", variable: "--font-poppins" });
 
 export const metadata: Metadata = {
   title: "Create Turborepo",
@@ -22,7 +23,7 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
       </head>
-      <body className={notoSans.className}>
+      <body className={`${notoSans.className} ${poppins.variable}`}>
         <MantineProvider>{children}</MantineProvider>
       </body>
     </html>
