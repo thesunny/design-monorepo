@@ -80,14 +80,7 @@ export default function Page() {
         {displayedSubcategory ? (
           <div>
             <div className="sticky top-0 bg-white border-b border-neutral-200 px-4 py-3">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h2 className="font-semibold">{displayedSubcategory.name}</h2>
-                  <p className="text-sm text-neutral-500">
-                    {displayedSubcategory.fonts.length} fonts
-                  </p>
-                </div>
-              </div>
+              <h2 className="font-semibold mb-3">{displayedSubcategory.name}</h2>
               <div className="flex rounded-lg bg-neutral-100 p-0.5">
                 {weightOptions.map((weight) => (
                   <button
