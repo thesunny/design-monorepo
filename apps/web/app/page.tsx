@@ -9,6 +9,7 @@ export default function Page() {
   const [hoveredSubcategory, setHoveredSubcategory] = useState<Subcategory | null>(null);
   const [loadedFonts, setLoadedFonts] = useState<Set<string>>(new Set());
   const [selectedWeight, setSelectedWeight] = useState<number | "all" | null>(null);
+  const [previewText, setPreviewText] = useState("The Quick Brown Fox Jumps");
 
   const weightOptions = [100, 200, 300, 400, 500, 600, 700, 800, 900, "all"] as const;
 
@@ -81,6 +82,13 @@ export default function Page() {
           <div>
             <div className="sticky top-0 bg-white border-b border-neutral-200 px-4 py-3">
               <h2 className="font-semibold mb-3">{displayedSubcategory.name}</h2>
+              <textarea
+                value={previewText}
+                onChange={(e) => setPreviewText(e.target.value)}
+                placeholder="Enter preview text..."
+                className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg resize-none mb-3 focus:outline-none focus:ring-2 focus:ring-neutral-300"
+                rows={2}
+              />
               <div className="flex rounded-lg bg-neutral-100 p-0.5">
                 {weightOptions.map((weight) => (
                   <button
@@ -99,7 +107,7 @@ export default function Page() {
             </div>
             <div className="divide-y divide-neutral-100">
               {displayedSubcategory.fonts.map((font) => (
-                <FontPreview key={font.id} font={font} isLoaded={loadedFonts.has(font.id)} selectedWeight={selectedWeight} />
+                <FontPreview key={font.id} font={font} isLoaded={loadedFonts.has(font.id)} selectedWeight={selectedWeight} previewText={previewText} />
               ))}
             </div>
           </div>
@@ -162,9 +170,19 @@ function getClosestWeight(weights: number[], target: number): { weight: number; 
   return { weight: closest, isExact: false };
 }
 
-function FontPreview({ font, isLoaded, selectedWeight }: { font: Font; isLoaded: boolean; selectedWeight: number | "all" | null }) {
-  const previewText = "The Quick Brown Fox Jumps";
+function FontPreview({ font, isLoaded, selectedWeight, previewText }: { font: Font; isLoaded: boolean; selectedWeight: number | "all" | null; previewText: string }) {
   const displayWeights = selectedWeight === "all" ? getDisplayWeights(font.weights) : [];
+
+  // Convert newlines to <br> elements
+  const renderText = (text: string) => {
+    const lines = text.split('\n');
+    return lines.map((line, i) => (
+      <span key={i}>
+        {line}
+        {i < lines.length - 1 && <br />}
+      </span>
+    ));
+  };
 
   // For specific weight selection
   const specificWeight = typeof selectedWeight === "number"
@@ -184,9 +202,9 @@ function FontPreview({ font, isLoaded, selectedWeight }: { font: Font; isLoaded:
                   mode="single"
                   max={200}
                   className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
-                  style={{ fontFamily: `"${font.name}", sans-serif`, fontWeight: weight, height: "1.2em" }}
+                  style={{ fontFamily: `"${font.name}", sans-serif`, fontWeight: weight }}
                 >
-                  {previewText}
+                  {renderText(previewText)}
                 </Textfit>
               </div>
               <span className="text-xs text-neutral-400 w-8 text-right">{weight}</span>
@@ -201,11 +219,10 @@ function FontPreview({ font, isLoaded, selectedWeight }: { font: Font; isLoaded:
             className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
             style={{
               fontFamily: `"${font.name}", sans-serif`,
-              fontWeight: specificWeight?.weight,
-              height: "1.2em"
+              fontWeight: specificWeight?.weight
             }}
           >
-            {previewText}
+            {renderText(previewText)}
           </Textfit>
         </div>
       )}
