@@ -8,12 +8,11 @@ export default function Page() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<Subcategory | null>(null);
   const [hoveredSubcategory, setHoveredSubcategory] = useState<Subcategory | null>(null);
   const [loadedFonts, setLoadedFonts] = useState<Set<string>>(new Set());
-  const [selectedWeight, setSelectedWeight] = useState<number | "all" | null>(null);
+  const [selectedWeight, setSelectedWeight] = useState(400);
+  const [showAllWeights, setShowAllWeights] = useState(false);
   const [previewText, setPreviewText] = useState("The Quick Brown Fox Jumps");
   const [lineHeight, setLineHeight] = useState(1.2);
   const [letterSpacing, setLetterSpacing] = useState(0);
-
-  const weightOptions = [100, 200, 300, 400, 500, 600, 700, 800, 900, "all"] as const;
 
   // The subcategory to display: hovered takes priority, then selected
   const displayedSubcategory = hoveredSubcategory || selectedSubcategory;
@@ -91,6 +90,36 @@ export default function Page() {
                 className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg resize-none mb-3 focus:outline-none focus:ring-2 focus:ring-neutral-300"
                 rows={2}
               />
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs text-neutral-500">Show All Weights</span>
+                <button
+                  role="switch"
+                  aria-checked={showAllWeights}
+                  onClick={() => setShowAllWeights(!showAllWeights)}
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                    showAllWeights ? "bg-neutral-900" : "bg-neutral-300"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      showAllWeights ? "translate-x-4" : "translate-x-0.5"
+                    }`}
+                  />
+                </button>
+              </div>
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-xs text-neutral-500 w-20">Weight</span>
+                <input
+                  type="range"
+                  min="100"
+                  max="900"
+                  step="100"
+                  value={selectedWeight}
+                  onChange={(e) => setSelectedWeight(parseInt(e.target.value))}
+                  className="flex-1 h-1 bg-neutral-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <span className="text-xs text-neutral-400 w-12 text-right">{selectedWeight}</span>
+              </div>
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-xs text-neutral-500 w-20">Line Height</span>
                 <input
@@ -104,7 +133,7 @@ export default function Page() {
                 />
                 <span className="text-xs text-neutral-400 w-12 text-right">{lineHeight.toFixed(1)}</span>
               </div>
-              <div className="flex items-center gap-3 mb-3">
+              <div className="flex items-center gap-3">
                 <span className="text-xs text-neutral-500 w-20">Tracking</span>
                 <input
                   type="range"
@@ -117,25 +146,10 @@ export default function Page() {
                 />
                 <span className="text-xs text-neutral-400 w-12 text-right">{letterSpacing.toFixed(2)}em</span>
               </div>
-              <div className="flex rounded-lg bg-neutral-100 p-0.5">
-                {weightOptions.map((weight) => (
-                  <button
-                    key={weight}
-                    onClick={() => setSelectedWeight(selectedWeight === weight ? null : weight)}
-                    className={`flex-1 px-1.5 py-1 text-xs rounded-md transition-colors ${
-                      selectedWeight === weight
-                        ? "bg-white text-neutral-900 shadow-sm"
-                        : "text-neutral-500 hover:text-neutral-700"
-                    }`}
-                  >
-                    {weight === "all" ? "All" : weight}
-                  </button>
-                ))}
-              </div>
             </div>
             <div className="divide-y divide-neutral-100">
               {displayedSubcategory.fonts.map((font) => (
-                <FontPreview key={font.id} font={font} isLoaded={loadedFonts.has(font.id)} selectedWeight={selectedWeight} previewText={previewText} lineHeight={lineHeight} letterSpacing={letterSpacing} />
+                <FontPreview key={font.id} font={font} isLoaded={loadedFonts.has(font.id)} selectedWeight={selectedWeight} showAllWeights={showAllWeights} previewText={previewText} lineHeight={lineHeight} letterSpacing={letterSpacing} />
               ))}
             </div>
           </div>
@@ -156,34 +170,10 @@ export default function Page() {
   );
 }
 
-function getDisplayWeights(weights: number[]): number[] {
-  const sortedWeights = [...weights].sort((a, b) => a - b);
-  const result: number[] = [];
-
-  // Find lowest weight below 400
-  const belowFour = sortedWeights.filter((w) => w < 400);
-  if (belowFour.length > 0) {
-    result.push(belowFour[0]); // lowest below 400
-  }
-
-  // Add 400 if available
-  if (weights.includes(400)) {
-    result.push(400);
-  }
-
-  // Add 700 if available
-  if (weights.includes(700)) {
-    result.push(700);
-  }
-
-  // Find highest weight above 700
-  const aboveSeven = sortedWeights.filter((w) => w > 700);
-  if (aboveSeven.length > 0) {
-    result.push(aboveSeven[aboveSeven.length - 1]); // highest above 700
-  }
-
-  // Remove duplicates and sort
-  return [...new Set(result)].sort((a, b) => a - b);
+function getAllAvailableWeights(weights: number[]): number[] {
+  // Return all weights from 100-900 in increments of 100 that are available
+  const standardWeights = [100, 200, 300, 400, 500, 600, 700, 800, 900];
+  return standardWeights.filter((w) => weights.includes(w));
 }
 
 function getClosestWeight(weights: number[], target: number): { weight: number; isExact: boolean } {
@@ -198,8 +188,8 @@ function getClosestWeight(weights: number[], target: number): { weight: number; 
   return { weight: closest, isExact: false };
 }
 
-function FontPreview({ font, isLoaded, selectedWeight, previewText, lineHeight, letterSpacing }: { font: Font; isLoaded: boolean; selectedWeight: number | "all" | null; previewText: string; lineHeight: number; letterSpacing: number }) {
-  const displayWeights = selectedWeight === "all" ? getDisplayWeights(font.weights) : [];
+function FontPreview({ font, isLoaded, selectedWeight, showAllWeights, previewText, lineHeight, letterSpacing }: { font: Font; isLoaded: boolean; selectedWeight: number; showAllWeights: boolean; previewText: string; lineHeight: number; letterSpacing: number }) {
+  const displayWeights = showAllWeights ? getAllAvailableWeights(font.weights) : [];
 
   // Convert newlines to <br> elements
   const renderText = (text: string) => {
@@ -212,8 +202,8 @@ function FontPreview({ font, isLoaded, selectedWeight, previewText, lineHeight, 
     ));
   };
 
-  // For specific weight selection
-  const specificWeight = typeof selectedWeight === "number"
+  // For specific weight selection (when not showing all weights)
+  const specificWeight = !showAllWeights
     ? getClosestWeight(font.weights, selectedWeight)
     : null;
 
@@ -221,7 +211,7 @@ function FontPreview({ font, isLoaded, selectedWeight, previewText, lineHeight, 
 
   return (
     <div className={`px-4 py-4 transition-colors cursor-pointer ${isInexactMatch ? "bg-neutral-100" : "hover:bg-neutral-50"}`}>
-      {selectedWeight === "all" && displayWeights.length > 0 ? (
+      {showAllWeights && displayWeights.length > 0 ? (
         <div className="space-y-2">
           {displayWeights.map((weight) => (
             <div key={weight} className="flex items-center gap-3">
