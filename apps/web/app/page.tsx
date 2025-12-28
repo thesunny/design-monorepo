@@ -6,7 +6,9 @@ import { Slider } from "@mantine/core";
 import { fontCategories, type Subcategory, type Font } from "../data/fontCategories";
 
 export default function Page() {
-  const [selectedSubcategory, setSelectedSubcategory] = useState<Subcategory | null>(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<Subcategory | null>(
+    fontCategories[0]?.subcategories[0] ?? null
+  );
   const [hoveredSubcategory, setHoveredSubcategory] = useState<Subcategory | null>(null);
   const [loadedFonts, setLoadedFonts] = useState<Set<string>>(new Set());
   const [selectedWeight, setSelectedWeight] = useState(400);
@@ -80,17 +82,17 @@ export default function Page() {
       </div>
 
       {/* Column 2: Font List */}
-      <div className="basis-3/5 border-r border-neutral-200 overflow-y-auto">
+      <div className="basis-3/5 border-r border-neutral-200 flex flex-col">
         {displayedSubcategory ? (
-          <div>
-            <div className="sticky top-0 bg-white border-b border-neutral-200 px-4 py-3">
-              <textarea
-                value={previewText}
-                onChange={(e) => setPreviewText(e.target.value)}
-                placeholder="Enter preview text..."
-                className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg resize-none mb-3 focus:outline-none focus:ring-2 focus:ring-neutral-300"
-                rows={2}
-              />
+          <>
+            <div className="flex-1 overflow-y-auto">
+              <div className="divide-y divide-neutral-200">
+                {displayedSubcategory.fonts.map((font) => (
+                  <FontPreview key={font.id} font={font} isLoaded={loadedFonts.has(font.id)} selectedWeight={selectedWeight} showAllWeights={showAllWeights} previewText={previewText} lineHeight={lineHeight} letterSpacing={letterSpacing} />
+                ))}
+              </div>
+            </div>
+            <div className="bg-white border-t border-neutral-200 px-4 py-3">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs text-neutral-500">Show All Weights</span>
                 <button
@@ -155,7 +157,7 @@ export default function Page() {
                   styles={{ markLabel: { fontSize: '12px' } }}
                 />
               </div>
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center gap-3 mb-8">
                 <span className="text-xs text-neutral-500 w-20">Tracking</span>
                 <Slider
                   value={letterSpacing}
@@ -176,13 +178,15 @@ export default function Page() {
                   styles={{ markLabel: { fontSize: '12px' } }}
                 />
               </div>
+              <textarea
+                value={previewText}
+                onChange={(e) => setPreviewText(e.target.value)}
+                placeholder="Enter preview text..."
+                className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-neutral-300"
+                rows={2}
+              />
             </div>
-            <div className="divide-y divide-neutral-200">
-              {displayedSubcategory.fonts.map((font) => (
-                <FontPreview key={font.id} font={font} isLoaded={loadedFonts.has(font.id)} selectedWeight={selectedWeight} showAllWeights={showAllWeights} previewText={previewText} lineHeight={lineHeight} letterSpacing={letterSpacing} />
-              ))}
-            </div>
-          </div>
+          </>
         ) : (
           <div className="flex items-center justify-center h-full text-neutral-500 text-sm">
             Select a category to view fonts
