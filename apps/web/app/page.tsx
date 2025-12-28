@@ -49,7 +49,7 @@ export default function Page() {
             <h2 className="text-sm font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide mb-2">
               {category.name}
             </h2>
-            <ul className="space-y-1">
+            <ul>
               {category.subcategories.map((subcategory) => (
                 <li key={subcategory.id}>
                   <button
