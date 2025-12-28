@@ -8,6 +8,7 @@ export default function Page() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<Subcategory | null>(null);
   const [hoveredSubcategory, setHoveredSubcategory] = useState<Subcategory | null>(null);
   const [loadedFonts, setLoadedFonts] = useState<Set<string>>(new Set());
+  const [showWeights, setShowWeights] = useState(false);
 
   // The subcategory to display: hovered takes priority, then selected
   const displayedSubcategory = hoveredSubcategory || selectedSubcategory;
@@ -77,14 +78,35 @@ export default function Page() {
         {displayedSubcategory ? (
           <div>
             <div className="sticky top-0 bg-white border-b border-neutral-200 px-4 py-3">
-              <h2 className="font-semibold">{displayedSubcategory.name}</h2>
-              <p className="text-sm text-neutral-500">
-                {displayedSubcategory.fonts.length} fonts
-              </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-semibold">{displayedSubcategory.name}</h2>
+                  <p className="text-sm text-neutral-500">
+                    {displayedSubcategory.fonts.length} fonts
+                  </p>
+                </div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <span className="text-sm text-neutral-500">Weights</span>
+                  <button
+                    role="switch"
+                    aria-checked={showWeights}
+                    onClick={() => setShowWeights(!showWeights)}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                      showWeights ? "bg-neutral-900" : "bg-neutral-300"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        showWeights ? "translate-x-4" : "translate-x-0.5"
+                      }`}
+                    />
+                  </button>
+                </label>
+              </div>
             </div>
             <div className="divide-y divide-neutral-100">
               {displayedSubcategory.fonts.map((font) => (
-                <FontPreview key={font.id} font={font} isLoaded={loadedFonts.has(font.id)} />
+                <FontPreview key={font.id} font={font} isLoaded={loadedFonts.has(font.id)} showWeights={showWeights} />
               ))}
             </div>
           </div>
@@ -105,21 +127,72 @@ export default function Page() {
   );
 }
 
-function FontPreview({ font, isLoaded }: { font: Font; isLoaded: boolean }) {
+function getDisplayWeights(weights: number[]): number[] {
+  const sortedWeights = [...weights].sort((a, b) => a - b);
+  const result: number[] = [];
+
+  // Find lowest weight below 400
+  const belowFour = sortedWeights.filter((w) => w < 400);
+  if (belowFour.length > 0) {
+    result.push(belowFour[0]); // lowest below 400
+  }
+
+  // Add 400 if available
+  if (weights.includes(400)) {
+    result.push(400);
+  }
+
+  // Add 700 if available
+  if (weights.includes(700)) {
+    result.push(700);
+  }
+
+  // Find highest weight above 700
+  const aboveSeven = sortedWeights.filter((w) => w > 700);
+  if (aboveSeven.length > 0) {
+    result.push(aboveSeven[aboveSeven.length - 1]); // highest above 700
+  }
+
+  // Remove duplicates and sort
+  return [...new Set(result)].sort((a, b) => a - b);
+}
+
+function FontPreview({ font, isLoaded, showWeights }: { font: Font; isLoaded: boolean; showWeights: boolean }) {
   const previewText = "The Quick Brown Fox Jumps";
+  const displayWeights = showWeights ? getDisplayWeights(font.weights) : [];
 
   return (
     <div className="px-4 py-4 hover:bg-neutral-50 transition-colors cursor-pointer">
-      <div className="w-[80%]">
-        <Textfit
-          mode="single"
-          max={200}
-          className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
-          style={{ fontFamily: `"${font.name}", sans-serif`, height: "1.2em" }}
-        >
-          {previewText}
-        </Textfit>
-      </div>
+      {showWeights && displayWeights.length > 0 ? (
+        <div className="space-y-2">
+          {displayWeights.map((weight) => (
+            <div key={weight} className="flex items-center gap-3">
+              <div className="flex-1 w-[80%]">
+                <Textfit
+                  mode="single"
+                  max={200}
+                  className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
+                  style={{ fontFamily: `"${font.name}", sans-serif`, fontWeight: weight, height: "1.2em" }}
+                >
+                  {previewText}
+                </Textfit>
+              </div>
+              <span className="text-xs text-neutral-400 w-8 text-right">{weight}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="w-[85%]">
+          <Textfit
+            mode="single"
+            max={200}
+            className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
+            style={{ fontFamily: `"${font.name}", sans-serif`, height: "1.2em" }}
+          >
+            {previewText}
+          </Textfit>
+        </div>
+      )}
       <div className="flex items-center justify-between mt-2">
         <div className="flex items-center gap-2">
           <span className="text-sm text-neutral-400">{font.name}</span>
