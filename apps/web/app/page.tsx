@@ -5,13 +5,17 @@ import { fontCategories, type Subcategory, type Font } from "../data/fontCategor
 
 export default function Page() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<Subcategory | null>(null);
+  const [hoveredSubcategory, setHoveredSubcategory] = useState<Subcategory | null>(null);
   const [loadedFonts, setLoadedFonts] = useState<Set<string>>(new Set());
 
-  // Load fonts from Google Fonts when a subcategory is selected
-  useEffect(() => {
-    if (!selectedSubcategory) return;
+  // The subcategory to display: hovered takes priority, then selected
+  const displayedSubcategory = hoveredSubcategory || selectedSubcategory;
 
-    const fontsToLoad = selectedSubcategory.fonts.filter(
+  // Load fonts from Google Fonts when a subcategory is displayed
+  useEffect(() => {
+    if (!displayedSubcategory) return;
+
+    const fontsToLoad = displayedSubcategory.fonts.filter(
       (font) => !loadedFonts.has(font.id)
     );
 
@@ -34,7 +38,7 @@ export default function Page() {
       fontsToLoad.forEach((font) => next.add(font.id));
       return next;
     });
-  }, [selectedSubcategory, loadedFonts]);
+  }, [displayedSubcategory, loadedFonts]);
 
   return (
     <main className="flex h-screen bg-white">
@@ -50,10 +54,12 @@ export default function Page() {
                 <li key={subcategory.id}>
                   <button
                     onClick={() => setSelectedSubcategory(subcategory)}
+                    onMouseEnter={() => setHoveredSubcategory(subcategory)}
+                    onMouseLeave={() => setHoveredSubcategory(null)}
                     className={`w-full text-left px-2 py-1.5 text-sm rounded transition-colors ${
                       selectedSubcategory?.id === subcategory.id
-                        ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
-                        : "hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        ? "bg-neutral-900 text-white"
+                        : "hover:bg-neutral-100"
                     }`}
                   >
                     {subcategory.name}
@@ -66,23 +72,23 @@ export default function Page() {
       </div>
 
       {/* Column 2: Font List */}
-      <div className="flex-1 border-r border-neutral-200 dark:border-neutral-800 overflow-y-auto">
-        {selectedSubcategory ? (
+      <div className="flex-1 border-r border-neutral-200 overflow-y-auto">
+        {displayedSubcategory ? (
           <div>
-            <div className="sticky top-0 bg-white dark:bg-neutral-950 border-b border-neutral-200 dark:border-neutral-800 px-4 py-3">
-              <h2 className="font-semibold">{selectedSubcategory.name}</h2>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                {selectedSubcategory.fonts.length} fonts
+            <div className="sticky top-0 bg-white border-b border-neutral-200 px-4 py-3">
+              <h2 className="font-semibold">{displayedSubcategory.name}</h2>
+              <p className="text-sm text-neutral-500">
+                {displayedSubcategory.fonts.length} fonts
               </p>
             </div>
-            <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-              {selectedSubcategory.fonts.map((font) => (
+            <div className="divide-y divide-neutral-100">
+              {displayedSubcategory.fonts.map((font) => (
                 <FontPreview key={font.id} font={font} isLoaded={loadedFonts.has(font.id)} />
               ))}
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-center h-full text-neutral-500 dark:text-neutral-400 text-sm">
+          <div className="flex items-center justify-center h-full text-neutral-500 text-sm">
             Select a category to view fonts
           </div>
         )}
