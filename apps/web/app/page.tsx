@@ -8,7 +8,9 @@ export default function Page() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<Subcategory | null>(null);
   const [hoveredSubcategory, setHoveredSubcategory] = useState<Subcategory | null>(null);
   const [loadedFonts, setLoadedFonts] = useState<Set<string>>(new Set());
-  const [showWeights, setShowWeights] = useState(false);
+  const [selectedWeight, setSelectedWeight] = useState<number | "all" | null>(null);
+
+  const weightOptions = [100, 200, 300, 400, 500, 600, 700, 800, 900, "all"] as const;
 
   // The subcategory to display: hovered takes priority, then selected
   const displayedSubcategory = hoveredSubcategory || selectedSubcategory;
@@ -78,35 +80,33 @@ export default function Page() {
         {displayedSubcategory ? (
           <div>
             <div className="sticky top-0 bg-white border-b border-neutral-200 px-4 py-3">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-3">
                 <div>
                   <h2 className="font-semibold">{displayedSubcategory.name}</h2>
                   <p className="text-sm text-neutral-500">
                     {displayedSubcategory.fonts.length} fonts
                   </p>
                 </div>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <span className="text-sm text-neutral-500">Weights</span>
+              </div>
+              <div className="flex rounded-lg bg-neutral-100 p-0.5">
+                {weightOptions.map((weight) => (
                   <button
-                    role="switch"
-                    aria-checked={showWeights}
-                    onClick={() => setShowWeights(!showWeights)}
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                      showWeights ? "bg-neutral-900" : "bg-neutral-300"
+                    key={weight}
+                    onClick={() => setSelectedWeight(selectedWeight === weight ? null : weight)}
+                    className={`flex-1 px-1.5 py-1 text-xs rounded-md transition-colors ${
+                      selectedWeight === weight
+                        ? "bg-white text-neutral-900 shadow-sm"
+                        : "text-neutral-500 hover:text-neutral-700"
                     }`}
                   >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        showWeights ? "translate-x-4" : "translate-x-0.5"
-                      }`}
-                    />
+                    {weight === "all" ? "All" : weight}
                   </button>
-                </label>
+                ))}
               </div>
             </div>
             <div className="divide-y divide-neutral-100">
               {displayedSubcategory.fonts.map((font) => (
-                <FontPreview key={font.id} font={font} isLoaded={loadedFonts.has(font.id)} showWeights={showWeights} />
+                <FontPreview key={font.id} font={font} isLoaded={loadedFonts.has(font.id)} selectedWeight={selectedWeight} />
               ))}
             </div>
           </div>
@@ -157,13 +157,30 @@ function getDisplayWeights(weights: number[]): number[] {
   return [...new Set(result)].sort((a, b) => a - b);
 }
 
-function FontPreview({ font, isLoaded, showWeights }: { font: Font; isLoaded: boolean; showWeights: boolean }) {
+function getClosestWeight(weights: number[], target: number): { weight: number; isExact: boolean } {
+  if (weights.includes(target)) {
+    return { weight: target, isExact: true };
+  }
+
+  const closest = weights.reduce((prev, curr) =>
+    Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev
+  );
+
+  return { weight: closest, isExact: false };
+}
+
+function FontPreview({ font, isLoaded, selectedWeight }: { font: Font; isLoaded: boolean; selectedWeight: number | "all" | null }) {
   const previewText = "The Quick Brown Fox Jumps";
-  const displayWeights = showWeights ? getDisplayWeights(font.weights) : [];
+  const displayWeights = selectedWeight === "all" ? getDisplayWeights(font.weights) : [];
+
+  // For specific weight selection
+  const specificWeight = typeof selectedWeight === "number"
+    ? getClosestWeight(font.weights, selectedWeight)
+    : null;
 
   return (
     <div className="px-4 py-4 hover:bg-neutral-50 transition-colors cursor-pointer">
-      {showWeights && displayWeights.length > 0 ? (
+      {selectedWeight === "all" && displayWeights.length > 0 ? (
         <div className="space-y-2">
           {displayWeights.map((weight) => (
             <div key={weight} className="flex items-center gap-3">
@@ -186,8 +203,12 @@ function FontPreview({ font, isLoaded, showWeights }: { font: Font; isLoaded: bo
           <Textfit
             mode="single"
             max={200}
-            className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
-            style={{ fontFamily: `"${font.name}", sans-serif`, height: "1.2em" }}
+            className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"} ${specificWeight && !specificWeight.isExact ? "text-neutral-300" : ""}`}
+            style={{
+              fontFamily: `"${font.name}", sans-serif`,
+              fontWeight: specificWeight?.weight,
+              height: "1.2em"
+            }}
           >
             {previewText}
           </Textfit>
@@ -195,7 +216,7 @@ function FontPreview({ font, isLoaded, showWeights }: { font: Font; isLoaded: bo
       )}
       <div className="flex items-center justify-between mt-2">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-neutral-400">{font.name}</span>
+          <span className={`text-sm ${specificWeight && !specificWeight.isExact ? "text-neutral-300" : "text-neutral-400"}`}>{font.name}</span>
           {font.variable && (
             <span className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded">
               Variable
@@ -207,7 +228,7 @@ function FontPreview({ font, isLoaded, showWeights }: { font: Font; isLoaded: bo
             </span>
           )}
         </div>
-        <span className="text-xs text-neutral-400">
+        <span className={`text-xs ${specificWeight && !specificWeight.isExact ? "text-neutral-300" : "text-neutral-400"}`}>
           {font.weights.join(" ")}
         </span>
       </div>
