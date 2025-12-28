@@ -10,6 +10,8 @@ export default function Page() {
   const [loadedFonts, setLoadedFonts] = useState<Set<string>>(new Set());
   const [selectedWeight, setSelectedWeight] = useState<number | "all" | null>(null);
   const [previewText, setPreviewText] = useState("The Quick Brown Fox Jumps");
+  const [lineHeight, setLineHeight] = useState(1.2);
+  const [letterSpacing, setLetterSpacing] = useState(0);
 
   const weightOptions = [100, 200, 300, 400, 500, 600, 700, 800, 900, "all"] as const;
 
@@ -89,6 +91,32 @@ export default function Page() {
                 className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg resize-none mb-3 focus:outline-none focus:ring-2 focus:ring-neutral-300"
                 rows={2}
               />
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-xs text-neutral-500 w-20">Line Height</span>
+                <input
+                  type="range"
+                  min="0.8"
+                  max="2.5"
+                  step="0.1"
+                  value={lineHeight}
+                  onChange={(e) => setLineHeight(parseFloat(e.target.value))}
+                  className="flex-1 h-1 bg-neutral-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <span className="text-xs text-neutral-400 w-12 text-right">{lineHeight.toFixed(1)}</span>
+              </div>
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-xs text-neutral-500 w-20">Tracking</span>
+                <input
+                  type="range"
+                  min="-0.1"
+                  max="0.3"
+                  step="0.01"
+                  value={letterSpacing}
+                  onChange={(e) => setLetterSpacing(parseFloat(e.target.value))}
+                  className="flex-1 h-1 bg-neutral-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <span className="text-xs text-neutral-400 w-12 text-right">{letterSpacing.toFixed(2)}em</span>
+              </div>
               <div className="flex rounded-lg bg-neutral-100 p-0.5">
                 {weightOptions.map((weight) => (
                   <button
@@ -107,7 +135,7 @@ export default function Page() {
             </div>
             <div className="divide-y divide-neutral-100">
               {displayedSubcategory.fonts.map((font) => (
-                <FontPreview key={font.id} font={font} isLoaded={loadedFonts.has(font.id)} selectedWeight={selectedWeight} previewText={previewText} />
+                <FontPreview key={font.id} font={font} isLoaded={loadedFonts.has(font.id)} selectedWeight={selectedWeight} previewText={previewText} lineHeight={lineHeight} letterSpacing={letterSpacing} />
               ))}
             </div>
           </div>
@@ -170,7 +198,7 @@ function getClosestWeight(weights: number[], target: number): { weight: number; 
   return { weight: closest, isExact: false };
 }
 
-function FontPreview({ font, isLoaded, selectedWeight, previewText }: { font: Font; isLoaded: boolean; selectedWeight: number | "all" | null; previewText: string }) {
+function FontPreview({ font, isLoaded, selectedWeight, previewText, lineHeight, letterSpacing }: { font: Font; isLoaded: boolean; selectedWeight: number | "all" | null; previewText: string; lineHeight: number; letterSpacing: number }) {
   const displayWeights = selectedWeight === "all" ? getDisplayWeights(font.weights) : [];
 
   // Convert newlines to <br> elements
@@ -202,7 +230,7 @@ function FontPreview({ font, isLoaded, selectedWeight, previewText }: { font: Fo
                   mode="single"
                   max={200}
                   className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
-                  style={{ fontFamily: `"${font.name}", sans-serif`, fontWeight: weight }}
+                  style={{ fontFamily: `"${font.name}", sans-serif`, fontWeight: weight, lineHeight, letterSpacing: `${letterSpacing}em` }}
                 >
                   {renderText(previewText)}
                 </Textfit>
@@ -219,7 +247,9 @@ function FontPreview({ font, isLoaded, selectedWeight, previewText }: { font: Fo
             className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
             style={{
               fontFamily: `"${font.name}", sans-serif`,
-              fontWeight: specificWeight?.weight
+              fontWeight: specificWeight?.weight,
+              lineHeight,
+              letterSpacing: `${letterSpacing}em`
             }}
           >
             {renderText(previewText)}
