@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { Noto_Sans, Poppins } from "next/font/google";
 import { MantineProvider, ColorSchemeScript } from "@mantine/core";
 import { ClerkProvider } from "@clerk/nextjs";
+import { ConvexClientProvider } from "./ConvexClientProvider";
 
 const notoSans = Noto_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
 const poppins = Poppins({ subsets: ["latin"], weight: "800", variable: "--font-poppins" });
@@ -26,7 +27,9 @@ export default function RootLayout({
       </head>
       <body className={`${notoSans.className} ${poppins.variable}`}>
         <ClerkProvider>
-          <MantineProvider>{children}</MantineProvider>
+          <ConvexClientProvider>
+            <MantineProvider>{children}</MantineProvider>
+          </ConvexClientProvider>
         </ClerkProvider>
       </body>
     </html>

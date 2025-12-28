@@ -3,13 +3,16 @@
 import { useState, useEffect } from "react";
 import { Textfit } from "react-textfit";
 import { Slider } from "@mantine/core";
-import { IconHeading, IconAlignLeft, IconCode } from "@tabler/icons-react";
+import { IconHeading, IconAlignLeft, IconCode, IconStar, IconStarFilled } from "@tabler/icons-react";
 import {
   SignInButton,
   SignedIn,
   SignedOut,
   UserButton,
+  useAuth,
 } from "@clerk/nextjs";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@repo/convex/convex/_generated/api";
 import {
   fontCategories,
   type Subcategory,
@@ -34,6 +37,9 @@ export default function Page() {
   const [filterBold, setFilterBold] = useState(false);
   const [filterItalic, setFilterItalic] = useState(false);
   const [filterVariable, setFilterVariable] = useState(false);
+
+  // Fetch favorites for Column 3
+  const favorites = useQuery(api.favorites.getFavorites);
 
   // The subcategory to display: hovered takes priority, then selected
   const displayedSubcategory = hoveredSubcategory || selectedSubcategory;
@@ -78,6 +84,29 @@ export default function Page() {
       return next;
     });
   }, [displayedSubcategory, loadedFonts]);
+
+  // Load fonts for favorites
+  useEffect(() => {
+    if (!favorites || favorites.length === 0) return;
+
+    const fontsToLoad = favorites.filter((fav) => !loadedFonts.has(fav.fontId));
+    if (fontsToLoad.length === 0) return;
+
+    const fontFamilies = fontsToLoad.map((fav) => {
+      return `${fav.fontName.replace(/ /g, "+")}:wght@${fav.weight}`;
+    });
+
+    const link = document.createElement("link");
+    link.href = `https://fonts.googleapis.com/css2?${fontFamilies.map((f) => `family=${f}`).join("&")}&display=swap`;
+    link.rel = "stylesheet";
+    document.head.appendChild(link);
+
+    setLoadedFonts((prev) => {
+      const next = new Set(prev);
+      fontsToLoad.forEach((fav) => next.add(fav.fontId));
+      return next;
+    });
+  }, [favorites, loadedFonts]);
 
   return (
     <main className="flex h-screen bg-white">
@@ -395,18 +424,100 @@ export default function Page() {
         )}
       </div>
 
-      {/* Column 3: Font Preview */}
+      {/* Column 3: Favorites */}
       <div className="basis-2/5 overflow-y-auto p-8">
-        {selectedFont ? (
-          <FontDetailPreview
-            font={selectedFont}
-            isLoaded={loadedFonts.has(selectedFont.id)}
-          />
+        <h2 className="text-lg font-semibold text-neutral-800 mb-4">Favorites</h2>
+        {!favorites || favorites.length === 0 ? (
+          <p className="text-neutral-500 text-sm">
+            No favorites yet. Click the star on a font to add it.
+          </p>
         ) : (
-          <p className="text-neutral-500 text-sm">Select a font to preview</p>
+          <div className="space-y-2">
+            {favorites.map((fav) => (
+              <FavoriteItem
+                key={fav._id}
+                favorite={fav}
+                isLoaded={loadedFonts.has(fav.fontId)}
+                previewText={previewText}
+              />
+            ))}
+          </div>
         )}
       </div>
     </main>
+  );
+}
+
+// Shared component for heading-style font preview
+function HeadingPreviewContent({
+  fontName,
+  weight,
+  lineHeight,
+  letterSpacing,
+  previewText,
+  isLoaded,
+  weights,
+  variable,
+  hasItalic,
+}: {
+  fontName: string;
+  weight: number;
+  lineHeight: number;
+  letterSpacing: number;
+  previewText: string;
+  isLoaded: boolean;
+  weights?: number[];
+  variable?: boolean;
+  hasItalic?: boolean;
+}) {
+  const renderText = (text: string) => {
+    const lines = text.split("\n");
+    return lines.map((line, i) => (
+      <span key={i}>
+        {line}
+        {i < lines.length - 1 && <br />}
+      </span>
+    ));
+  };
+
+  return (
+    <>
+      <div className="w-[85%]">
+        <Textfit
+          mode="single"
+          max={200}
+          className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
+          style={{
+            fontFamily: `"${fontName}", sans-serif`,
+            fontWeight: weight,
+            lineHeight,
+            letterSpacing: `${letterSpacing}em`,
+          }}
+        >
+          {renderText(previewText)}
+        </Textfit>
+      </div>
+      <div className="flex items-center justify-between mt-2">
+        <span className="text-sm text-neutral-400">{fontName}</span>
+        <div className="flex items-center gap-2">
+          {variable && (
+            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
+              Variable
+            </span>
+          )}
+          {hasItalic && (
+            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
+              Italic
+            </span>
+          )}
+          {weights && (
+            <span className="text-xs text-neutral-400">
+              {weights.join(" ")}
+            </span>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -452,9 +563,47 @@ function FontPreview({
   isSelected: boolean;
   onClick: () => void;
 }) {
+  const { isSignedIn } = useAuth();
+  const favorites = useQuery(api.favorites.getFavorites);
+  const addFavorite = useMutation(api.favorites.addFavorite);
+  const removeFavorite = useMutation(api.favorites.removeFavorite);
+
   const displayWeights = showAllWeights
     ? getAllAvailableWeights(font.weights)
     : [];
+
+  // Check if this font with current settings is favorited as heading
+  const currentWeight = showAllWeights ? selectedWeight : (getClosestWeight(font.weights, selectedWeight).weight);
+  const isFavorited = favorites?.some(
+    (fav) =>
+      fav.fontId === font.id &&
+      fav.weight === currentWeight &&
+      fav.lineHeight === lineHeight &&
+      fav.letterSpacing === letterSpacing &&
+      (fav.type === "heading" || fav.type === undefined)
+  ) ?? false;
+
+  const handleStarClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isFavorited) {
+      await removeFavorite({
+        fontId: font.id,
+        weight: currentWeight,
+        lineHeight,
+        letterSpacing,
+        type: "heading",
+      });
+    } else {
+      await addFavorite({
+        fontId: font.id,
+        fontName: font.name,
+        weight: currentWeight,
+        lineHeight,
+        letterSpacing,
+        type: "heading",
+      });
+    }
+  };
 
   // Convert newlines to <br> elements
   const renderText = (text: string) => {
@@ -477,7 +626,7 @@ function FontPreview({
   return (
     <div
       onClick={onClick}
-      className={`px-8 py-4 transition-colors cursor-pointer ${
+      className={`px-8 py-4 transition-colors cursor-pointer relative ${
         isSelected
           ? "bg-blue-50 border-l-2 border-l-blue-500"
           : isInexactMatch
@@ -485,6 +634,19 @@ function FontPreview({
             : "hover:bg-neutral-50"
       }`}
     >
+      {isSignedIn && (
+        <button
+          onClick={handleStarClick}
+          className="absolute top-3 right-3 p-1 rounded hover:bg-neutral-200 transition-colors"
+          title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+        >
+          {isFavorited ? (
+            <IconStarFilled size={18} className="text-yellow-500" />
+          ) : (
+            <IconStar size={18} className="text-neutral-400" />
+          )}
+        </button>
+      )}
       {showAllWeights && displayWeights.length > 0 ? (
         <div className="space-y-2">
           {displayWeights.map((weight) => (
@@ -511,40 +673,18 @@ function FontPreview({
           ))}
         </div>
       ) : (
-        <div className="w-[85%]">
-          <Textfit
-            mode="single"
-            max={200}
-            className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
-            style={{
-              fontFamily: `"${font.name}", sans-serif`,
-              fontWeight: specificWeight?.weight,
-              lineHeight,
-              letterSpacing: `${letterSpacing}em`,
-            }}
-          >
-            {renderText(previewText)}
-          </Textfit>
-        </div>
+        <HeadingPreviewContent
+          fontName={font.name}
+          weight={specificWeight?.weight ?? 400}
+          lineHeight={lineHeight}
+          letterSpacing={letterSpacing}
+          previewText={previewText}
+          isLoaded={isLoaded}
+          weights={font.weights}
+          variable={font.variable}
+          hasItalic={font.styles.includes("italic")}
+        />
       )}
-      <div className="flex items-center justify-between mt-2">
-        <span className="text-sm text-neutral-400">{font.name}</span>
-        <div className="flex items-center gap-2">
-          {font.variable && (
-            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-              Variable
-            </span>
-          )}
-          {font.styles.includes("italic") && (
-            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-              Italic
-            </span>
-          )}
-          <span className="text-xs text-neutral-400">
-            {font.weights.join(" ")}
-          </span>
-        </div>
-      </div>
     </div>
   );
 }
@@ -842,6 +982,87 @@ console.log(result); // 55`}</code>
           </span>
         </div>
       </div>
+    </div>
+  );
+}
+
+type Favorite = {
+  _id: string;
+  fontId: string;
+  fontName: string;
+  weight: number;
+  lineHeight: number;
+  letterSpacing: number;
+  type?: "heading" | "paragraph" | "code";
+  createdAt: number;
+};
+
+function FavoriteItem({
+  favorite,
+  isLoaded,
+  previewText,
+}: {
+  favorite: Favorite;
+  isLoaded: boolean;
+  previewText: string;
+}) {
+  const removeFavorite = useMutation(api.favorites.removeFavorite);
+  const type = favorite.type ?? "heading";
+
+  const handleRemove = async () => {
+    await removeFavorite({
+      fontId: favorite.fontId,
+      weight: favorite.weight,
+      lineHeight: favorite.lineHeight,
+      letterSpacing: favorite.letterSpacing,
+      type,
+    });
+  };
+
+  // Render based on type
+  if (type === "heading") {
+    return (
+      <div className="border border-neutral-200 rounded-lg px-8 py-4 relative">
+        <button
+          onClick={handleRemove}
+          className="absolute top-3 right-3 p-1 rounded hover:bg-neutral-100 transition-colors"
+          title="Remove from favorites"
+        >
+          <IconStarFilled size={18} className="text-yellow-500" />
+        </button>
+        <HeadingPreviewContent
+          fontName={favorite.fontName}
+          weight={favorite.weight}
+          lineHeight={favorite.lineHeight}
+          letterSpacing={favorite.letterSpacing}
+          previewText={previewText}
+          isLoaded={isLoaded}
+        />
+      </div>
+    );
+  }
+
+  // Placeholder for paragraph and code types (to be implemented later)
+  return (
+    <div className="border border-neutral-200 rounded-lg px-8 py-4 relative">
+      <button
+        onClick={handleRemove}
+        className="absolute top-3 right-3 p-1 rounded hover:bg-neutral-100 transition-colors"
+        title="Remove from favorites"
+      >
+        <IconStarFilled size={18} className="text-yellow-500" />
+      </button>
+      <p
+        className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
+        style={{
+          fontFamily: `"${favorite.fontName}", sans-serif`,
+          fontWeight: favorite.weight,
+          lineHeight: favorite.lineHeight,
+          letterSpacing: `${favorite.letterSpacing}em`,
+        }}
+      >
+        {favorite.fontName} ({type})
+      </p>
     </div>
   );
 }
