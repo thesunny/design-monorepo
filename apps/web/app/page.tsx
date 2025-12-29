@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Textfit } from "react-textfit";
 import { Slider } from "@mantine/core";
+import FontFaceObserver from "fontfaceobserver";
 import { IconHeading, IconAlignLeft, IconCode, IconStar, IconStarFilled } from "@tabler/icons-react";
 import {
   SignInButton,
@@ -25,6 +26,7 @@ export default function Page() {
   const [hoveredSubcategory, setHoveredSubcategory] =
     useState<Subcategory | null>(null);
   const [loadedFonts, setLoadedFonts] = useState<Set<string>>(new Set());
+  const [failedFonts, setFailedFonts] = useState<Set<string>>(new Set());
   const [selectedWeight, setSelectedWeight] = useState(400);
   const [showAllWeights, setShowAllWeights] = useState(false);
   const [previewText, setPreviewText] = useState("The Quick Brown Fox Jumps");
@@ -61,7 +63,7 @@ export default function Page() {
     if (!displayedSubcategory) return;
 
     const fontsToLoad = displayedSubcategory.fonts.filter(
-      (font) => !loadedFonts.has(font.id)
+      (font) => !loadedFonts.has(font.id) && !failedFonts.has(font.id)
     );
 
     if (fontsToLoad.length === 0) return;
@@ -77,19 +79,24 @@ export default function Page() {
     link.rel = "stylesheet";
     document.head.appendChild(link);
 
-    // Mark fonts as loaded
-    setLoadedFonts((prev) => {
-      const next = new Set(prev);
-      fontsToLoad.forEach((font) => next.add(font.id));
-      return next;
+    // Use FontFaceObserver to detect when fonts are actually rendered
+    // Handle each font individually so one failure doesn't block others
+    fontsToLoad.forEach((font) => {
+      const weight = font.weights[0] || 400;
+      const observer = new FontFaceObserver(font.name, { weight });
+      observer.load(null, 10000).then(() => {
+        setLoadedFonts((prev) => new Set(prev).add(font.id));
+      }).catch(() => {
+        setFailedFonts((prev) => new Set(prev).add(font.id));
+      });
     });
-  }, [displayedSubcategory, loadedFonts]);
+  }, [displayedSubcategory, loadedFonts, failedFonts]);
 
   // Load fonts for favorites
   useEffect(() => {
     if (!favorites || favorites.length === 0) return;
 
-    const fontsToLoad = favorites.filter((fav) => !loadedFonts.has(fav.fontId));
+    const fontsToLoad = favorites.filter((fav) => !loadedFonts.has(fav.fontId) && !failedFonts.has(fav.fontId));
     if (fontsToLoad.length === 0) return;
 
     const fontFamilies = fontsToLoad.map((fav) => {
@@ -101,12 +108,17 @@ export default function Page() {
     link.rel = "stylesheet";
     document.head.appendChild(link);
 
-    setLoadedFonts((prev) => {
-      const next = new Set(prev);
-      fontsToLoad.forEach((fav) => next.add(fav.fontId));
-      return next;
+    // Use FontFaceObserver to detect when fonts are actually rendered
+    // Handle each font individually so one failure doesn't block others
+    fontsToLoad.forEach((fav) => {
+      const observer = new FontFaceObserver(fav.fontName, { weight: fav.weight });
+      observer.load(null, 10000).then(() => {
+        setLoadedFonts((prev) => new Set(prev).add(fav.fontId));
+      }).catch(() => {
+        setFailedFonts((prev) => new Set(prev).add(fav.fontId));
+      });
     });
-  }, [favorites, loadedFonts]);
+  }, [favorites, loadedFonts, failedFonts]);
 
   return (
     <main className="flex h-screen bg-white">
@@ -262,6 +274,7 @@ export default function Page() {
                       key={font.id}
                       font={font}
                       isLoaded={loadedFonts.has(font.id)}
+                      isFailed={failedFonts.has(font.id)}
                       selectedWeight={selectedWeight}
                       showAllWeights={showAllWeights}
                       previewText={previewText}
@@ -438,6 +451,7 @@ export default function Page() {
                 key={fav._id}
                 favorite={fav}
                 isLoaded={loadedFonts.has(fav.fontId)}
+                isFailed={failedFonts.has(fav.fontId)}
                 previewText={previewText}
               />
             ))}
@@ -456,6 +470,7 @@ function HeadingPreviewContent({
   letterSpacing,
   previewText,
   isLoaded,
+  isFailed,
   weights,
   variable,
   hasItalic,
@@ -466,6 +481,7 @@ function HeadingPreviewContent({
   letterSpacing: number;
   previewText: string;
   isLoaded: boolean;
+  isFailed?: boolean;
   weights?: number[];
   variable?: boolean;
   hasItalic?: boolean;
@@ -480,13 +496,20 @@ function HeadingPreviewContent({
     ));
   };
 
+  const getOpacityClass = () => {
+    if (isFailed) return "opacity-30 line-through";
+    if (isLoaded) return "opacity-100";
+    return "opacity-30";
+  };
+
   return (
     <>
       <div className="w-[85%]">
         <Textfit
+          key={`${fontName}-${isLoaded}-${isFailed}`}
           mode="single"
           max={200}
-          className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
+          className={`transition-opacity ${getOpacityClass()}`}
           style={{
             fontFamily: `"${fontName}", sans-serif`,
             fontWeight: weight,
@@ -498,7 +521,14 @@ function HeadingPreviewContent({
         </Textfit>
       </div>
       <div className="flex items-center justify-between mt-2">
-        <span className="text-sm text-neutral-400">{fontName}</span>
+        <div className="flex items-center gap-2">
+          <span className={`text-sm ${isFailed ? "text-red-400" : "text-neutral-400"}`}>{fontName}</span>
+          {isFailed && (
+            <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-600 rounded">
+              Not Found
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-2">
           {variable && (
             <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
@@ -545,6 +575,7 @@ function getClosestWeight(
 function FontPreview({
   font,
   isLoaded,
+  isFailed,
   selectedWeight,
   showAllWeights,
   previewText,
@@ -555,6 +586,7 @@ function FontPreview({
 }: {
   font: Font;
   isLoaded: boolean;
+  isFailed?: boolean;
   selectedWeight: number;
   showAllWeights: boolean;
   previewText: string;
@@ -653,9 +685,10 @@ function FontPreview({
             <div key={weight} className="flex items-center gap-3">
               <div className="flex-1 w-[80%]">
                 <Textfit
+                  key={`${font.name}-${weight}-${isLoaded}-${isFailed}`}
                   mode="single"
                   max={200}
-                  className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
+                  className={`transition-opacity ${isFailed ? "opacity-30 line-through" : isLoaded ? "opacity-100" : "opacity-30"}`}
                   style={{
                     fontFamily: `"${font.name}", sans-serif`,
                     fontWeight: weight,
@@ -666,11 +699,19 @@ function FontPreview({
                   {renderText(previewText)}
                 </Textfit>
               </div>
-              <span className="text-xs text-neutral-400 w-8 text-right">
+              <span className={`text-xs w-8 text-right ${isFailed ? "text-red-400" : "text-neutral-400"}`}>
                 {weight}
               </span>
             </div>
           ))}
+          {isFailed && (
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-sm text-red-400">{font.name}</span>
+              <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-600 rounded">
+                Not Found
+              </span>
+            </div>
+          )}
         </div>
       ) : (
         <HeadingPreviewContent
@@ -680,6 +721,7 @@ function FontPreview({
           letterSpacing={letterSpacing}
           previewText={previewText}
           isLoaded={isLoaded}
+          isFailed={isFailed}
           weights={font.weights}
           variable={font.variable}
           hasItalic={font.styles.includes("italic")}
@@ -1000,10 +1042,12 @@ type Favorite = {
 function FavoriteItem({
   favorite,
   isLoaded,
+  isFailed,
   previewText,
 }: {
   favorite: Favorite;
   isLoaded: boolean;
+  isFailed?: boolean;
   previewText: string;
 }) {
   const removeFavorite = useMutation(api.favorites.removeFavorite);
@@ -1043,6 +1087,7 @@ function FavoriteItem({
           letterSpacing={favorite.letterSpacing}
           previewText={previewText}
           isLoaded={isLoaded}
+          isFailed={isFailed}
           weights={fontData?.weights}
           variable={fontData?.variable}
           hasItalic={fontData?.styles.includes("italic")}
