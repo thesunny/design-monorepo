@@ -592,19 +592,14 @@ function HeadingPreviewContent({
           )}
         </div>
         <div className="flex items-center gap-2">
-          {variable && (
-            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-              Variable
-            </span>
-          )}
           {hasItalic && (
             <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
               Italic
             </span>
           )}
           {weights && (
-            <span className="text-xs text-neutral-400">
-              {weights.join(" ")}
+            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
+              {formatWeights(weights, variable ?? false)}
             </span>
           )}
         </div>
@@ -617,6 +612,15 @@ function getAllAvailableWeights(weights: number[]): number[] {
   // Return all weights from 100-900 in increments of 100 that are available
   const standardWeights = [100, 200, 300, 400, 500, 600, 700, 800, 900];
   return standardWeights.filter((w) => weights.includes(w));
+}
+
+function formatWeights(weights: number[], isVariable: boolean): string {
+  if (isVariable && weights.length > 1) {
+    const min = Math.min(...weights);
+    const max = Math.max(...weights);
+    return `${min} - ${max}`;
+  }
+  return weights.join(" ");
 }
 
 function getClosestWeight(
@@ -784,14 +788,26 @@ function FontPreview({
               </span>
             </div>
           ))}
-          {isFailed && (
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-sm text-red-400">{font.name}</span>
-              <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-600 rounded">
-                Not Found
+          <div className="flex items-center justify-between mt-2">
+            <div className="flex items-center gap-2">
+              <span className={`text-sm ${isFailed ? "text-red-400" : "text-neutral-400"}`}>{font.name}</span>
+              {isFailed && (
+                <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-600 rounded">
+                  Not Found
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {font.styles.includes("italic") && (
+                <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
+                  Italic
+                </span>
+              )}
+              <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
+                {formatWeights(font.weights, font.variable)}
               </span>
             </div>
-          )}
+          </div>
         </div>
       ) : (
         <HeadingPreviewContent
@@ -955,18 +971,13 @@ function FontDetailPreview({
           Font Info
         </p>
         <div className="flex flex-wrap gap-2">
-          {font.variable && (
-            <span className="text-xs px-2 py-1 bg-neutral-100 text-neutral-600 rounded">
-              Variable
-            </span>
-          )}
           {font.styles.includes("italic") && (
             <span className="text-xs px-2 py-1 bg-neutral-100 text-neutral-600 rounded">
               Italic
             </span>
           )}
           <span className="text-xs px-2 py-1 bg-neutral-100 text-neutral-600 rounded">
-            Weights: {font.weights.join(", ")}
+            {formatWeights(font.weights, font.variable)}
           </span>
         </div>
       </div>
@@ -1019,18 +1030,13 @@ function ParagraphPreview({
       <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-100">
         <span className="text-sm text-neutral-500">{font.name}</span>
         <div className="flex items-center gap-2">
-          {font.variable && (
-            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-              Variable
-            </span>
-          )}
           {font.styles.includes("italic") && (
             <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
               Italic
             </span>
           )}
-          <span className="text-xs text-neutral-400">
-            {font.weights.join(" ")}
+          <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
+            {formatWeights(font.weights, font.variable)}
           </span>
         </div>
       </div>
@@ -1091,18 +1097,13 @@ console.log(result); // 55`}</code>
       <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-100">
         <span className="text-sm text-neutral-500">{font.name}</span>
         <div className="flex items-center gap-2">
-          {font.variable && (
-            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-              Variable
-            </span>
-          )}
           {font.styles.includes("italic") && (
             <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
               Italic
             </span>
           )}
-          <span className="text-xs text-neutral-400">
-            {font.weights.join(" ")}
+          <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
+            {formatWeights(font.weights, font.variable)}
           </span>
         </div>
       </div>
