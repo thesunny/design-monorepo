@@ -33,6 +33,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
   const [failedFonts, setFailedFonts] = useState<Set<string>>(new Set());
   const [selectedWeight, setSelectedWeight] = useState(400);
   const [showAllWeights, setShowAllWeights] = useState(false);
+  const [showItalics, setShowItalics] = useState(false);
   const [previewText, setPreviewText] = useState("The Quick Brown Fox Jumps");
   const [lineHeight, setLineHeight] = useState(1.2);
   const [letterSpacing, setLetterSpacing] = useState(0);
@@ -296,6 +297,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                       isFailed={failedFonts.has(font.id)}
                       selectedWeight={selectedWeight}
                       showAllWeights={showAllWeights}
+                      showItalics={showItalics}
                       previewText={previewText}
                       lineHeight={lineHeight}
                       letterSpacing={letterSpacing}
@@ -319,6 +321,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                       font={font}
                       isLoaded={loadedFonts.has(font.id)}
                       selectedWeight={selectedWeight}
+                      showItalics={showItalics}
                       lineHeight={lineHeight}
                       letterSpacing={letterSpacing}
                     />
@@ -339,6 +342,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                       font={font}
                       isLoaded={loadedFonts.has(font.id)}
                       selectedWeight={selectedWeight}
+                      showItalics={showItalics}
                       lineHeight={lineHeight}
                       letterSpacing={letterSpacing}
                     />
@@ -347,24 +351,41 @@ export default function PageClient({ fontCategories }: PageClientProps) {
               )}
             </div>
             <div className="bg-white border-t border-neutral-200 px-4 py-3">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-neutral-500">
-                  Show All Weights
-                </span>
-                <button
-                  role="switch"
-                  aria-checked={showAllWeights}
-                  onClick={() => setShowAllWeights(!showAllWeights)}
-                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                    showAllWeights ? "bg-neutral-900" : "bg-neutral-300"
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      showAllWeights ? "translate-x-4" : "translate-x-0.5"
+              <div className="flex items-center gap-6 mb-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <button
+                    role="switch"
+                    aria-checked={showAllWeights}
+                    onClick={() => setShowAllWeights(!showAllWeights)}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                      showAllWeights ? "bg-neutral-900" : "bg-neutral-300"
                     }`}
-                  />
-                </button>
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        showAllWeights ? "translate-x-4" : "translate-x-0.5"
+                      }`}
+                    />
+                  </button>
+                  <span className="text-xs text-neutral-500">All Weights</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <button
+                    role="switch"
+                    aria-checked={showItalics}
+                    onClick={() => setShowItalics(!showItalics)}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                      showItalics ? "bg-neutral-900" : "bg-neutral-300"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        showItalics ? "translate-x-4" : "translate-x-0.5"
+                      }`}
+                    />
+                  </button>
+                  <span className="text-xs text-neutral-500">Italics</span>
+                </label>
               </div>
               <div className="flex items-center gap-3 mb-6">
                 <span className="text-xs text-neutral-500 w-20">Weight</span>
@@ -516,6 +537,7 @@ function HeadingPreviewContent({
   weights,
   variable,
   hasItalic,
+  showItalics,
 }: {
   fontName: string;
   weight: number;
@@ -529,6 +551,7 @@ function HeadingPreviewContent({
   weights?: number[];
   variable?: boolean;
   hasItalic?: boolean;
+  showItalics?: boolean;
 }) {
   const renderText = (text: string) => {
     const lines = text.split("\n");
@@ -540,23 +563,22 @@ function HeadingPreviewContent({
     ));
   };
 
-  const getOpacityClass = () => {
-    if (isFailed) return "opacity-30 line-through";
-    if (isLoaded) return "opacity-100";
-    return "opacity-30";
-  };
+  const italicUnavailable = showItalics && !hasItalic;
+  const fontStyle = showItalics && hasItalic ? "italic" : "normal";
 
   return (
     <>
       <div className="overflow-hidden" style={{ width: previewWidth }}>
         {isLoaded ? (
           <Textfit
-            key={`${fontName}-${weight}`}
+            key={`${fontName}-${weight}-${showItalics}`}
             mode="single"
             max={200}
+            className={italicUnavailable ? "opacity-30" : ""}
             style={{
               fontFamily: `"${fontName}", sans-serif`,
               fontWeight: weight,
+              fontStyle,
               lineHeight,
               letterSpacing: `${letterSpacing}em`,
             }}
@@ -569,6 +591,7 @@ function HeadingPreviewContent({
             style={{
               fontFamily: `"${fontName}", sans-serif`,
               fontWeight: weight,
+              fontStyle,
               lineHeight,
               letterSpacing: `${letterSpacing}em`,
               fontSize,
@@ -640,6 +663,7 @@ function FontPreview({
   isFailed,
   selectedWeight,
   showAllWeights,
+  showItalics,
   previewText,
   lineHeight,
   letterSpacing,
@@ -651,6 +675,7 @@ function FontPreview({
   isFailed?: boolean;
   selectedWeight: number;
   showAllWeights: boolean;
+  showItalics: boolean;
   previewText: string;
   lineHeight: number;
   letterSpacing: number;
@@ -717,6 +742,10 @@ function FontPreview({
 
   const isInexactMatch = specificWeight && !specificWeight.isExact;
 
+  // Check if italic is available
+  const hasItalic = font.styles.includes("italic");
+  const italicUnavailable = showItalics && !hasItalic;
+
   return (
     <div
       className={`px-8 py-4 relative ${
@@ -743,12 +772,14 @@ function FontPreview({
               <div className="overflow-hidden" style={{ width: previewWidth }}>
                 {isLoaded ? (
                   <Textfit
-                    key={`${font.name}-${weight}`}
+                    key={`${font.name}-${weight}-${showItalics}`}
                     mode="single"
                     max={200}
+                    className={italicUnavailable ? "opacity-30" : ""}
                     style={{
                       fontFamily: `"${font.name}", sans-serif`,
                       fontWeight: weight,
+                      fontStyle: showItalics && hasItalic ? "italic" : "normal",
                       lineHeight,
                       letterSpacing: `${letterSpacing}em`,
                     }}
@@ -761,6 +792,7 @@ function FontPreview({
                     style={{
                       fontFamily: `"${font.name}", sans-serif`,
                       fontWeight: weight,
+                      fontStyle: showItalics && hasItalic ? "italic" : "normal",
                       lineHeight,
                       letterSpacing: `${letterSpacing}em`,
                       fontSize,
@@ -809,7 +841,8 @@ function FontPreview({
           isFailed={isFailed}
           weights={font.weights}
           variable={font.variable}
-          hasItalic={font.styles.includes("italic")}
+          hasItalic={hasItalic}
+          showItalics={showItalics}
         />
       )}
     </div>
@@ -976,24 +1009,31 @@ function ParagraphPreview({
   font,
   isLoaded,
   selectedWeight,
+  showItalics,
   lineHeight,
   letterSpacing,
 }: {
   font: Font;
   isLoaded: boolean;
   selectedWeight: number;
+  showItalics: boolean;
   lineHeight: number;
   letterSpacing: number;
 }) {
   const { weight } = getClosestWeight(font.weights, selectedWeight);
+  const hasItalic = font.styles.includes("italic");
+  const italicUnavailable = showItalics && !hasItalic;
 
   return (
     <div className="border rounded-lg p-4 border-neutral-200">
       <p
-        className={`text-base leading-relaxed transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
+        className={`text-base leading-relaxed transition-opacity ${
+          !isLoaded || italicUnavailable ? "opacity-30" : "opacity-100"
+        }`}
         style={{
           fontFamily: `"${font.name}", sans-serif`,
           fontWeight: weight,
+          fontStyle: showItalics && hasItalic ? "italic" : "normal",
           lineHeight,
           letterSpacing: `${letterSpacing}em`,
         }}
@@ -1024,24 +1064,31 @@ function CodePreview({
   font,
   isLoaded,
   selectedWeight,
+  showItalics,
   lineHeight,
   letterSpacing,
 }: {
   font: Font;
   isLoaded: boolean;
   selectedWeight: number;
+  showItalics: boolean;
   lineHeight: number;
   letterSpacing: number;
 }) {
   const { weight } = getClosestWeight(font.weights, selectedWeight);
+  const hasItalic = font.styles.includes("italic");
+  const italicUnavailable = showItalics && !hasItalic;
 
   return (
     <div className="border rounded-lg p-4 border-neutral-200">
       <pre
-        className={`text-sm leading-relaxed transition-opacity overflow-x-auto ${isLoaded ? "opacity-100" : "opacity-30"}`}
+        className={`text-sm leading-relaxed transition-opacity overflow-x-auto ${
+          !isLoaded || italicUnavailable ? "opacity-30" : "opacity-100"
+        }`}
         style={{
           fontFamily: `"${font.name}", monospace`,
           fontWeight: weight,
+          fontStyle: showItalics && hasItalic ? "italic" : "normal",
           lineHeight,
           letterSpacing: `${letterSpacing}em`,
         }}
