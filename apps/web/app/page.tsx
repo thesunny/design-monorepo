@@ -1009,6 +1009,12 @@ function FavoriteItem({
   const removeFavorite = useMutation(api.favorites.removeFavorite);
   const type = favorite.type ?? "heading";
 
+  // Look up font data from fontCategories
+  const fontData = fontCategories
+    .flatMap((cat) => cat.subcategories)
+    .flatMap((sub) => sub.fonts)
+    .find((f) => f.id === favorite.fontId);
+
   const handleRemove = async () => {
     await removeFavorite({
       fontId: favorite.fontId,
@@ -1037,6 +1043,9 @@ function FavoriteItem({
           letterSpacing={favorite.letterSpacing}
           previewText={previewText}
           isLoaded={isLoaded}
+          weights={fontData?.weights}
+          variable={fontData?.variable}
+          hasItalic={fontData?.styles.includes("italic")}
         />
       </div>
     );
