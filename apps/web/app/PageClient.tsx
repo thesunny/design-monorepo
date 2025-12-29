@@ -44,6 +44,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
   const [filterItalic, setFilterItalic] = useState(false);
   const [filterVariable, setFilterVariable] = useState(false);
   const [previewWidth, setPreviewWidth] = useState(640);
+  const [fontSize, setFontSize] = useState(36);
 
   // Fetch favorites for Column 3
   const favorites = useQuery(api.favorites.getFavorites);
@@ -125,16 +126,16 @@ export default function PageClient({ fontCategories }: PageClientProps) {
     });
   }, [favorites, loadedFonts, failedFonts]);
 
-  // Measure preview text width using Arial 400 at 36px to normalize all font previews
+  // Measure preview text width using Arial 400 at the selected font size to normalize all font previews
   useEffect(() => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     if (ctx) {
-      ctx.font = "400 36px Arial";
+      ctx.font = `400 ${fontSize}px Arial`;
       const metrics = ctx.measureText(previewText);
       setPreviewWidth(metrics.width);
     }
-  }, [previewText]);
+  }, [previewText, fontSize]);
 
   return (
     <main className="flex h-screen bg-white">
@@ -297,6 +298,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                       lineHeight={lineHeight}
                       letterSpacing={letterSpacing}
                       previewWidth={previewWidth}
+                      fontSize={fontSize}
                       isSelected={selectedFont?.id === font.id}
                       onClick={() => setSelectedFont(font)}
                     />
@@ -394,6 +396,28 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                 />
               </div>
               <div className="flex items-center gap-3 mb-6">
+                <span className="text-xs text-neutral-500 w-20">Size</span>
+                <Slider
+                  value={fontSize}
+                  onChange={setFontSize}
+                  min={12}
+                  max={72}
+                  step={1}
+                  marks={[
+                    { value: 12, label: "12" },
+                    { value: 24, label: "24" },
+                    { value: 36, label: "36" },
+                    { value: 48, label: "48" },
+                    { value: 60, label: "60" },
+                    { value: 72, label: "72" },
+                  ]}
+                  size="sm"
+                  color="dark"
+                  className="flex-1"
+                  styles={{ markLabel: { fontSize: "12px" } }}
+                />
+              </div>
+              <div className="flex items-center gap-3 mb-6">
                 <span className="text-xs text-neutral-500 w-20">Tracking</span>
                 <Slider
                   value={letterSpacing}
@@ -471,6 +495,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                 isFailed={failedFonts.has(fav.fontId)}
                 previewText={previewText}
                 previewWidth={previewWidth}
+                fontSize={fontSize}
                 fontCategories={fontCategories}
               />
             ))}
@@ -489,6 +514,7 @@ function HeadingPreviewContent({
   letterSpacing,
   previewText,
   previewWidth,
+  fontSize,
   isLoaded,
   isFailed,
   weights,
@@ -501,6 +527,7 @@ function HeadingPreviewContent({
   letterSpacing: number;
   previewText: string;
   previewWidth: number;
+  fontSize: number;
   isLoaded: boolean;
   isFailed?: boolean;
   weights?: number[];
@@ -548,7 +575,7 @@ function HeadingPreviewContent({
               fontWeight: weight,
               lineHeight,
               letterSpacing: `${letterSpacing}em`,
-              fontSize: 36,
+              fontSize,
             }}
           >
             {renderText(previewText)}
@@ -617,6 +644,7 @@ function FontPreview({
   lineHeight,
   letterSpacing,
   previewWidth,
+  fontSize,
   isSelected,
   onClick,
 }: {
@@ -629,6 +657,7 @@ function FontPreview({
   lineHeight: number;
   letterSpacing: number;
   previewWidth: number;
+  fontSize: number;
   isSelected: boolean;
   onClick: () => void;
 }) {
@@ -743,7 +772,7 @@ function FontPreview({
                       fontWeight: weight,
                       lineHeight,
                       letterSpacing: `${letterSpacing}em`,
-                      fontSize: 36,
+                      fontSize,
                     }}
                   >
                     {renderText(previewText)}
@@ -772,6 +801,7 @@ function FontPreview({
           letterSpacing={letterSpacing}
           previewText={previewText}
           previewWidth={previewWidth}
+          fontSize={fontSize}
           isLoaded={isLoaded}
           isFailed={isFailed}
           weights={font.weights}
@@ -1097,6 +1127,7 @@ function FavoriteItem({
   isFailed,
   previewText,
   previewWidth,
+  fontSize,
   fontCategories,
 }: {
   favorite: Favorite;
@@ -1104,6 +1135,7 @@ function FavoriteItem({
   isFailed?: boolean;
   previewText: string;
   previewWidth: number;
+  fontSize: number;
   fontCategories: EnrichedCategory[];
 }) {
   const removeFavorite = useMutation(api.favorites.removeFavorite);
@@ -1143,6 +1175,7 @@ function FavoriteItem({
           letterSpacing={favorite.letterSpacing}
           previewText={previewText}
           previewWidth={previewWidth}
+          fontSize={fontSize}
           isLoaded={isLoaded}
           isFailed={isFailed}
           weights={fontData?.weights}
