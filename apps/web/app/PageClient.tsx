@@ -36,7 +36,6 @@ export default function PageClient({ fontCategories }: PageClientProps) {
   const [previewText, setPreviewText] = useState("The Quick Brown Fox Jumps");
   const [lineHeight, setLineHeight] = useState(1.2);
   const [letterSpacing, setLetterSpacing] = useState(0);
-  const [selectedFont, setSelectedFont] = useState<Font | null>(null);
   const [previewMode, setPreviewMode] = useState<"headings" | "paragraphs" | "code">(
     "headings"
   );
@@ -76,8 +75,11 @@ export default function PageClient({ fontCategories }: PageClientProps) {
 
     // Build Google Fonts URL
     const fontFamilies = fontsToLoad.map((font) => {
-      const weights = font.weights.join(";");
-      return `${font.name.replace(/ /g, "+")}:wght@${weights}`;
+      // Use range syntax for variable fonts, discrete weights for static fonts
+      const weightParam = font.variable
+        ? `${Math.min(...font.weights)}..${Math.max(...font.weights)}`
+        : font.weights.join(";");
+      return `${font.name.replace(/ /g, "+")}:wght@${weightParam}`;
     });
 
     const link = document.createElement("link");
@@ -299,8 +301,6 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                       letterSpacing={letterSpacing}
                       previewWidth={previewWidth}
                       fontSize={fontSize}
-                      isSelected={selectedFont?.id === font.id}
-                      onClick={() => setSelectedFont(font)}
                     />
                   ))}
                 </div>
@@ -321,8 +321,6 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                       selectedWeight={selectedWeight}
                       lineHeight={lineHeight}
                       letterSpacing={letterSpacing}
-                      isSelected={selectedFont?.id === font.id}
-                      onClick={() => setSelectedFont(font)}
                     />
                   ))}
                 </div>
@@ -343,8 +341,6 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                       selectedWeight={selectedWeight}
                       lineHeight={lineHeight}
                       letterSpacing={letterSpacing}
-                      isSelected={selectedFont?.id === font.id}
-                      onClick={() => setSelectedFont(font)}
                     />
                   ))}
                 </div>
@@ -649,8 +645,6 @@ function FontPreview({
   letterSpacing,
   previewWidth,
   fontSize,
-  isSelected,
-  onClick,
 }: {
   font: Font;
   isLoaded: boolean;
@@ -662,8 +656,6 @@ function FontPreview({
   letterSpacing: number;
   previewWidth: number;
   fontSize: number;
-  isSelected: boolean;
-  onClick: () => void;
 }) {
   const { isSignedIn } = useAuth();
   const favorites = useQuery(api.favorites.getFavorites);
@@ -727,13 +719,8 @@ function FontPreview({
 
   return (
     <div
-      onClick={onClick}
-      className={`px-8 py-4 transition-colors cursor-pointer relative ${
-        isSelected
-          ? "bg-blue-50 border-l-2 border-l-blue-500"
-          : isInexactMatch
-            ? "bg-neutral-100"
-            : "hover:bg-neutral-50"
+      className={`px-8 py-4 relative ${
+        isInexactMatch ? "bg-neutral-100" : ""
       }`}
     >
       {isSignedIn && (
@@ -991,28 +978,17 @@ function ParagraphPreview({
   selectedWeight,
   lineHeight,
   letterSpacing,
-  isSelected,
-  onClick,
 }: {
   font: Font;
   isLoaded: boolean;
   selectedWeight: number;
   lineHeight: number;
   letterSpacing: number;
-  isSelected: boolean;
-  onClick: () => void;
 }) {
   const { weight } = getClosestWeight(font.weights, selectedWeight);
 
   return (
-    <div
-      onClick={onClick}
-      className={`border rounded-lg p-4 transition-colors cursor-pointer ${
-        isSelected
-          ? "border-blue-500 bg-blue-50"
-          : "border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50"
-      }`}
-    >
+    <div className="border rounded-lg p-4 border-neutral-200">
       <p
         className={`text-base leading-relaxed transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
         style={{
@@ -1050,28 +1026,17 @@ function CodePreview({
   selectedWeight,
   lineHeight,
   letterSpacing,
-  isSelected,
-  onClick,
 }: {
   font: Font;
   isLoaded: boolean;
   selectedWeight: number;
   lineHeight: number;
   letterSpacing: number;
-  isSelected: boolean;
-  onClick: () => void;
 }) {
   const { weight } = getClosestWeight(font.weights, selectedWeight);
 
   return (
-    <div
-      onClick={onClick}
-      className={`border rounded-lg p-4 transition-colors cursor-pointer ${
-        isSelected
-          ? "border-blue-500 bg-blue-50"
-          : "border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50"
-      }`}
-    >
+    <div className="border rounded-lg p-4 border-neutral-200">
       <pre
         className={`text-sm leading-relaxed transition-opacity overflow-x-auto ${isLoaded ? "opacity-100" : "opacity-30"}`}
         style={{
