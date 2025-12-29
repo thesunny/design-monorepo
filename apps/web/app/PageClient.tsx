@@ -1160,7 +1160,7 @@ function FavoriteItem({
   // Render based on type
   if (type === "heading") {
     return (
-      <div className="border border-neutral-200 rounded-lg px-8 py-4 relative">
+      <div className="border border-neutral-200 rounded-lg px-8 py-4 relative overflow-hidden">
         <button
           onClick={handleRemove}
           className="absolute top-3 right-3 p-1 rounded hover:bg-neutral-100 transition-colors"
@@ -1188,7 +1188,7 @@ function FavoriteItem({
 
   // Placeholder for paragraph and code types (to be implemented later)
   return (
-    <div className="border border-neutral-200 rounded-lg px-8 py-4 relative">
+    <div className="border border-neutral-200 rounded-lg px-8 py-4 relative overflow-hidden">
       <button
         onClick={handleRemove}
         className="absolute top-3 right-3 p-1 rounded hover:bg-neutral-100 transition-colors"
