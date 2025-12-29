@@ -39,6 +39,7 @@ export default function Page() {
   const [filterBold, setFilterBold] = useState(false);
   const [filterItalic, setFilterItalic] = useState(false);
   const [filterVariable, setFilterVariable] = useState(false);
+  const [previewWidth, setPreviewWidth] = useState(640);
 
   // Fetch favorites for Column 3
   const favorites = useQuery(api.favorites.getFavorites);
@@ -120,6 +121,17 @@ export default function Page() {
     });
   }, [favorites, loadedFonts, failedFonts]);
 
+  // Measure preview text width using Arial at 36px to normalize all font previews
+  useEffect(() => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      ctx.font = "36px Arial";
+      const metrics = ctx.measureText(previewText);
+      setPreviewWidth(metrics.width);
+    }
+  }, [previewText]);
+
   return (
     <main className="flex h-screen bg-white">
       {/* Column 1: Category Browser - Slack-style dark sidebar */}
@@ -188,7 +200,7 @@ export default function Page() {
       </div>
 
       {/* Column 2: Font List */}
-      <div className="basis-3/5 border-r border-neutral-200 flex flex-col">
+      <div className="flex-1 border-r border-neutral-200 flex flex-col">
         {displayedSubcategory ? (
           <>
             {/* Tabs and Filters */}
@@ -280,6 +292,7 @@ export default function Page() {
                       previewText={previewText}
                       lineHeight={lineHeight}
                       letterSpacing={letterSpacing}
+                      previewWidth={previewWidth}
                       isSelected={selectedFont?.id === font.id}
                       onClick={() => setSelectedFont(font)}
                     />
@@ -453,6 +466,7 @@ export default function Page() {
                 isLoaded={loadedFonts.has(fav.fontId)}
                 isFailed={failedFonts.has(fav.fontId)}
                 previewText={previewText}
+                previewWidth={previewWidth}
               />
             ))}
           </div>
@@ -469,6 +483,7 @@ function HeadingPreviewContent({
   lineHeight,
   letterSpacing,
   previewText,
+  previewWidth,
   isLoaded,
   isFailed,
   weights,
@@ -480,6 +495,7 @@ function HeadingPreviewContent({
   lineHeight: number;
   letterSpacing: number;
   previewText: string;
+  previewWidth: number;
   isLoaded: boolean;
   isFailed?: boolean;
   weights?: number[];
@@ -504,7 +520,7 @@ function HeadingPreviewContent({
 
   return (
     <>
-      <div className="w-[85%]">
+      <div style={{ width: previewWidth }}>
         <Textfit
           key={`${fontName}-${isLoaded}-${isFailed}`}
           mode="single"
@@ -581,6 +597,7 @@ function FontPreview({
   previewText,
   lineHeight,
   letterSpacing,
+  previewWidth,
   isSelected,
   onClick,
 }: {
@@ -592,6 +609,7 @@ function FontPreview({
   previewText: string;
   lineHeight: number;
   letterSpacing: number;
+  previewWidth: number;
   isSelected: boolean;
   onClick: () => void;
 }) {
@@ -683,7 +701,7 @@ function FontPreview({
         <div className="space-y-2">
           {displayWeights.map((weight) => (
             <div key={weight} className="flex items-center gap-3">
-              <div className="flex-1 w-[80%]">
+              <div style={{ width: previewWidth }}>
                 <Textfit
                   key={`${font.name}-${weight}-${isLoaded}-${isFailed}`}
                   mode="single"
@@ -720,6 +738,7 @@ function FontPreview({
           lineHeight={lineHeight}
           letterSpacing={letterSpacing}
           previewText={previewText}
+          previewWidth={previewWidth}
           isLoaded={isLoaded}
           isFailed={isFailed}
           weights={font.weights}
@@ -1044,11 +1063,13 @@ function FavoriteItem({
   isLoaded,
   isFailed,
   previewText,
+  previewWidth,
 }: {
   favorite: Favorite;
   isLoaded: boolean;
   isFailed?: boolean;
   previewText: string;
+  previewWidth: number;
 }) {
   const removeFavorite = useMutation(api.favorites.removeFavorite);
   const type = favorite.type ?? "heading";
@@ -1086,6 +1107,7 @@ function FavoriteItem({
           lineHeight={favorite.lineHeight}
           letterSpacing={favorite.letterSpacing}
           previewText={previewText}
+          previewWidth={previewWidth}
           isLoaded={isLoaded}
           isFailed={isFailed}
           weights={fontData?.weights}

@@ -2,6 +2,10 @@
 
 This Turborepo starter is maintained by the Turborepo core team.
 
+## Google Fonts Info
+
+https://fonts.google.com/metadata/fonts
+
 ## Using this example
 
 Run the following command:
