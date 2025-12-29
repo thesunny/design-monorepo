@@ -121,12 +121,12 @@ export default function Page() {
     });
   }, [favorites, loadedFonts, failedFonts]);
 
-  // Measure preview text width using Arial at 36px to normalize all font previews
+  // Measure preview text width using Arial 400 at 36px to normalize all font previews
   useEffect(() => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     if (ctx) {
-      ctx.font = "36px Arial";
+      ctx.font = "400 36px Arial";
       const metrics = ctx.measureText(previewText);
       setPreviewWidth(metrics.width);
     }
@@ -200,7 +200,7 @@ export default function Page() {
       </div>
 
       {/* Column 2: Font List */}
-      <div className="flex-1 border-r border-neutral-200 flex flex-col">
+      <div className="flex-1 min-w-0 border-r border-neutral-200 flex flex-col">
         {displayedSubcategory ? (
           <>
             {/* Tabs and Filters */}
@@ -451,7 +451,7 @@ export default function Page() {
       </div>
 
       {/* Column 3: Favorites */}
-      <div className="basis-2/5 overflow-y-auto p-8">
+      <div className="w-[480px] flex-shrink-0 overflow-y-auto p-8">
         <h2 className="text-lg font-semibold text-neutral-800 mb-4">Favorites</h2>
         {!favorites || favorites.length === 0 ? (
           <p className="text-neutral-500 text-sm">
@@ -520,21 +520,35 @@ function HeadingPreviewContent({
 
   return (
     <>
-      <div style={{ width: previewWidth }}>
-        <Textfit
-          key={`${fontName}-${isLoaded}-${isFailed}`}
-          mode="single"
-          max={200}
-          className={`transition-opacity ${getOpacityClass()}`}
-          style={{
-            fontFamily: `"${fontName}", sans-serif`,
-            fontWeight: weight,
-            lineHeight,
-            letterSpacing: `${letterSpacing}em`,
-          }}
-        >
-          {renderText(previewText)}
-        </Textfit>
+      <div className="overflow-hidden" style={{ width: previewWidth }}>
+        {isLoaded ? (
+          <Textfit
+            key={`${fontName}-${weight}`}
+            mode="single"
+            max={200}
+            style={{
+              fontFamily: `"${fontName}", sans-serif`,
+              fontWeight: weight,
+              lineHeight,
+              letterSpacing: `${letterSpacing}em`,
+            }}
+          >
+            {renderText(previewText)}
+          </Textfit>
+        ) : (
+          <div
+            className="opacity-30 truncate"
+            style={{
+              fontFamily: `"${fontName}", sans-serif`,
+              fontWeight: weight,
+              lineHeight,
+              letterSpacing: `${letterSpacing}em`,
+              fontSize: 36,
+            }}
+          >
+            {renderText(previewText)}
+          </div>
+        )}
       </div>
       <div className="flex items-center justify-between mt-2">
         <div className="flex items-center gap-2">
@@ -701,21 +715,35 @@ function FontPreview({
         <div className="space-y-2">
           {displayWeights.map((weight) => (
             <div key={weight} className="flex items-center gap-3">
-              <div style={{ width: previewWidth }}>
-                <Textfit
-                  key={`${font.name}-${weight}-${isLoaded}-${isFailed}`}
-                  mode="single"
-                  max={200}
-                  className={`transition-opacity ${isFailed ? "opacity-30 line-through" : isLoaded ? "opacity-100" : "opacity-30"}`}
-                  style={{
-                    fontFamily: `"${font.name}", sans-serif`,
-                    fontWeight: weight,
-                    lineHeight,
-                    letterSpacing: `${letterSpacing}em`,
-                  }}
-                >
-                  {renderText(previewText)}
-                </Textfit>
+              <div className="overflow-hidden" style={{ width: previewWidth }}>
+                {isLoaded ? (
+                  <Textfit
+                    key={`${font.name}-${weight}`}
+                    mode="single"
+                    max={200}
+                    style={{
+                      fontFamily: `"${font.name}", sans-serif`,
+                      fontWeight: weight,
+                      lineHeight,
+                      letterSpacing: `${letterSpacing}em`,
+                    }}
+                  >
+                    {renderText(previewText)}
+                  </Textfit>
+                ) : (
+                  <div
+                    className="opacity-30 truncate"
+                    style={{
+                      fontFamily: `"${font.name}", sans-serif`,
+                      fontWeight: weight,
+                      lineHeight,
+                      letterSpacing: `${letterSpacing}em`,
+                      fontSize: 36,
+                    }}
+                  >
+                    {renderText(previewText)}
+                  </div>
+                )}
               </div>
               <span className={`text-xs w-8 text-right ${isFailed ? "text-red-400" : "text-neutral-400"}`}>
                 {weight}
