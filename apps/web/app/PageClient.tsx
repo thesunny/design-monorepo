@@ -394,6 +394,27 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                 />
               </div>
               <div className="flex items-center gap-3 mb-6">
+                <span className="text-xs text-neutral-500 w-20">Tracking</span>
+                <Slider
+                  value={letterSpacing}
+                  onChange={setLetterSpacing}
+                  min={-0.1}
+                  max={0.3}
+                  step={0.01}
+                  marks={[
+                    { value: -0.1, label: "-0.1" },
+                    { value: 0, label: "0" },
+                    { value: 0.1, label: "0.1" },
+                    { value: 0.2, label: "0.2" },
+                    { value: 0.3, label: "0.3" },
+                  ]}
+                  size="sm"
+                  color="dark"
+                  className="flex-1"
+                  styles={{ markLabel: { fontSize: "12px" } }}
+                />
+              </div>
+              <div className="flex items-center gap-3 mb-8">
                 <span className="text-xs text-neutral-500 w-20">
                   Line Height
                 </span>
@@ -410,27 +431,6 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                     { value: 1.5, label: "1.5" },
                     { value: 2.0, label: "2.0" },
                     { value: 2.5, label: "2.5" },
-                  ]}
-                  size="sm"
-                  color="dark"
-                  className="flex-1"
-                  styles={{ markLabel: { fontSize: "12px" } }}
-                />
-              </div>
-              <div className="flex items-center gap-3 mb-8">
-                <span className="text-xs text-neutral-500 w-20">Tracking</span>
-                <Slider
-                  value={letterSpacing}
-                  onChange={setLetterSpacing}
-                  min={-0.1}
-                  max={0.3}
-                  step={0.01}
-                  marks={[
-                    { value: -0.1, label: "-0.1" },
-                    { value: 0, label: "0" },
-                    { value: 0.1, label: "0.1" },
-                    { value: 0.2, label: "0.2" },
-                    { value: 0.3, label: "0.3" },
                   ]}
                   size="sm"
                   color="dark"
