@@ -74,13 +74,28 @@ export default function PageClient({ fontCategories }: PageClientProps) {
 
     if (fontsToLoad.length === 0) return;
 
-    // Build Google Fonts URL
+    // Build Google Fonts URL with both normal and italic variants
     const fontFamilies = fontsToLoad.map((font) => {
-      // Use range syntax for variable fonts, discrete weights for static fonts
-      const weightParam = font.variable
-        ? `${Math.min(...font.weights)}..${Math.max(...font.weights)}`
-        : font.weights.join(";");
-      return `${font.name.replace(/ /g, "+")}:wght@${weightParam}`;
+      const hasItalic = font.styles.includes("italic");
+      const encodedName = font.name.replace(/ /g, "+");
+
+      if (font.variable) {
+        const min = Math.min(...font.weights);
+        const max = Math.max(...font.weights);
+        if (hasItalic) {
+          // Variable font with italic: ital,wght@0,min..max;1,min..max
+          return `${encodedName}:ital,wght@0,${min}..${max};1,${min}..${max}`;
+        }
+        return `${encodedName}:wght@${min}..${max}`;
+      } else {
+        if (hasItalic) {
+          // Static font with italic: ital,wght@0,w1;0,w2;1,w1;1,w2
+          const normalWeights = font.weights.map((w) => `0,${w}`).join(";");
+          const italicWeights = font.weights.map((w) => `1,${w}`).join(";");
+          return `${encodedName}:ital,wght@${normalWeights};${italicWeights}`;
+        }
+        return `${encodedName}:wght@${font.weights.join(";")}`;
+      }
     });
 
     const link = document.createElement("link");
