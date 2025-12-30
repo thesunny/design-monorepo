@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Textfit } from "react-textfit";
 import { Slider } from "@mantine/core";
 import FontFaceObserver from "fontfaceobserver";
@@ -43,8 +43,12 @@ export default function PageClient({ fontCategories }: PageClientProps) {
   const [filterBold, setFilterBold] = useState(false);
   const [filterItalic, setFilterItalic] = useState(false);
   const [filterVariable, setFilterVariable] = useState(false);
-  const [previewWidth, setPreviewWidth] = useState(640);
-  const [fontSize, setFontSize] = useState(36);
+  const [headingsFontSize, setHeadingsFontSize] = useState(36);
+  const [textFontSize, setTextFontSize] = useState(16);
+
+  // Use headings font size for headings tab, text font size for paragraphs/code
+  const fontSize = previewMode === "headings" ? headingsFontSize : textFontSize;
+  const setFontSize = previewMode === "headings" ? setHeadingsFontSize : setTextFontSize;
 
   // Fetch favorites for Column 3
   const favorites = useQuery(api.favorites.getFavorites);
@@ -145,14 +149,16 @@ export default function PageClient({ fontCategories }: PageClientProps) {
   }, [favorites, loadedFonts, failedFonts]);
 
   // Measure preview text width using Arial 400 at the selected font size to normalize all font previews
-  useEffect(() => {
+  const previewWidth = useMemo(() => {
+    if (typeof document === "undefined") return 640;
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     if (ctx) {
       ctx.font = `400 ${fontSize}px Arial`;
       const metrics = ctx.measureText(previewText);
-      setPreviewWidth(metrics.width);
+      return metrics.width;
     }
+    return 640;
   }, [previewText, fontSize]);
 
   return (
@@ -339,6 +345,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                       showItalics={showItalics}
                       lineHeight={lineHeight}
                       letterSpacing={letterSpacing}
+                      fontSize={fontSize}
                     />
                   ))}
                 </div>
@@ -360,6 +367,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                       showItalics={showItalics}
                       lineHeight={lineHeight}
                       letterSpacing={letterSpacing}
+                      fontSize={fontSize}
                     />
                   ))}
                 </div>
@@ -527,7 +535,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                 isFailed={failedFonts.has(fav.fontId)}
                 previewText={previewText}
                 previewWidth={previewWidth}
-                fontSize={fontSize}
+                fontSize={headingsFontSize}
                 fontCategories={fontCategories}
               />
             ))}
@@ -1027,6 +1035,7 @@ function ParagraphPreview({
   showItalics,
   lineHeight,
   letterSpacing,
+  fontSize,
 }: {
   font: Font;
   isLoaded: boolean;
@@ -1034,6 +1043,7 @@ function ParagraphPreview({
   showItalics: boolean;
   lineHeight: number;
   letterSpacing: number;
+  fontSize: number;
 }) {
   const { weight } = getClosestWeight(font.weights, selectedWeight);
   const hasItalic = font.styles.includes("italic");
@@ -1042,13 +1052,14 @@ function ParagraphPreview({
   return (
     <div className="border rounded-lg p-4 border-neutral-200">
       <p
-        className={`text-base leading-relaxed transition-opacity ${
+        className={`leading-relaxed transition-opacity ${
           !isLoaded || italicUnavailable ? "opacity-30" : "opacity-100"
         }`}
         style={{
           fontFamily: `"${font.name}", sans-serif`,
           fontWeight: weight,
           fontStyle: showItalics && hasItalic ? "italic" : "normal",
+          fontSize,
           lineHeight,
           letterSpacing: `${letterSpacing}em`,
         }}
@@ -1082,6 +1093,7 @@ function CodePreview({
   showItalics,
   lineHeight,
   letterSpacing,
+  fontSize,
 }: {
   font: Font;
   isLoaded: boolean;
@@ -1089,6 +1101,7 @@ function CodePreview({
   showItalics: boolean;
   lineHeight: number;
   letterSpacing: number;
+  fontSize: number;
 }) {
   const { weight } = getClosestWeight(font.weights, selectedWeight);
   const hasItalic = font.styles.includes("italic");
@@ -1097,13 +1110,14 @@ function CodePreview({
   return (
     <div className="border rounded-lg p-4 border-neutral-200">
       <pre
-        className={`text-sm leading-relaxed transition-opacity overflow-x-auto ${
+        className={`leading-relaxed transition-opacity overflow-x-auto ${
           !isLoaded || italicUnavailable ? "opacity-30" : "opacity-100"
         }`}
         style={{
           fontFamily: `"${font.name}", monospace`,
           fontWeight: weight,
           fontStyle: showItalics && hasItalic ? "italic" : "normal",
+          fontSize,
           lineHeight,
           letterSpacing: `${letterSpacing}em`,
         }}
