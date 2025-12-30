@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Textfit } from "react-textfit";
 import { Slider } from "@mantine/core";
-import FontFaceObserver from "fontfaceobserver";
 import { IconHeading, IconAlignLeft, IconCode, IconStar, IconStarFilled } from "@tabler/icons-react";
 import { useAuth } from "@clerk/nextjs";
 import { useQuery, useMutation } from "convex/react";
@@ -15,6 +14,7 @@ import type {
 } from "../data/types";
 import { CategorySidebar } from "./CategorySidebar";
 import { FavoritesColumn } from "./FavoritesColumn";
+import { useFontLoader } from "./hooks/useFontLoader";
 
 type PageClientProps = {
   fontCategories: EnrichedCategory[];
@@ -25,8 +25,6 @@ export default function PageClient({ fontCategories }: PageClientProps) {
     useState<EnrichedSubcategory | null>(fontCategories[0]?.subcategories[0] ?? null);
   const [hoveredSubcategory, setHoveredSubcategory] =
     useState<EnrichedSubcategory | null>(null);
-  const [loadedFonts, setLoadedFonts] = useState<Set<string>>(new Set());
-  const [failedFonts, setFailedFonts] = useState<Set<string>>(new Set());
   const [selectedWeight, setSelectedWeight] = useState(400);
   const [showAllWeights, setShowAllWeights] = useState(false);
   const [showItalics, setShowItalics] = useState(false);
@@ -53,6 +51,53 @@ export default function PageClient({ fontCategories }: PageClientProps) {
   // The subcategory to display: hovered takes priority, then selected
   const displayedSubcategory = hoveredSubcategory || selectedSubcategory;
 
+  // Create a map of all fonts for quick lookup (used for favorites)
+  const fontMap = useMemo(() => {
+    const map = new Map<string, Font>();
+    for (const category of fontCategories) {
+      for (const subcategory of category.subcategories) {
+        for (const font of subcategory.fonts) {
+          map.set(font.id, font);
+        }
+      }
+    }
+    return map;
+  }, [fontCategories]);
+
+  // Compute all fonts that need to be loaded (category + favorites)
+  const fontsToLoad = useMemo(() => {
+    const fonts: Font[] = [];
+    const seenIds = new Set<string>();
+
+    // Add fonts from displayed subcategory
+    if (displayedSubcategory) {
+      for (const font of displayedSubcategory.fonts) {
+        if (!seenIds.has(font.id)) {
+          seenIds.add(font.id);
+          fonts.push(font);
+        }
+      }
+    }
+
+    // Add fonts from favorites (look up full Font object)
+    if (favorites) {
+      for (const fav of favorites) {
+        if (!seenIds.has(fav.fontId)) {
+          const font = fontMap.get(fav.fontId);
+          if (font) {
+            seenIds.add(fav.fontId);
+            fonts.push(font);
+          }
+        }
+      }
+    }
+
+    return fonts;
+  }, [displayedSubcategory, favorites, fontMap]);
+
+  // Load fonts using the optimized hook (one link per font)
+  const { loadedFonts, failedFonts } = useFontLoader(fontsToLoad);
+
   // Filter fonts based on active filters
   const filteredFonts = displayedSubcategory?.fonts.filter((font) => {
     if (filterBold) {
@@ -64,86 +109,6 @@ export default function PageClient({ fontCategories }: PageClientProps) {
     if (filterVariable && !font.variable) return false;
     return true;
   }) ?? [];
-
-  // Load fonts from Google Fonts when a subcategory is displayed
-  useEffect(() => {
-    if (!displayedSubcategory) return;
-
-    const fontsToLoad = displayedSubcategory.fonts.filter(
-      (font) => !loadedFonts.has(font.id) && !failedFonts.has(font.id)
-    );
-
-    if (fontsToLoad.length === 0) return;
-
-    // Build Google Fonts URL with both normal and italic variants
-    const fontFamilies = fontsToLoad.map((font) => {
-      const hasItalic = font.styles.includes("italic");
-      const encodedName = font.name.replace(/ /g, "+");
-
-      if (font.variable) {
-        const min = Math.min(...font.weights);
-        const max = Math.max(...font.weights);
-        if (hasItalic) {
-          // Variable font with italic: ital,wght@0,min..max;1,min..max
-          return `${encodedName}:ital,wght@0,${min}..${max};1,${min}..${max}`;
-        }
-        return `${encodedName}:wght@${min}..${max}`;
-      } else {
-        if (hasItalic) {
-          // Static font with italic: ital,wght@0,w1;0,w2;1,w1;1,w2
-          const normalWeights = font.weights.map((w) => `0,${w}`).join(";");
-          const italicWeights = font.weights.map((w) => `1,${w}`).join(";");
-          return `${encodedName}:ital,wght@${normalWeights};${italicWeights}`;
-        }
-        return `${encodedName}:wght@${font.weights.join(";")}`;
-      }
-    });
-
-    const link = document.createElement("link");
-    link.href = `https://fonts.googleapis.com/css2?${fontFamilies.map((f) => `family=${f}`).join("&")}&display=swap`;
-    link.rel = "stylesheet";
-    document.head.appendChild(link);
-
-    // Use FontFaceObserver to detect when fonts are actually rendered
-    // Handle each font individually so one failure doesn't block others
-    fontsToLoad.forEach((font) => {
-      const weight = font.weights[0] || 400;
-      const observer = new FontFaceObserver(font.name, { weight });
-      observer.load(null, 10000).then(() => {
-        setLoadedFonts((prev) => new Set(prev).add(font.id));
-      }).catch(() => {
-        setFailedFonts((prev) => new Set(prev).add(font.id));
-      });
-    });
-  }, [displayedSubcategory, loadedFonts, failedFonts]);
-
-  // Load fonts for favorites
-  useEffect(() => {
-    if (!favorites || favorites.length === 0) return;
-
-    const fontsToLoad = favorites.filter((fav) => !loadedFonts.has(fav.fontId) && !failedFonts.has(fav.fontId));
-    if (fontsToLoad.length === 0) return;
-
-    const fontFamilies = fontsToLoad.map((fav) => {
-      return `${fav.fontName.replace(/ /g, "+")}:wght@${fav.weight}`;
-    });
-
-    const link = document.createElement("link");
-    link.href = `https://fonts.googleapis.com/css2?${fontFamilies.map((f) => `family=${f}`).join("&")}&display=swap`;
-    link.rel = "stylesheet";
-    document.head.appendChild(link);
-
-    // Use FontFaceObserver to detect when fonts are actually rendered
-    // Handle each font individually so one failure doesn't block others
-    fontsToLoad.forEach((fav) => {
-      const observer = new FontFaceObserver(fav.fontName, { weight: fav.weight });
-      observer.load(null, 10000).then(() => {
-        setLoadedFonts((prev) => new Set(prev).add(fav.fontId));
-      }).catch(() => {
-        setFailedFonts((prev) => new Set(prev).add(fav.fontId));
-      });
-    });
-  }, [favorites, loadedFonts, failedFonts]);
 
   // Measure preview text width using Arial 400 at the selected font size to normalize all font previews
   useEffect(() => {
