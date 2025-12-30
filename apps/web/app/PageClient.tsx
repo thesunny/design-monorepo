@@ -5,13 +5,7 @@ import { Textfit } from "react-textfit";
 import { Slider } from "@mantine/core";
 import FontFaceObserver from "fontfaceobserver";
 import { IconHeading, IconAlignLeft, IconCode, IconStar, IconStarFilled } from "@tabler/icons-react";
-import {
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-  useAuth,
-} from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@repo/convex/convex/_generated/api";
 import type {
@@ -19,6 +13,7 @@ import type {
   EnrichedSubcategory,
   Font,
 } from "../data/types";
+import { CategorySidebar } from "./CategorySidebar";
 
 type PageClientProps = {
   fontCategories: EnrichedCategory[];
@@ -163,70 +158,12 @@ export default function PageClient({ fontCategories }: PageClientProps) {
 
   return (
     <main className="flex h-screen bg-white">
-      {/* Column 1: Category Browser - Slack-style dark sidebar */}
-      <div className="w-40 flex-shrink-0 bg-[#3F0E40] flex flex-col">
-        <div className="h-12 flex items-center px-4">
-          <span
-            className="font-[family-name:var(--font-poppins)]"
-            style={{ fontSize: 18, color: "#9A8A9B" }}
-          >
-            Font Picker
-          </span>
-        </div>
-        <div className="flex-1 overflow-y-auto p-4">
-          {fontCategories.map((category) => (
-            <div key={category.id} className="mb-6">
-              <h2
-                className="font-semibold text-[#C4B3C5] uppercase tracking-wide mb-2 px-2"
-                style={{ fontSize: 13 }}
-              >
-                {category.name}
-              </h2>
-              <ul>
-                {category.subcategories.map((subcategory) => (
-                  <li key={subcategory.id}>
-                    <button
-                      onClick={() => setSelectedSubcategory(subcategory)}
-                      onMouseEnter={() => setHoveredSubcategory(subcategory)}
-                      onMouseLeave={() => setHoveredSubcategory(null)}
-                      className={`w-full text-left px-2 py-1 rounded transition-colors ${
-                        selectedSubcategory?.id === subcategory.id
-                          ? "bg-[#E8DFE8] text-[#3F0E40] font-semibold"
-                          : "text-[#BCB3BD] hover:bg-[#522653]"
-                      }`}
-                      style={{ fontSize: 15 }}
-                    >
-                      {subcategory.name}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        {/* User Section */}
-        <div className="mt-auto px-4 py-3 border-t border-[#522653]">
-          <SignedOut>
-            <SignInButton mode="modal">
-              <button className="w-full px-3 py-2 text-sm text-[#E8DFE8] bg-[#522653] hover:bg-[#6B3A6D] rounded transition-colors">
-                Login
-              </button>
-            </SignInButton>
-          </SignedOut>
-          <SignedIn>
-            <div className="flex items-center gap-2">
-              <UserButton
-                appearance={{
-                  elements: {
-                    avatarBox: "w-8 h-8",
-                  },
-                }}
-              />
-              <span className="text-sm text-[#C4B3C5] truncate">Logged in</span>
-            </div>
-          </SignedIn>
-        </div>
-      </div>
+      <CategorySidebar
+        fontCategories={fontCategories}
+        selectedSubcategory={selectedSubcategory}
+        onSelectSubcategory={setSelectedSubcategory}
+        onHoverSubcategory={setHoveredSubcategory}
+      />
 
       {/* Column 2: Font List */}
       <div className="flex-1 min-w-0 border-r border-neutral-200 flex flex-col">
@@ -868,162 +805,6 @@ function FontPreview({
           showItalics={showItalics}
         />
       )}
-    </div>
-  );
-}
-
-function FontDetailPreview({
-  font,
-  isLoaded,
-}: {
-  font: Font;
-  isLoaded: boolean;
-}) {
-  const fontFamily = `"${font.name}", sans-serif`;
-  const opacityClass = isLoaded ? "opacity-100" : "opacity-30";
-
-  // Get a good bold weight for headings
-  const boldWeight = font.weights.includes(700)
-    ? 700
-    : font.weights.includes(600)
-      ? 600
-      : Math.max(...font.weights);
-  // Get a good regular weight for body
-  const regularWeight = font.weights.includes(400)
-    ? 400
-    : font.weights.includes(500)
-      ? 500
-      : Math.min(...font.weights);
-  // Get a good medium weight for form labels
-  const mediumWeight = font.weights.includes(500)
-    ? 500
-    : font.weights.includes(600)
-      ? 600
-      : regularWeight;
-
-  return (
-    <div className={`space-y-8 transition-opacity ${opacityClass}`}>
-      {/* Title */}
-      <div>
-        <p className="text-xs text-neutral-400 uppercase tracking-wide mb-2">
-          Title
-        </p>
-        <h1
-          style={{ fontFamily, fontWeight: boldWeight }}
-          className="text-5xl leading-tight"
-        >
-          {font.name}
-        </h1>
-      </div>
-
-      {/* Heading */}
-      <div>
-        <p className="text-xs text-neutral-400 uppercase tracking-wide mb-2">
-          Heading
-        </p>
-        <h2
-          style={{ fontFamily, fontWeight: boldWeight }}
-          className="text-2xl leading-snug"
-        >
-          The quick brown fox jumps over the lazy dog
-        </h2>
-      </div>
-
-      {/* Body Text */}
-      <div>
-        <p className="text-xs text-neutral-400 uppercase tracking-wide mb-2">
-          Body
-        </p>
-        <p
-          style={{ fontFamily, fontWeight: regularWeight }}
-          className="text-base leading-relaxed text-neutral-700"
-        >
-          Typography is the art and technique of arranging type to make written
-          language legible, readable, and appealing when displayed. The
-          arrangement of type involves selecting typefaces, point sizes, line
-          lengths, line-spacing, and letter-spacing.
-        </p>
-      </div>
-
-      {/* Form Fields */}
-      <div>
-        <p className="text-xs text-neutral-400 uppercase tracking-wide mb-4">
-          Form Fields
-        </p>
-        <div className="space-y-4">
-          {/* Text Input */}
-          <div>
-            <label
-              style={{ fontFamily, fontWeight: mediumWeight }}
-              className="block text-sm text-neutral-600 mb-1"
-            >
-              Full Name
-            </label>
-            <input
-              type="text"
-              placeholder="Enter your name"
-              defaultValue="John Doe"
-              style={{ fontFamily, fontWeight: regularWeight }}
-              className="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Email Input */}
-          <div>
-            <label
-              style={{ fontFamily, fontWeight: mediumWeight }}
-              className="block text-sm text-neutral-600 mb-1"
-            >
-              Email Address
-            </label>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              style={{ fontFamily, fontWeight: regularWeight }}
-              className="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-neutral-400"
-            />
-          </div>
-
-          {/* Textarea */}
-          <div>
-            <label
-              style={{ fontFamily, fontWeight: mediumWeight }}
-              className="block text-sm text-neutral-600 mb-1"
-            >
-              Message
-            </label>
-            <textarea
-              placeholder="Write your message here..."
-              rows={3}
-              style={{ fontFamily, fontWeight: regularWeight }}
-              className="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-neutral-400 resize-none"
-            />
-            <p
-              style={{ fontFamily, fontWeight: regularWeight }}
-              className="text-xs text-neutral-500 mt-1"
-            >
-              Optional: Add any additional details
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Font Info */}
-      <div className="pt-4 border-t border-neutral-200">
-        <p className="text-xs text-neutral-400 uppercase tracking-wide mb-2">
-          Font Info
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {font.styles.includes("italic") && (
-            <span className="text-xs px-2 py-1 bg-neutral-100 text-neutral-600 rounded">
-              Italic
-            </span>
-          )}
-          <span className="text-xs px-2 py-1 bg-neutral-100 text-neutral-600 rounded">
-            {formatWeights(font.weights, font.variable)}
-          </span>
-        </div>
-      </div>
     </div>
   );
 }
