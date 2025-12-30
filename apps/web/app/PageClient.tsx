@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Textfit } from "react-textfit";
 import { Slider } from "@mantine/core";
 import FontFaceObserver from "fontfaceobserver";
@@ -14,6 +14,7 @@ import type {
   Font,
 } from "../data/types";
 import { CategorySidebar } from "./CategorySidebar";
+import { FavoritesColumn } from "./FavoritesColumn";
 
 type PageClientProps = {
   fontCategories: EnrichedCategory[];
@@ -40,6 +41,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
   const [filterVariable, setFilterVariable] = useState(false);
   const [headingsFontSize, setHeadingsFontSize] = useState(36);
   const [textFontSize, setTextFontSize] = useState(16);
+  const [previewWidth, setPreviewWidth] = useState(640);
 
   // Use headings font size for headings tab, text font size for paragraphs/code
   const fontSize = previewMode === "headings" ? headingsFontSize : textFontSize;
@@ -144,16 +146,14 @@ export default function PageClient({ fontCategories }: PageClientProps) {
   }, [favorites, loadedFonts, failedFonts]);
 
   // Measure preview text width using Arial 400 at the selected font size to normalize all font previews
-  const previewWidth = useMemo(() => {
-    if (typeof document === "undefined") return 640;
+  useEffect(() => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     if (ctx) {
       ctx.font = `400 ${fontSize}px Arial`;
       const metrics = ctx.measureText(previewText);
-      return metrics.width;
+      setPreviewWidth(metrics.width);
     }
-    return 640;
   }, [previewText, fontSize]);
 
   return (
@@ -455,36 +455,21 @@ export default function PageClient({ fontCategories }: PageClientProps) {
         )}
       </div>
 
-      {/* Column 3: Favorites */}
-      <div className="w-[480px] flex-shrink-0 overflow-y-auto p-8">
-        <h2 className="text-lg font-semibold text-neutral-800 mb-4">Favorites</h2>
-        {!favorites || favorites.length === 0 ? (
-          <p className="text-neutral-500 text-sm">
-            No favorites yet. Click the star on a font to add it.
-          </p>
-        ) : (
-          <div className="space-y-2">
-            {favorites.map((fav) => (
-              <FavoriteItem
-                key={fav._id}
-                favorite={fav}
-                isLoaded={loadedFonts.has(fav.fontId)}
-                isFailed={failedFonts.has(fav.fontId)}
-                previewText={previewText}
-                previewWidth={previewWidth}
-                fontSize={headingsFontSize}
-                fontCategories={fontCategories}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+      <FavoritesColumn
+        favorites={favorites}
+        loadedFonts={loadedFonts}
+        failedFonts={failedFonts}
+        previewText={previewText}
+        previewWidth={previewWidth}
+        fontSize={headingsFontSize}
+        fontCategories={fontCategories}
+      />
     </main>
   );
 }
 
 // Shared component for heading-style font preview
-function HeadingPreviewContent({
+export function HeadingPreviewContent({
   fontName,
   weight,
   lineHeight,
@@ -593,7 +578,7 @@ function getAllAvailableWeights(weights: number[]): number[] {
   return standardWeights.filter((w) => weights.includes(w));
 }
 
-function formatWeights(weights: number[], isVariable: boolean): string {
+export function formatWeights(weights: number[], isVariable: boolean): string {
   if (isVariable && weights.length > 1) {
     const min = Math.min(...weights);
     const max = Math.max(...weights);
@@ -933,103 +918,3 @@ console.log(result); // 55`}</code>
   );
 }
 
-type Favorite = {
-  _id: string;
-  fontId: string;
-  fontName: string;
-  weight: number;
-  lineHeight: number;
-  letterSpacing: number;
-  type?: "heading" | "paragraph" | "code";
-  createdAt: number;
-};
-
-function FavoriteItem({
-  favorite,
-  isLoaded,
-  isFailed,
-  previewText,
-  previewWidth,
-  fontSize,
-  fontCategories,
-}: {
-  favorite: Favorite;
-  isLoaded: boolean;
-  isFailed?: boolean;
-  previewText: string;
-  previewWidth: number;
-  fontSize: number;
-  fontCategories: EnrichedCategory[];
-}) {
-  const removeFavorite = useMutation(api.favorites.removeFavorite);
-  const type = favorite.type ?? "heading";
-
-  // Look up font data from fontCategories
-  const fontData = fontCategories
-    .flatMap((cat) => cat.subcategories)
-    .flatMap((sub) => sub.fonts)
-    .find((f) => f.id === favorite.fontId);
-
-  const handleRemove = async () => {
-    await removeFavorite({
-      fontId: favorite.fontId,
-      weight: favorite.weight,
-      lineHeight: favorite.lineHeight,
-      letterSpacing: favorite.letterSpacing,
-      type,
-    });
-  };
-
-  // Render based on type
-  if (type === "heading") {
-    return (
-      <div className="border border-neutral-200 rounded-lg px-8 py-4 relative overflow-hidden">
-        <button
-          onClick={handleRemove}
-          className="absolute top-3 right-3 p-1 rounded hover:bg-neutral-100 transition-colors"
-          title="Remove from favorites"
-        >
-          <IconStarFilled size={18} className="text-yellow-500" />
-        </button>
-        <HeadingPreviewContent
-          fontName={favorite.fontName}
-          weight={favorite.weight}
-          lineHeight={favorite.lineHeight}
-          letterSpacing={favorite.letterSpacing}
-          previewText={previewText}
-          previewWidth={previewWidth}
-          fontSize={fontSize}
-          isLoaded={isLoaded}
-          isFailed={isFailed}
-          weights={fontData?.weights}
-          variable={fontData?.variable}
-          hasItalic={fontData?.styles.includes("italic")}
-        />
-      </div>
-    );
-  }
-
-  // Placeholder for paragraph and code types (to be implemented later)
-  return (
-    <div className="border border-neutral-200 rounded-lg px-8 py-4 relative overflow-hidden">
-      <button
-        onClick={handleRemove}
-        className="absolute top-3 right-3 p-1 rounded hover:bg-neutral-100 transition-colors"
-        title="Remove from favorites"
-      >
-        <IconStarFilled size={18} className="text-yellow-500" />
-      </button>
-      <p
-        className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
-        style={{
-          fontFamily: `"${favorite.fontName}", sans-serif`,
-          fontWeight: favorite.weight,
-          lineHeight: favorite.lineHeight,
-          letterSpacing: `${favorite.letterSpacing}em`,
-        }}
-      >
-        {favorite.fontName} ({type})
-      </p>
-    </div>
-  );
-}
