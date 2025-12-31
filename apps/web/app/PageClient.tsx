@@ -377,44 +377,48 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                 />
                 <div /> {/* Empty cell for grid alignment */}
 
-                {/* Line Height row */}
-                <span className="text-xs text-neutral-500">Line Height</span>
-                <Slider
-                  value={lineHeight}
-                  onChange={setLineHeight}
-                  min={0.8}
-                  max={2.5}
-                  step={0.1}
-                  marks={[
-                    { value: 0.8, label: "0.8" },
-                    { value: 1.0, label: "1.0" },
-                    { value: 1.2, label: "1.2" },
-                    { value: 1.5, label: "1.5" },
-                    { value: 2.0, label: "2.0" },
-                    { value: 2.5, label: "2.5" },
-                  ]}
-                  size="sm"
-                  color="dark"
-                  disabled={lineHeightAuto}
-                  styles={{ markLabel: { fontSize: "12px" } }}
-                />
-                <label className="flex items-center gap-2 cursor-pointer ml-3">
-                  <button
-                    role="switch"
-                    aria-checked={lineHeightAuto}
-                    onClick={() => setLineHeightAuto(!lineHeightAuto)}
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                      lineHeightAuto ? "bg-neutral-900" : "bg-neutral-300"
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        lineHeightAuto ? "translate-x-4" : "translate-x-0.5"
-                      }`}
+                {/* Line Height row - hidden for headings tab */}
+                {previewMode !== "headings" && (
+                  <>
+                    <span className="text-xs text-neutral-500">Line Height</span>
+                    <Slider
+                      value={lineHeight}
+                      onChange={setLineHeight}
+                      min={0.8}
+                      max={2.5}
+                      step={0.1}
+                      marks={[
+                        { value: 0.8, label: "0.8" },
+                        { value: 1.0, label: "1.0" },
+                        { value: 1.2, label: "1.2" },
+                        { value: 1.5, label: "1.5" },
+                        { value: 2.0, label: "2.0" },
+                        { value: 2.5, label: "2.5" },
+                      ]}
+                      size="sm"
+                      color="dark"
+                      disabled={lineHeightAuto}
+                      styles={{ markLabel: { fontSize: "12px" } }}
                     />
-                  </button>
-                  <span className="text-xs text-neutral-500 whitespace-nowrap">Auto</span>
-                </label>
+                    <label className="flex items-center gap-2 cursor-pointer ml-3">
+                      <button
+                        role="switch"
+                        aria-checked={lineHeightAuto}
+                        onClick={() => setLineHeightAuto(!lineHeightAuto)}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                          lineHeightAuto ? "bg-neutral-900" : "bg-neutral-300"
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            lineHeightAuto ? "translate-x-4" : "translate-x-0.5"
+                          }`}
+                        />
+                      </button>
+                      <span className="text-xs text-neutral-500 whitespace-nowrap">Auto</span>
+                    </label>
+                  </>
+                )}
 
                 {/* Preview Text row */}
                 <span className="text-xs text-neutral-500">Text</span>
