@@ -77,26 +77,32 @@ export function FavoritesColumn({
   }, [favorites]);
 
   return (
-    <div className="w-[480px] flex-shrink-0 overflow-y-auto p-8">
-      <h2 className="text-lg font-semibold text-neutral-800 mb-4">Favorites</h2>
-      {groupedFavorites.length === 0 ? (
-        <p className="text-neutral-500 text-sm">
-          No favorites yet. Click the star on a font to add it.
-        </p>
-      ) : (
-        <div className="space-y-2">
-          {groupedFavorites.map((group) => (
-            <GroupedFavoriteItem
-              key={group.fontId}
-              group={group}
-              isFailed={failedFonts.has(group.fontId)}
-              previewText={previewText}
-              fontSize={fontSize}
-              fontCategories={fontCategories}
-            />
-          ))}
-        </div>
-      )}
+    <div className="w-[480px] flex-shrink-0 flex flex-col">
+      {/* Header */}
+      <div className="flex items-center border-b border-neutral-200 px-8 h-12">
+        <span className="text-sm font-medium text-neutral-900">Favorites</span>
+      </div>
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto p-8">
+        {groupedFavorites.length === 0 ? (
+          <p className="text-neutral-500 text-sm">
+            No favorites yet. Click the star on a font to add it.
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {groupedFavorites.map((group) => (
+              <GroupedFavoriteItem
+                key={group.fontId}
+                group={group}
+                isFailed={failedFonts.has(group.fontId)}
+                previewText={previewText}
+                fontSize={fontSize}
+                fontCategories={fontCategories}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
