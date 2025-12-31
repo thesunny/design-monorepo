@@ -31,6 +31,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
   const [showItalics, setShowItalics] = useState(false);
   const [previewText, setPreviewText] = useState("The Quick Brown Fox Jumps");
   const [lineHeight, setLineHeight] = useState(1.2);
+  const [lineHeightAuto, setLineHeightAuto] = useState(true);
   const [letterSpacing, setLetterSpacing] = useState(0);
   const [previewMode, setPreviewMode] = useState<"headings" | "paragraphs" | "code">(
     "headings"
@@ -214,6 +215,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                       showItalics={showItalics}
                       previewText={previewText}
                       lineHeight={lineHeight}
+                      lineHeightAuto={lineHeightAuto}
                       letterSpacing={letterSpacing}
                       fontSize={fontSize}
                     />
@@ -235,6 +237,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                       selectedWeight={selectedWeight}
                       showItalics={showItalics}
                       lineHeight={lineHeight}
+                      lineHeightAuto={lineHeightAuto}
                       letterSpacing={letterSpacing}
                       fontSize={fontSize}
                     />
@@ -256,6 +259,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                       selectedWeight={selectedWeight}
                       showItalics={showItalics}
                       lineHeight={lineHeight}
+                      lineHeightAuto={lineHeightAuto}
                       letterSpacing={letterSpacing}
                       fontSize={fontSize}
                     />
@@ -391,9 +395,26 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                   ]}
                   size="sm"
                   color="dark"
+                  disabled={lineHeightAuto}
                   styles={{ markLabel: { fontSize: "12px" } }}
                 />
-                <div /> {/* Empty cell for grid alignment */}
+                <label className="flex items-center gap-2 cursor-pointer ml-3">
+                  <button
+                    role="switch"
+                    aria-checked={lineHeightAuto}
+                    onClick={() => setLineHeightAuto(!lineHeightAuto)}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                      lineHeightAuto ? "bg-neutral-900" : "bg-neutral-300"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        lineHeightAuto ? "translate-x-4" : "translate-x-0.5"
+                      }`}
+                    />
+                  </button>
+                  <span className="text-xs text-neutral-500 whitespace-nowrap">Auto</span>
+                </label>
 
                 {/* Preview Text row */}
                 <span className="text-xs text-neutral-500">Text</span>
@@ -482,6 +503,16 @@ function getClosestWeight(
   return { weight: closest, isExact: false };
 }
 
+/**
+ * Gets the lineHeight from font metadata for a specific weight and style.
+ * Falls back to 1.2 if not found.
+ */
+function getFontLineHeight(font: Font, weight: number, isItalic: boolean): number {
+  const key = isItalic ? `${weight}i` : `${weight}`;
+  const variant = font.metadata.fonts[key];
+  return variant?.lineHeight ?? 1.2;
+}
+
 function FontPreview({
   font,
   isFailed,
@@ -490,6 +521,7 @@ function FontPreview({
   showItalics,
   previewText,
   lineHeight,
+  lineHeightAuto,
   letterSpacing,
   fontSize,
 }: {
@@ -500,6 +532,7 @@ function FontPreview({
   showItalics: boolean;
   previewText: string;
   lineHeight: number;
+  lineHeightAuto: boolean;
   letterSpacing: number;
   fontSize: number;
 }) {
@@ -550,12 +583,17 @@ function FontPreview({
       }`}
     >
       <div className="space-y-2">
-        {weightsToDisplay.map((weight) => (
+        {weightsToDisplay.map((weight) => {
+          const isItalic = showItalics && hasItalic;
+          const effectiveLineHeight = lineHeightAuto
+            ? getFontLineHeight(font, weight, isItalic)
+            : lineHeight;
+          return (
           <FontWeightRow
             key={weight}
             fontName={font.name}
             weight={weight}
-            lineHeight={lineHeight}
+            lineHeight={effectiveLineHeight}
             letterSpacing={letterSpacing}
             previewText={previewText}
             fontSize={fontSize}
@@ -585,7 +623,8 @@ function FontPreview({
               }
             }}
           />
-        ))}
+        );
+        })}
       </div>
       <div className="flex items-center justify-between mt-2">
         <div className="flex items-center gap-2">
@@ -618,6 +657,7 @@ function ParagraphPreview({
   selectedWeight,
   showItalics,
   lineHeight,
+  lineHeightAuto,
   letterSpacing,
   fontSize,
 }: {
@@ -625,6 +665,7 @@ function ParagraphPreview({
   selectedWeight: number;
   showItalics: boolean;
   lineHeight: number;
+  lineHeightAuto: boolean;
   letterSpacing: number;
   fontSize: number;
 }) {
@@ -632,6 +673,10 @@ function ParagraphPreview({
   const hasItalic = font.styles.includes("italic");
   const italicUnavailable = showItalics && !hasItalic;
   const fontStyle = showItalics && hasItalic ? "italic" : "normal";
+  const isItalic = showItalics && hasItalic;
+  const effectiveLineHeight = lineHeightAuto
+    ? getFontLineHeight(font, weight, isItalic)
+    : lineHeight;
 
   return (
     <div className="border rounded-lg p-4 border-neutral-200">
@@ -639,7 +684,7 @@ function ParagraphPreview({
         fontFamily={font.name}
         fontWeight={weight}
         fontStyle={fontStyle}
-        lineHeight={lineHeight}
+        lineHeight={effectiveLineHeight}
         letterSpacing={letterSpacing}
         normalizedFontSize={fontSize}
         normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
@@ -672,6 +717,7 @@ function CodePreview({
   selectedWeight,
   showItalics,
   lineHeight,
+  lineHeightAuto,
   letterSpacing,
   fontSize,
 }: {
@@ -679,6 +725,7 @@ function CodePreview({
   selectedWeight: number;
   showItalics: boolean;
   lineHeight: number;
+  lineHeightAuto: boolean;
   letterSpacing: number;
   fontSize: number;
 }) {
@@ -686,6 +733,10 @@ function CodePreview({
   const hasItalic = font.styles.includes("italic");
   const italicUnavailable = showItalics && !hasItalic;
   const fontStyle = showItalics && hasItalic ? "italic" : "normal";
+  const isItalic = showItalics && hasItalic;
+  const effectiveLineHeight = lineHeightAuto
+    ? getFontLineHeight(font, weight, isItalic)
+    : lineHeight;
 
   return (
     <div className="border rounded-lg p-4 border-neutral-200">
@@ -694,7 +745,7 @@ function CodePreview({
           fontFamily={font.name}
           fontWeight={weight}
           fontStyle={fontStyle}
-          lineHeight={lineHeight}
+          lineHeight={effectiveLineHeight}
           letterSpacing={letterSpacing}
           normalizedFontSize={fontSize}
           normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
