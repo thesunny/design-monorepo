@@ -99,7 +99,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
   }, [displayedSubcategory, favorites, fontMap]);
 
   // Load fonts using the optimized hook (one link per font)
-  const { loadedFonts, failedFonts } = useFontLoader(fontsToLoad);
+  const { failedFonts } = useFontLoader(fontsToLoad);
 
   // Filter fonts based on active filters
   const filteredFonts = displayedSubcategory?.fonts.filter((font) => {
@@ -253,7 +253,6 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                     <CodePreview
                       key={font.id}
                       font={font}
-                      isLoaded={loadedFonts.has(font.id)}
                       selectedWeight={selectedWeight}
                       showItalics={showItalics}
                       lineHeight={lineHeight}
@@ -670,7 +669,6 @@ function ParagraphPreview({
 
 function CodePreview({
   font,
-  isLoaded,
   selectedWeight,
   showItalics,
   lineHeight,
@@ -678,7 +676,6 @@ function CodePreview({
   fontSize,
 }: {
   font: Font;
-  isLoaded: boolean;
   selectedWeight: number;
   showItalics: boolean;
   lineHeight: number;
@@ -688,35 +685,29 @@ function CodePreview({
   const { weight } = getClosestWeight(font.weights, selectedWeight);
   const hasItalic = font.styles.includes("italic");
   const italicUnavailable = showItalics && !hasItalic;
+  const fontStyle = showItalics && hasItalic ? "italic" : "normal";
 
   return (
     <div className="border rounded-lg p-4 border-neutral-200">
-      <pre
-        className={`leading-relaxed transition-opacity overflow-x-auto ${
-          !isLoaded || italicUnavailable ? "opacity-30" : "opacity-100"
-        }`}
-        style={{
-          fontFamily: `"${font.name}", monospace`,
-          fontWeight: weight,
-          fontStyle: showItalics && hasItalic ? "italic" : "normal",
-          fontSize,
-          lineHeight,
-          letterSpacing: `${letterSpacing}em`,
-        }}
-      >
-        <code
-          style={{
-            fontFamily: "inherit",
-            fontWeight: "inherit",
-          }}
+      <div className="overflow-x-auto">
+        <NormalizedText
+          fontFamily={font.name}
+          fontWeight={weight}
+          fontStyle={fontStyle}
+          lineHeight={lineHeight}
+          letterSpacing={letterSpacing}
+          normalizedFontSize={fontSize}
+          normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+          className={italicUnavailable ? "opacity-30" : ""}
+          style={{ display: "block", whiteSpace: "pre" }}
         >{`function fibonacci(n) {
   if (n <= 1) return n;
   return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
 const result = fibonacci(10);
-console.log(result); // 55`}</code>
-      </pre>
+console.log(result); // 55`}</NormalizedText>
+      </div>
       <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-100">
         <span className="text-sm text-neutral-500">{font.name}</span>
         <div className="flex items-center gap-2">
