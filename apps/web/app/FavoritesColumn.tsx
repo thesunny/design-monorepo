@@ -159,13 +159,6 @@ function GroupedFavoriteItem({
       <div className="space-y-2">
         {group.weights.map((weightData) => (
           <div key={weightData._id} className="flex items-center gap-3">
-            <button
-              onClick={() => handleRemoveWeight(weightData)}
-              className="p-1 rounded hover:bg-neutral-100 transition-colors flex-shrink-0"
-              title="Remove from favorites"
-            >
-              <IconStarFilled size={16} className="text-yellow-500" />
-            </button>
             <div className="overflow-hidden" style={{ width: previewWidth }}>
               {isLoaded ? (
                 <Textfit
@@ -199,6 +192,13 @@ function GroupedFavoriteItem({
             <span className={`text-xs w-8 text-right flex-shrink-0 ${isFailed ? "text-red-400" : "text-neutral-400"}`}>
               {weightData.weight}
             </span>
+            <button
+              onClick={() => handleRemoveWeight(weightData)}
+              className="p-1 rounded hover:bg-neutral-100 transition-colors flex-shrink-0"
+              title="Remove from favorites"
+            >
+              <IconStarFilled size={16} className="text-yellow-500" />
+            </button>
           </div>
         ))}
       </div>

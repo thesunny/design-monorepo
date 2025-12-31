@@ -688,19 +688,6 @@ function FontPreview({
             const weightFavorited = isWeightFavorited(weight);
             return (
               <div key={weight} className="flex items-center gap-3">
-                {isSignedIn && (
-                  <button
-                    onClick={(e) => handleStarClick(e, weight)}
-                    className="p-1 rounded hover:bg-neutral-200 transition-colors flex-shrink-0"
-                    title={weightFavorited ? "Remove from favorites" : "Add to favorites"}
-                  >
-                    {weightFavorited ? (
-                      <IconStarFilled size={16} className="text-yellow-500" />
-                    ) : (
-                      <IconStar size={16} className="text-neutral-400" />
-                    )}
-                  </button>
-                )}
                 <div className="overflow-hidden" style={{ width: previewWidth }}>
                   {isLoaded ? (
                     <Textfit
@@ -737,6 +724,19 @@ function FontPreview({
                 <span className={`text-xs w-8 text-right ${isFailed ? "text-red-400" : "text-neutral-400"}`}>
                   {weight}
                 </span>
+                {isSignedIn && (
+                  <button
+                    onClick={(e) => handleStarClick(e, weight)}
+                    className="p-1 rounded hover:bg-neutral-200 transition-colors flex-shrink-0"
+                    title={weightFavorited ? "Remove from favorites" : "Add to favorites"}
+                  >
+                    {weightFavorited ? (
+                      <IconStarFilled size={16} className="text-yellow-500" />
+                    ) : (
+                      <IconStar size={16} className="text-neutral-400" />
+                    )}
+                  </button>
+                )}
               </div>
             );
           })}
