@@ -22,7 +22,7 @@ export function CategorySidebar({
   onHoverSubcategory,
 }: CategorySidebarProps) {
   return (
-    <div className="w-40 flex-shrink-0 bg-[#3F0E40] flex flex-col">
+    <div className="w-40 flex-shrink-0 bg-[#2f251a] flex flex-col">
       <div className="h-12 flex items-center px-4">
         <span
           className="font-[family-name:var(--font-poppins)]"
@@ -35,7 +35,7 @@ export function CategorySidebar({
         {fontCategories.map((category) => (
           <div key={category.id} className="mb-6">
             <h2
-              className="font-semibold text-[#C4B3C5] uppercase tracking-wide mb-2 px-2"
+              className="font-semibold text-white/50 uppercase tracking-wide mb-2 px-2"
               style={{ fontSize: 13 }}
             >
               {category.name}
@@ -49,8 +49,8 @@ export function CategorySidebar({
                     onMouseLeave={() => onHoverSubcategory(null)}
                     className={`w-full text-left px-2 py-1 rounded transition-colors ${
                       selectedSubcategory?.id === subcategory.id
-                        ? "bg-[#E8DFE8] text-[#3F0E40] font-semibold"
-                        : "text-[#BCB3BD] hover:bg-[#522653]"
+                        ? "bg-white/10 text-white font-semibold"
+                        : "text-white/70 hover:bg-white/5"
                     }`}
                     style={{ fontSize: 15 }}
                   >
@@ -62,7 +62,7 @@ export function CategorySidebar({
           </div>
         ))}
       </div>
-      <div className="mt-auto px-4 py-3 border-t border-[#522653]">
+      <div className="mt-auto px-4 py-3 border-t border-white/10">
         <SignedOut>
           <SignInButton mode="modal">
             <button className="w-full px-3 py-2 text-sm text-[#E8DFE8] bg-[#522653] hover:bg-[#6B3A6D] rounded transition-colors">
