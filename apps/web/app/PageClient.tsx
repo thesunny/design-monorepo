@@ -779,10 +779,12 @@ function ParagraphPreview({
         normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
         className={italicUnavailable ? "opacity-30" : ""}
       >
-        Typography is the art and technique of arranging type to make written
-        language legible, readable, and appealing when displayed. The
-        arrangement of type involves selecting typefaces, point sizes, line
-        lengths, and letter-spacing.
+        Typography is the art of arranging type. It makes text legible and
+        appealing when displayed.
+        <br /><br />
+        Good typography uses <strong>contrast</strong> and <em>spacing</em> to
+        create <u>visual hierarchy</u>. It guides the reader through{" "}
+        <strong>bold</strong> headings and <em>subtle</em> emphasis.
       </NormalizedText>
       <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-100">
         <span className="text-sm text-neutral-500">{font.name}</span>

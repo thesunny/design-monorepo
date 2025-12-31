@@ -9,8 +9,8 @@ A prioritized list of features to add to the font picker application, ordered by
 ### 1. Search Input Box
 Quick filter to search fonts by name. With 300+ fonts, scrolling through categories is inefficient.
 - [ ] Fuzzy matching for typos
-- [ ] Search across all categories simultaneously
-- [ ] Keyboard shortcut (Cmd/Ctrl+K) to focus search
+- [x] Search across all categories simultaneously
+- [x] Keyboard shortcut (Cmd/Ctrl+K) to focus search
 - [ ] Show category badge in results
 
 ### 2. Copy `<link>` / `@import` Code
