@@ -224,7 +224,8 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                     placeholder="Search fonts..."
-                    className={`w-48 pl-8 pr-7 py-1.5 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:border-transparent ${isSearchPending ? "bg-neutral-50" : ""}`}
+                    style={{ fontSize: 13 }}
+                    className={`w-48 pl-7 pr-6 py-1.5 border border-neutral-200 rounded focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:border-transparent ${isSearchPending ? "bg-neutral-50" : ""}`}
                   />
                   {searchInput && (
                     <button
