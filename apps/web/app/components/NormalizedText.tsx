@@ -87,13 +87,14 @@ export function NormalizedText({
       .then(() => {
         if (cancelled) return;
 
-        // Measure Arial as the reference
+        // Measure Arial as the reference (always use weight 400 since Arial
+        // only has regular/bold, and we want consistent scaling across all weights)
         const arialWidth = measureTextWidth(
           normalizationText,
           "Arial",
           BASE_MEASURE_SIZE,
-          fontWeight,
-          fontStyle
+          400,
+          "normal"
         );
 
         // Measure the target font
