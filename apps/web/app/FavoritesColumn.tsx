@@ -26,20 +26,16 @@ type GroupedFavorite = {
 
 type FavoritesColumnProps = {
   favorites: Favorite[] | undefined;
-  loadedFonts: Set<string>;
   failedFonts: Set<string>;
   previewText: string;
-  previewWidth: number;
   fontSize: number;
   fontCategories: EnrichedCategory[];
 };
 
 export function FavoritesColumn({
   favorites,
-  loadedFonts,
   failedFonts,
   previewText,
-  previewWidth,
   fontSize,
   fontCategories,
 }: FavoritesColumnProps) {
@@ -93,10 +89,8 @@ export function FavoritesColumn({
             <GroupedFavoriteItem
               key={group.fontId}
               group={group}
-              isLoaded={loadedFonts.has(group.fontId)}
               isFailed={failedFonts.has(group.fontId)}
               previewText={previewText}
-              previewWidth={previewWidth}
               fontSize={fontSize}
               fontCategories={fontCategories}
             />
@@ -109,18 +103,14 @@ export function FavoritesColumn({
 
 function GroupedFavoriteItem({
   group,
-  isLoaded,
   isFailed,
   previewText,
-  previewWidth,
   fontSize,
   fontCategories,
 }: {
   group: GroupedFavorite;
-  isLoaded: boolean;
   isFailed?: boolean;
   previewText: string;
-  previewWidth: number;
   fontSize: number;
   fontCategories: EnrichedCategory[];
 }) {
@@ -153,9 +143,7 @@ function GroupedFavoriteItem({
             lineHeight={weightData.lineHeight}
             letterSpacing={weightData.letterSpacing}
             previewText={previewText}
-            previewWidth={previewWidth}
             fontSize={fontSize}
-            isLoaded={isLoaded}
             isFailed={isFailed}
             showStar={true}
             isFavorited={true}

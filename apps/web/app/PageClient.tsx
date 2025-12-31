@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Slider } from "@mantine/core";
 import { IconHeading, IconAlignLeft, IconCode, IconStar, IconStarFilled } from "@tabler/icons-react";
 import { useAuth } from "@clerk/nextjs";
@@ -39,11 +39,9 @@ export default function PageClient({ fontCategories }: PageClientProps) {
   const [filterVariable, setFilterVariable] = useState(false);
   const [headingsFontSize, setHeadingsFontSize] = useState(36);
   const [textFontSize, setTextFontSize] = useState(16);
-  const [previewWidth, setPreviewWidth] = useState(640);
 
   // Fixed font size for favorites column (not affected by slider)
   const FAVORITES_FONT_SIZE = 24;
-  const [favoritesPreviewWidth, setFavoritesPreviewWidth] = useState(400);
 
   // Use headings font size for headings tab, text font size for paragraphs/code
   const fontSize = previewMode === "headings" ? headingsFontSize : textFontSize;
@@ -113,28 +111,6 @@ export default function PageClient({ fontCategories }: PageClientProps) {
     if (filterVariable && !font.variable) return false;
     return true;
   }) ?? [];
-
-  // Measure preview text width using Arial 400 at the selected font size to normalize all font previews
-  useEffect(() => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    if (ctx) {
-      ctx.font = `400 ${fontSize}px Arial`;
-      const metrics = ctx.measureText(previewText);
-      setPreviewWidth(metrics.width);
-    }
-  }, [previewText, fontSize]);
-
-  // Measure preview width for favorites column using fixed 24px Arial
-  useEffect(() => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    if (ctx) {
-      ctx.font = `400 ${FAVORITES_FONT_SIZE}px Arial`;
-      const metrics = ctx.measureText(previewText);
-      setFavoritesPreviewWidth(metrics.width);
-    }
-  }, [previewText, FAVORITES_FONT_SIZE]);
 
   return (
     <main className="flex h-screen bg-white">
@@ -231,7 +207,6 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                     <FontPreview
                       key={font.id}
                       font={font}
-                      isLoaded={loadedFonts.has(font.id)}
                       isFailed={failedFonts.has(font.id)}
                       selectedWeight={selectedWeight}
                       showAllWeights={showAllWeights}
@@ -239,7 +214,6 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                       previewText={previewText}
                       lineHeight={lineHeight}
                       letterSpacing={letterSpacing}
-                      previewWidth={previewWidth}
                       fontSize={fontSize}
                     />
                   ))}
@@ -470,10 +444,8 @@ export default function PageClient({ fontCategories }: PageClientProps) {
 
       <FavoritesColumn
         favorites={favorites}
-        loadedFonts={loadedFonts}
         failedFonts={failedFonts}
         previewText={previewText}
-        previewWidth={favoritesPreviewWidth}
         fontSize={FAVORITES_FONT_SIZE}
         fontCategories={fontCategories}
       />
@@ -513,7 +485,6 @@ function getClosestWeight(
 
 function FontPreview({
   font,
-  isLoaded,
   isFailed,
   selectedWeight,
   showAllWeights,
@@ -521,11 +492,9 @@ function FontPreview({
   previewText,
   lineHeight,
   letterSpacing,
-  previewWidth,
   fontSize,
 }: {
   font: Font;
-  isLoaded: boolean;
   isFailed?: boolean;
   selectedWeight: number;
   showAllWeights: boolean;
@@ -533,7 +502,6 @@ function FontPreview({
   previewText: string;
   lineHeight: number;
   letterSpacing: number;
-  previewWidth: number;
   fontSize: number;
 }) {
   const { isSignedIn } = useAuth();
@@ -591,9 +559,7 @@ function FontPreview({
             lineHeight={lineHeight}
             letterSpacing={letterSpacing}
             previewText={previewText}
-            previewWidth={previewWidth}
             fontSize={fontSize}
-            isLoaded={isLoaded}
             isFailed={isFailed}
             showItalics={showItalics}
             hasItalic={hasItalic}

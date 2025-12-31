@@ -1,7 +1,7 @@
 "use client";
 
-import { Textfit } from "react-textfit";
 import { IconStar, IconStarFilled } from "@tabler/icons-react";
+import { NormalizedText } from "./components/NormalizedText";
 
 type FontWeightRowProps = {
   fontName: string;
@@ -9,9 +9,7 @@ type FontWeightRowProps = {
   lineHeight: number;
   letterSpacing: number;
   previewText: string;
-  previewWidth: number;
   fontSize: number;
-  isLoaded: boolean;
   isFailed?: boolean;
   showItalics?: boolean;
   hasItalic?: boolean;
@@ -27,9 +25,7 @@ export function FontWeightRow({
   lineHeight,
   letterSpacing,
   previewText,
-  previewWidth,
   fontSize,
-  isLoaded,
   isFailed,
   showItalics,
   hasItalic,
@@ -53,56 +49,26 @@ export function FontWeightRow({
 
   return (
     <div className="flex items-center">
-      {/*
-        Font preview with normalization and fade-out overflow.
-
-        FONT NORMALIZATION: Do not remove Textfit!
-        Textfit normalizes the font size so all fonts appear at a consistent visual width
-        based on the previewWidth (which is calculated from Arial at the selected size).
-        This ensures fonts with different natural widths look comparable.
-
-        The outer container clips overflow with a fade effect when the screen is narrow.
-      */}
+      {/* Font preview with normalization and fade-out overflow */}
       <div
-        className="flex-1 min-w-0 overflow-hidden"
+        className="flex-1 min-w-0 overflow-hidden whitespace-nowrap"
         style={{
           maskImage: "linear-gradient(to right, black calc(100% - 40px), transparent 100%)",
           WebkitMaskImage: "linear-gradient(to right, black calc(100% - 40px), transparent 100%)",
         }}
       >
-        <div style={{ width: previewWidth }}>
-          {isLoaded ? (
-            <Textfit
-              key={`${fontName}-${weight}-${showItalics}`}
-              mode="single"
-              max={200}
-              className={italicUnavailable ? "opacity-30" : ""}
-              style={{
-                fontFamily: `"${fontName}", sans-serif`,
-                fontWeight: weight,
-                fontStyle,
-                lineHeight,
-                letterSpacing: `${letterSpacing}em`,
-              }}
-            >
-              {renderText(previewText)}
-            </Textfit>
-          ) : (
-            <div
-              className="opacity-30 whitespace-nowrap"
-              style={{
-                fontFamily: `"${fontName}", sans-serif`,
-                fontWeight: weight,
-                fontStyle,
-                lineHeight,
-                letterSpacing: `${letterSpacing}em`,
-                fontSize,
-              }}
-            >
-              {renderText(previewText)}
-            </div>
-          )}
-        </div>
+        <NormalizedText
+          fontFamily={fontName}
+          fontWeight={weight}
+          fontStyle={fontStyle}
+          lineHeight={lineHeight}
+          letterSpacing={letterSpacing}
+          normalizedFontSize={fontSize}
+          normalizationText={previewText}
+          className={italicUnavailable ? "opacity-30" : ""}
+        >
+          {renderText(previewText)}
+        </NormalizedText>
       </div>
 
       {/* Weight and star grouped on the right */}
