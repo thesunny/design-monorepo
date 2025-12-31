@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useDeferredValue } from "react";
 import { Slider } from "@mantine/core";
-import { IconHeading, IconAlignLeft, IconCode, IconStar, IconStarFilled } from "@tabler/icons-react";
+import { IconHeading, IconAlignLeft, IconCode, IconStar, IconStarFilled, IconSearch, IconX } from "@tabler/icons-react";
 import { useAuth } from "@clerk/nextjs";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@repo/convex/convex/_generated/api";
@@ -40,6 +40,9 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
   const [filterBold, setFilterBold] = useState(false);
   const [filterItalic, setFilterItalic] = useState(false);
   const [filterVariable, setFilterVariable] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  // Defer the search query so typing stays responsive
+  const deferredSearchQuery = useDeferredValue(searchInput);
   const [headingsFontSize, setHeadingsFontSize] = useState(36);
   const [textFontSize, setTextFontSize] = useState(16);
 
@@ -95,13 +98,36 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
     return getFontsForSubcategory(displayedSubcategory);
   }, [displayedSubcategory, getFontsForSubcategory]);
 
-  // Compute all fonts that need to be loaded (category + favorites)
+  // Maximum number of search results to display (prevents loading hundreds of fonts)
+  const MAX_SEARCH_RESULTS = 50;
+
+  // Search fonts across all fonts when there's a search query (uses deferred value)
+  const searchedFonts = useMemo(() => {
+    if (!deferredSearchQuery.trim()) return null;
+    const query = deferredSearchQuery.toLowerCase().trim();
+    const results: Font[] = [];
+    for (const font of allFonts) {
+      if (font.name.toLowerCase().includes(query)) {
+        results.push(font);
+        if (results.length >= MAX_SEARCH_RESULTS) break;
+      }
+    }
+    return results;
+  }, [deferredSearchQuery, allFonts]);
+
+  // Track if search is pending (input differs from deferred value)
+  const isSearchPending = searchInput !== deferredSearchQuery;
+
+  // Determine which fonts to show: searched fonts or category fonts
+  const baseFonts = searchedFonts ?? displayedFonts;
+
+  // Compute all fonts that need to be loaded (displayed/searched fonts + favorites)
   const fontsToLoad = useMemo(() => {
     const fonts: Font[] = [];
     const seenIds = new Set<string>();
 
-    // Add fonts from displayed subcategory
-    for (const font of displayedFonts) {
+    // Add fonts from current view (search results or category)
+    for (const font of baseFonts) {
       if (!seenIds.has(font.id)) {
         seenIds.add(font.id);
         fonts.push(font);
@@ -122,13 +148,13 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
     }
 
     return fonts;
-  }, [displayedFonts, favorites, fontByIdMap]);
+  }, [baseFonts, favorites, fontByIdMap]);
 
   // Load fonts using the optimized hook (one link per font)
   const { failedFonts } = useFontLoader(fontsToLoad);
 
   // Filter fonts based on active filters
-  const filteredFonts = displayedFonts.filter((font) => {
+  const filteredFonts = baseFonts.filter((font) => {
     if (filterBold) {
       const hasNormal = font.weights.some((w) => w >= 400 && w <= 500);
       const hasBold = font.weights.some((w) => w >= 600);
@@ -190,7 +216,27 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                 <IconCode size={16} className="mr-1.5" />
                 Code
               </button>
-              <div className="flex items-center gap-2 ml-auto">
+              <div className="flex items-center ml-auto mr-4">
+                <div className="relative">
+                  <IconSearch size={14} className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${isSearchPending ? "text-neutral-300" : "text-neutral-400"}`} />
+                  <input
+                    type="text"
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    placeholder="Search fonts..."
+                    className={`w-48 pl-8 pr-7 py-1.5 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:border-transparent ${isSearchPending ? "bg-neutral-50" : ""}`}
+                  />
+                  {searchInput && (
+                    <button
+                      onClick={() => setSearchInput("")}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+                    >
+                      <IconX size={14} />
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => setFilterBold(!filterBold)}
                   style={{ fontSize: 12 }}
