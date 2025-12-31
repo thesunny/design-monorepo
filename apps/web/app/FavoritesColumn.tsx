@@ -1,11 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import { Textfit } from "react-textfit";
-import { IconStarFilled } from "@tabler/icons-react";
 import { useMutation } from "convex/react";
 import { api } from "@repo/convex/convex/_generated/api";
 import type { EnrichedCategory } from "../data/types";
+import { FontWeightRow } from "./FontWeightRow";
 
 type Favorite = {
   _id: string;
@@ -133,8 +132,8 @@ function GroupedFavoriteItem({
     .flatMap((sub) => sub.fonts)
     .find((f) => f.id === group.fontId);
 
-  const handleRemoveWeight = async (weightData: { weight: number; lineHeight: number; letterSpacing: number }) => {
-    await removeFavorite({
+  const handleRemoveWeight = (weightData: { weight: number; lineHeight: number; letterSpacing: number }) => {
+    removeFavorite({
       fontId: group.fontId,
       weight: weightData.weight,
       lineHeight: weightData.lineHeight,
@@ -143,63 +142,25 @@ function GroupedFavoriteItem({
     });
   };
 
-  // Convert newlines to <br> elements
-  const renderText = (text: string) => {
-    const lines = text.split("\n");
-    return lines.map((line, i) => (
-      <span key={i}>
-        {line}
-        {i < lines.length - 1 && <br />}
-      </span>
-    ));
-  };
-
   return (
     <div className="border border-neutral-200 rounded-lg px-8 py-4 overflow-hidden">
       <div className="space-y-2">
         {group.weights.map((weightData) => (
-          <div key={weightData._id} className="flex items-center gap-3">
-            <div className="overflow-hidden" style={{ width: previewWidth }}>
-              {isLoaded ? (
-                <Textfit
-                  key={`${group.fontName}-${weightData.weight}`}
-                  mode="single"
-                  max={200}
-                  style={{
-                    fontFamily: `"${group.fontName}", sans-serif`,
-                    fontWeight: weightData.weight,
-                    lineHeight: weightData.lineHeight,
-                    letterSpacing: `${weightData.letterSpacing}em`,
-                  }}
-                >
-                  {renderText(previewText)}
-                </Textfit>
-              ) : (
-                <div
-                  className="opacity-30 truncate"
-                  style={{
-                    fontFamily: `"${group.fontName}", sans-serif`,
-                    fontWeight: weightData.weight,
-                    lineHeight: weightData.lineHeight,
-                    letterSpacing: `${weightData.letterSpacing}em`,
-                    fontSize,
-                  }}
-                >
-                  {renderText(previewText)}
-                </div>
-              )}
-            </div>
-            <span className={`text-xs w-8 text-right flex-shrink-0 ${isFailed ? "text-red-400" : "text-neutral-400"}`}>
-              {weightData.weight}
-            </span>
-            <button
-              onClick={() => handleRemoveWeight(weightData)}
-              className="p-1 rounded hover:bg-neutral-100 transition-colors flex-shrink-0"
-              title="Remove from favorites"
-            >
-              <IconStarFilled size={16} className="text-yellow-500" />
-            </button>
-          </div>
+          <FontWeightRow
+            key={weightData._id}
+            fontName={group.fontName}
+            weight={weightData.weight}
+            lineHeight={weightData.lineHeight}
+            letterSpacing={weightData.letterSpacing}
+            previewText={previewText}
+            previewWidth={previewWidth}
+            fontSize={fontSize}
+            isLoaded={isLoaded}
+            isFailed={isFailed}
+            showStar={true}
+            isFavorited={true}
+            onStarClick={() => handleRemoveWeight(weightData)}
+          />
         ))}
       </div>
       <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-100">

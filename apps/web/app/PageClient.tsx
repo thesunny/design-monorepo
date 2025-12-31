@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Textfit } from "react-textfit";
 import { Slider } from "@mantine/core";
 import { IconHeading, IconAlignLeft, IconCode, IconStar, IconStarFilled } from "@tabler/icons-react";
 import { useAuth } from "@clerk/nextjs";
@@ -15,6 +14,7 @@ import type {
 import { CategorySidebar } from "./CategorySidebar";
 import { FavoritesColumn } from "./FavoritesColumn";
 import { useFontLoader } from "./hooks/useFontLoader";
+import { FontWeightRow } from "./FontWeightRow";
 
 type PageClientProps = {
   fontCategories: EnrichedCategory[];
@@ -433,110 +433,6 @@ export default function PageClient({ fontCategories }: PageClientProps) {
   );
 }
 
-// Shared component for heading-style font preview
-export function HeadingPreviewContent({
-  fontName,
-  weight,
-  lineHeight,
-  letterSpacing,
-  previewText,
-  previewWidth,
-  fontSize,
-  isLoaded,
-  isFailed,
-  weights,
-  variable,
-  hasItalic,
-  showItalics,
-}: {
-  fontName: string;
-  weight: number;
-  lineHeight: number;
-  letterSpacing: number;
-  previewText: string;
-  previewWidth: number;
-  fontSize: number;
-  isLoaded: boolean;
-  isFailed?: boolean;
-  weights?: number[];
-  variable?: boolean;
-  hasItalic?: boolean;
-  showItalics?: boolean;
-}) {
-  const renderText = (text: string) => {
-    const lines = text.split("\n");
-    return lines.map((line, i) => (
-      <span key={i}>
-        {line}
-        {i < lines.length - 1 && <br />}
-      </span>
-    ));
-  };
-
-  const italicUnavailable = showItalics && !hasItalic;
-  const fontStyle = showItalics && hasItalic ? "italic" : "normal";
-
-  return (
-    <>
-      <div className="overflow-hidden" style={{ width: previewWidth }}>
-        {isLoaded ? (
-          <Textfit
-            key={`${fontName}-${weight}-${showItalics}`}
-            mode="single"
-            max={200}
-            className={italicUnavailable ? "opacity-30" : ""}
-            style={{
-              fontFamily: `"${fontName}", sans-serif`,
-              fontWeight: weight,
-              fontStyle,
-              lineHeight,
-              letterSpacing: `${letterSpacing}em`,
-            }}
-          >
-            {renderText(previewText)}
-          </Textfit>
-        ) : (
-          <div
-            className="opacity-30 truncate"
-            style={{
-              fontFamily: `"${fontName}", sans-serif`,
-              fontWeight: weight,
-              fontStyle,
-              lineHeight,
-              letterSpacing: `${letterSpacing}em`,
-              fontSize,
-            }}
-          >
-            {renderText(previewText)}
-          </div>
-        )}
-      </div>
-      <div className="flex items-center justify-between mt-2">
-        <div className="flex items-center gap-2">
-          <span className={`text-sm ${isFailed ? "text-red-400" : "text-neutral-400"}`}>{fontName}</span>
-          {isFailed && (
-            <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-600 rounded">
-              Not Found
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          {hasItalic && (
-            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-              Italic
-            </span>
-          )}
-          {weights && (
-            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-              {formatWeights(weights, variable ?? false)}
-            </span>
-          )}
-        </div>
-      </div>
-    </>
-  );
-}
-
 function getAllAvailableWeights(weights: number[]): number[] {
   // Return all weights from 100-900 in increments of 100 that are available
   const standardWeights = [100, 200, 300, 400, 500, 600, 700, 800, 900];
@@ -617,167 +513,87 @@ function FontPreview({
         (fav.type === "heading" || fav.type === undefined)
     ) ?? false;
 
-  // Handle star click for a specific weight
-  const handleStarClick = async (e: React.MouseEvent, weight: number) => {
-    e.stopPropagation();
-    if (isWeightFavorited(weight)) {
-      await removeFavorite({
-        fontId: font.id,
-        weight,
-        lineHeight,
-        letterSpacing,
-        type: "heading",
-      });
-    } else {
-      await addFavorite({
-        fontId: font.id,
-        fontName: font.name,
-        weight,
-        lineHeight,
-        letterSpacing,
-        type: "heading",
-      });
-    }
-  };
-
-  // Convert newlines to <br> elements
-  const renderText = (text: string) => {
-    const lines = text.split("\n");
-    return lines.map((line, i) => (
-      <span key={i}>
-        {line}
-        {i < lines.length - 1 && <br />}
-      </span>
-    ));
-  };
-
   // For specific weight selection (when not showing all weights)
   const specificWeight = !showAllWeights
     ? getClosestWeight(font.weights, selectedWeight)
     : null;
 
   const isInexactMatch = specificWeight && !specificWeight.isExact;
-  const isSingleWeightFavorited = singleWeight !== null && isWeightFavorited(singleWeight);
 
   // Check if italic is available
   const hasItalic = font.styles.includes("italic");
-  const italicUnavailable = showItalics && !hasItalic;
+
+  // Weights to display: either all available weights or just the selected one
+  const weightsToDisplay = showAllWeights
+    ? displayWeights
+    : [specificWeight?.weight ?? 400];
 
   return (
     <div
-      className={`px-8 py-4 relative ${
+      className={`px-8 py-4 ${
         isInexactMatch ? "bg-neutral-100" : ""
       }`}
     >
-      {isSignedIn && !showAllWeights && singleWeight !== null && (
-        <button
-          onClick={(e) => handleStarClick(e, singleWeight)}
-          className="absolute top-3 right-3 p-1 rounded hover:bg-neutral-200 transition-colors"
-          title={isSingleWeightFavorited ? "Remove from favorites" : "Add to favorites"}
-        >
-          {isSingleWeightFavorited ? (
-            <IconStarFilled size={18} className="text-yellow-500" />
-          ) : (
-            <IconStar size={18} className="text-neutral-400" />
+      <div className="space-y-2">
+        {weightsToDisplay.map((weight) => (
+          <FontWeightRow
+            key={weight}
+            fontName={font.name}
+            weight={weight}
+            lineHeight={lineHeight}
+            letterSpacing={letterSpacing}
+            previewText={previewText}
+            previewWidth={previewWidth}
+            fontSize={fontSize}
+            isLoaded={isLoaded}
+            isFailed={isFailed}
+            showItalics={showItalics}
+            hasItalic={hasItalic}
+            showStar={isSignedIn}
+            isFavorited={isWeightFavorited(weight)}
+            onStarClick={() => {
+              if (isWeightFavorited(weight)) {
+                removeFavorite({
+                  fontId: font.id,
+                  weight,
+                  lineHeight,
+                  letterSpacing,
+                  type: "heading",
+                });
+              } else {
+                addFavorite({
+                  fontId: font.id,
+                  fontName: font.name,
+                  weight,
+                  lineHeight,
+                  letterSpacing,
+                  type: "heading",
+                });
+              }
+            }}
+          />
+        ))}
+      </div>
+      <div className="flex items-center justify-between mt-2">
+        <div className="flex items-center gap-2">
+          <span className={`text-sm ${isFailed ? "text-red-400" : "text-neutral-400"}`}>{font.name}</span>
+          {isFailed && (
+            <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-600 rounded">
+              Not Found
+            </span>
           )}
-        </button>
-      )}
-      {showAllWeights && displayWeights.length > 0 ? (
-        <div className="space-y-2">
-          {displayWeights.map((weight) => {
-            const weightFavorited = isWeightFavorited(weight);
-            return (
-              <div key={weight} className="flex items-center gap-3">
-                <div className="overflow-hidden" style={{ width: previewWidth }}>
-                  {isLoaded ? (
-                    <Textfit
-                      key={`${font.name}-${weight}-${showItalics}`}
-                      mode="single"
-                      max={200}
-                      className={italicUnavailable ? "opacity-30" : ""}
-                      style={{
-                        fontFamily: `"${font.name}", sans-serif`,
-                        fontWeight: weight,
-                        fontStyle: showItalics && hasItalic ? "italic" : "normal",
-                        lineHeight,
-                        letterSpacing: `${letterSpacing}em`,
-                      }}
-                    >
-                      {renderText(previewText)}
-                    </Textfit>
-                  ) : (
-                    <div
-                      className="opacity-30 truncate"
-                      style={{
-                        fontFamily: `"${font.name}", sans-serif`,
-                        fontWeight: weight,
-                        fontStyle: showItalics && hasItalic ? "italic" : "normal",
-                        lineHeight,
-                        letterSpacing: `${letterSpacing}em`,
-                        fontSize,
-                      }}
-                    >
-                      {renderText(previewText)}
-                    </div>
-                  )}
-                </div>
-                <span className={`text-xs w-8 text-right ${isFailed ? "text-red-400" : "text-neutral-400"}`}>
-                  {weight}
-                </span>
-                {isSignedIn && (
-                  <button
-                    onClick={(e) => handleStarClick(e, weight)}
-                    className="p-1 rounded hover:bg-neutral-200 transition-colors flex-shrink-0"
-                    title={weightFavorited ? "Remove from favorites" : "Add to favorites"}
-                  >
-                    {weightFavorited ? (
-                      <IconStarFilled size={16} className="text-yellow-500" />
-                    ) : (
-                      <IconStar size={16} className="text-neutral-400" />
-                    )}
-                  </button>
-                )}
-              </div>
-            );
-          })}
-          <div className="flex items-center justify-between mt-2">
-            <div className="flex items-center gap-2">
-              <span className={`text-sm ${isFailed ? "text-red-400" : "text-neutral-400"}`}>{font.name}</span>
-              {isFailed && (
-                <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-600 rounded">
-                  Not Found
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              {font.styles.includes("italic") && (
-                <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-                  Italic
-                </span>
-              )}
-              <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-                {formatWeights(font.weights, font.variable)}
-              </span>
-            </div>
-          </div>
         </div>
-      ) : (
-        <HeadingPreviewContent
-          fontName={font.name}
-          weight={specificWeight?.weight ?? 400}
-          lineHeight={lineHeight}
-          letterSpacing={letterSpacing}
-          previewText={previewText}
-          previewWidth={previewWidth}
-          fontSize={fontSize}
-          isLoaded={isLoaded}
-          isFailed={isFailed}
-          weights={font.weights}
-          variable={font.variable}
-          hasItalic={hasItalic}
-          showItalics={showItalics}
-        />
-      )}
+        <div className="flex items-center gap-2">
+          {hasItalic && (
+            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
+              Italic
+            </span>
+          )}
+          <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
+            {formatWeights(font.weights, font.variable)}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
