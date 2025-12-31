@@ -295,23 +295,6 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                 <label className="flex items-center gap-2 cursor-pointer">
                   <button
                     role="switch"
-                    aria-checked={showAllWeights}
-                    onClick={() => setShowAllWeights(!showAllWeights)}
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                      showAllWeights ? "bg-neutral-900" : "bg-neutral-300"
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        showAllWeights ? "translate-x-4" : "translate-x-0.5"
-                      }`}
-                    />
-                  </button>
-                  <span className="text-xs text-neutral-500">All Weights</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <button
-                    role="switch"
                     aria-checked={showItalics}
                     onClick={() => setShowItalics(!showItalics)}
                     className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
@@ -327,8 +310,13 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                   <span className="text-xs text-neutral-500">Italics</span>
                 </label>
               </div>
-              <div className="flex items-center gap-3 mb-6">
-                <span className="text-xs text-neutral-500 w-20">Weight</span>
+              {/* Sliders grid: label | slider | optional toggle */}
+              <div
+                className="grid gap-x-3 gap-y-6 mb-8 items-center"
+                style={{ gridTemplateColumns: "5rem 1fr auto" }}
+              >
+                {/* Weight row */}
+                <span className="text-xs text-neutral-500">Weight</span>
                 <Slider
                   value={selectedWeight}
                   onChange={setSelectedWeight}
@@ -348,12 +336,28 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                   ]}
                   size="sm"
                   color="dark"
-                  className="flex-1"
                   styles={{ markLabel: { fontSize: "12px" } }}
                 />
-              </div>
-              <div className="flex items-center gap-3 mb-6">
-                <span className="text-xs text-neutral-500 w-20">Size</span>
+                <label className="flex items-center gap-2 cursor-pointer ml-3">
+                  <button
+                    role="switch"
+                    aria-checked={showAllWeights}
+                    onClick={() => setShowAllWeights(!showAllWeights)}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                      showAllWeights ? "bg-neutral-900" : "bg-neutral-300"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        showAllWeights ? "translate-x-4" : "translate-x-0.5"
+                      }`}
+                    />
+                  </button>
+                  <span className="text-xs text-neutral-500 whitespace-nowrap">All Weights</span>
+                </label>
+
+                {/* Size row */}
+                <span className="text-xs text-neutral-500">Size</span>
                 <Slider
                   value={fontSize}
                   onChange={setFontSize}
@@ -370,12 +374,12 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                   ]}
                   size="sm"
                   color="dark"
-                  className="flex-1"
                   styles={{ markLabel: { fontSize: "12px" } }}
                 />
-              </div>
-              <div className="flex items-center gap-3 mb-6">
-                <span className="text-xs text-neutral-500 w-20">Tracking</span>
+                <div /> {/* Empty cell for grid alignment */}
+
+                {/* Tracking row */}
+                <span className="text-xs text-neutral-500">Tracking</span>
                 <Slider
                   value={letterSpacing}
                   onChange={setLetterSpacing}
@@ -391,14 +395,12 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                   ]}
                   size="sm"
                   color="dark"
-                  className="flex-1"
                   styles={{ markLabel: { fontSize: "12px" } }}
                 />
-              </div>
-              <div className="flex items-center gap-3 mb-8">
-                <span className="text-xs text-neutral-500 w-20">
-                  Line Height
-                </span>
+                <div /> {/* Empty cell for grid alignment */}
+
+                {/* Line Height row */}
+                <span className="text-xs text-neutral-500">Line Height</span>
                 <Slider
                   value={lineHeight}
                   onChange={setLineHeight}
@@ -415,9 +417,9 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                   ]}
                   size="sm"
                   color="dark"
-                  className="flex-1"
                   styles={{ markLabel: { fontSize: "12px" } }}
                 />
+                <div /> {/* Empty cell for grid alignment */}
               </div>
               <textarea
                 value={previewText}

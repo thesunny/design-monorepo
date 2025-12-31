@@ -88,7 +88,7 @@ export function FavoritesColumn({
           No favorites yet. Click the star on a font to add it.
         </p>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-2">
           {groupedFavorites.map((group) => (
             <GroupedFavoriteItem
               key={group.fontId}
@@ -143,7 +143,7 @@ function GroupedFavoriteItem({
   };
 
   return (
-    <div className="border border-neutral-200 rounded-lg px-8 py-4 overflow-hidden">
+    <div className="border border-neutral-200 rounded-lg px-4 py-4 overflow-hidden">
       <div className="space-y-2">
         {group.weights.map((weightData) => (
           <FontWeightRow
