@@ -1,10 +1,11 @@
 "use client";
 
+import { useMemo } from "react";
+import { Textfit } from "react-textfit";
 import { IconStarFilled } from "@tabler/icons-react";
 import { useMutation } from "convex/react";
 import { api } from "@repo/convex/convex/_generated/api";
 import type { EnrichedCategory } from "../data/types";
-import { HeadingPreviewContent } from "./PageClient";
 
 type Favorite = {
   _id: string;
@@ -15,6 +16,13 @@ type Favorite = {
   letterSpacing: number;
   type?: "heading" | "paragraph" | "code";
   createdAt: number;
+};
+
+// Group favorites by fontId
+type GroupedFavorite = {
+  fontId: string;
+  fontName: string;
+  weights: { weight: number; lineHeight: number; letterSpacing: number; _id: string }[];
 };
 
 type FavoritesColumnProps = {
@@ -36,21 +44,58 @@ export function FavoritesColumn({
   fontSize,
   fontCategories,
 }: FavoritesColumnProps) {
+  // Group favorites by fontId
+  const groupedFavorites = useMemo(() => {
+    if (!favorites) return [];
+
+    const groups = new Map<string, GroupedFavorite>();
+
+    for (const fav of favorites) {
+      const existing = groups.get(fav.fontId);
+      if (existing) {
+        existing.weights.push({
+          weight: fav.weight,
+          lineHeight: fav.lineHeight,
+          letterSpacing: fav.letterSpacing,
+          _id: fav._id,
+        });
+      } else {
+        groups.set(fav.fontId, {
+          fontId: fav.fontId,
+          fontName: fav.fontName,
+          weights: [{
+            weight: fav.weight,
+            lineHeight: fav.lineHeight,
+            letterSpacing: fav.letterSpacing,
+            _id: fav._id,
+          }],
+        });
+      }
+    }
+
+    // Sort weights within each group
+    for (const group of groups.values()) {
+      group.weights.sort((a, b) => a.weight - b.weight);
+    }
+
+    return Array.from(groups.values());
+  }, [favorites]);
+
   return (
     <div className="w-[480px] flex-shrink-0 overflow-y-auto p-8">
       <h2 className="text-lg font-semibold text-neutral-800 mb-4">Favorites</h2>
-      {!favorites || favorites.length === 0 ? (
+      {groupedFavorites.length === 0 ? (
         <p className="text-neutral-500 text-sm">
           No favorites yet. Click the star on a font to add it.
         </p>
       ) : (
-        <div className="space-y-2">
-          {favorites.map((fav) => (
-            <FavoriteItem
-              key={fav._id}
-              favorite={fav}
-              isLoaded={loadedFonts.has(fav.fontId)}
-              isFailed={failedFonts.has(fav.fontId)}
+        <div className="space-y-4">
+          {groupedFavorites.map((group) => (
+            <GroupedFavoriteItem
+              key={group.fontId}
+              group={group}
+              isLoaded={loadedFonts.has(group.fontId)}
+              isFailed={failedFonts.has(group.fontId)}
               previewText={previewText}
               previewWidth={previewWidth}
               fontSize={fontSize}
@@ -63,8 +108,8 @@ export function FavoritesColumn({
   );
 }
 
-function FavoriteItem({
-  favorite,
+function GroupedFavoriteItem({
+  group,
   isLoaded,
   isFailed,
   previewText,
@@ -72,7 +117,7 @@ function FavoriteItem({
   fontSize,
   fontCategories,
 }: {
-  favorite: Favorite;
+  group: GroupedFavorite;
   isLoaded: boolean;
   isFailed?: boolean;
   previewText: string;
@@ -81,74 +126,108 @@ function FavoriteItem({
   fontCategories: EnrichedCategory[];
 }) {
   const removeFavorite = useMutation(api.favorites.removeFavorite);
-  const type = favorite.type ?? "heading";
 
   // Look up font data from fontCategories
   const fontData = fontCategories
     .flatMap((cat) => cat.subcategories)
     .flatMap((sub) => sub.fonts)
-    .find((f) => f.id === favorite.fontId);
+    .find((f) => f.id === group.fontId);
 
-  const handleRemove = async () => {
+  const handleRemoveWeight = async (weightData: { weight: number; lineHeight: number; letterSpacing: number }) => {
     await removeFavorite({
-      fontId: favorite.fontId,
-      weight: favorite.weight,
-      lineHeight: favorite.lineHeight,
-      letterSpacing: favorite.letterSpacing,
-      type,
+      fontId: group.fontId,
+      weight: weightData.weight,
+      lineHeight: weightData.lineHeight,
+      letterSpacing: weightData.letterSpacing,
+      type: "heading",
     });
   };
 
-  // Render based on type
-  if (type === "heading") {
-    return (
-      <div className="border border-neutral-200 rounded-lg px-8 py-4 relative overflow-hidden">
-        <button
-          onClick={handleRemove}
-          className="absolute top-3 right-3 p-1 rounded hover:bg-neutral-100 transition-colors"
-          title="Remove from favorites"
-        >
-          <IconStarFilled size={18} className="text-yellow-500" />
-        </button>
-        <HeadingPreviewContent
-          fontName={favorite.fontName}
-          weight={favorite.weight}
-          lineHeight={favorite.lineHeight}
-          letterSpacing={favorite.letterSpacing}
-          previewText={previewText}
-          previewWidth={previewWidth}
-          fontSize={fontSize}
-          isLoaded={isLoaded}
-          isFailed={isFailed}
-          weights={fontData?.weights}
-          variable={fontData?.variable}
-          hasItalic={fontData?.styles.includes("italic")}
-        />
-      </div>
-    );
-  }
+  // Convert newlines to <br> elements
+  const renderText = (text: string) => {
+    const lines = text.split("\n");
+    return lines.map((line, i) => (
+      <span key={i}>
+        {line}
+        {i < lines.length - 1 && <br />}
+      </span>
+    ));
+  };
 
-  // Placeholder for paragraph and code types (to be implemented later)
   return (
-    <div className="border border-neutral-200 rounded-lg px-8 py-4 relative overflow-hidden">
-      <button
-        onClick={handleRemove}
-        className="absolute top-3 right-3 p-1 rounded hover:bg-neutral-100 transition-colors"
-        title="Remove from favorites"
-      >
-        <IconStarFilled size={18} className="text-yellow-500" />
-      </button>
-      <p
-        className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-30"}`}
-        style={{
-          fontFamily: `"${favorite.fontName}", sans-serif`,
-          fontWeight: favorite.weight,
-          lineHeight: favorite.lineHeight,
-          letterSpacing: `${favorite.letterSpacing}em`,
-        }}
-      >
-        {favorite.fontName} ({type})
-      </p>
+    <div className="border border-neutral-200 rounded-lg px-8 py-4 overflow-hidden">
+      <div className="space-y-2">
+        {group.weights.map((weightData) => (
+          <div key={weightData._id} className="flex items-center gap-3">
+            <button
+              onClick={() => handleRemoveWeight(weightData)}
+              className="p-1 rounded hover:bg-neutral-100 transition-colors flex-shrink-0"
+              title="Remove from favorites"
+            >
+              <IconStarFilled size={16} className="text-yellow-500" />
+            </button>
+            <div className="overflow-hidden" style={{ width: previewWidth }}>
+              {isLoaded ? (
+                <Textfit
+                  key={`${group.fontName}-${weightData.weight}`}
+                  mode="single"
+                  max={200}
+                  style={{
+                    fontFamily: `"${group.fontName}", sans-serif`,
+                    fontWeight: weightData.weight,
+                    lineHeight: weightData.lineHeight,
+                    letterSpacing: `${weightData.letterSpacing}em`,
+                  }}
+                >
+                  {renderText(previewText)}
+                </Textfit>
+              ) : (
+                <div
+                  className="opacity-30 truncate"
+                  style={{
+                    fontFamily: `"${group.fontName}", sans-serif`,
+                    fontWeight: weightData.weight,
+                    lineHeight: weightData.lineHeight,
+                    letterSpacing: `${weightData.letterSpacing}em`,
+                    fontSize,
+                  }}
+                >
+                  {renderText(previewText)}
+                </div>
+              )}
+            </div>
+            <span className={`text-xs w-8 text-right flex-shrink-0 ${isFailed ? "text-red-400" : "text-neutral-400"}`}>
+              {weightData.weight}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-100">
+        <div className="flex items-center gap-2">
+          <span className={`text-sm ${isFailed ? "text-red-400" : "text-neutral-400"}`}>
+            {group.fontName}
+          </span>
+          {isFailed && (
+            <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-600 rounded">
+              Not Found
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {fontData?.styles.includes("italic") && (
+            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
+              Italic
+            </span>
+          )}
+          {fontData && (
+            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
+              {fontData.variable && fontData.weights.length > 1
+                ? `${Math.min(...fontData.weights)} - ${Math.max(...fontData.weights)}`
+                : fontData.weights.join(" ")}
+            </span>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

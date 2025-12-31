@@ -601,23 +601,29 @@ function FontPreview({
     ? getAllAvailableWeights(font.weights)
     : [];
 
-  // Check if this font with current settings is favorited as heading
-  const currentWeight = showAllWeights ? selectedWeight : (getClosestWeight(font.weights, selectedWeight).weight);
-  const isFavorited = favorites?.some(
-    (fav) =>
-      fav.fontId === font.id &&
-      fav.weight === currentWeight &&
-      fav.lineHeight === lineHeight &&
-      fav.letterSpacing === letterSpacing &&
-      (fav.type === "heading" || fav.type === undefined)
-  ) ?? false;
+  // For single weight view: get the closest weight to selected
+  const singleWeight = !showAllWeights
+    ? getClosestWeight(font.weights, selectedWeight).weight
+    : null;
 
-  const handleStarClick = async (e: React.MouseEvent) => {
+  // Check if a specific weight is favorited
+  const isWeightFavorited = (weight: number) =>
+    favorites?.some(
+      (fav) =>
+        fav.fontId === font.id &&
+        fav.weight === weight &&
+        fav.lineHeight === lineHeight &&
+        fav.letterSpacing === letterSpacing &&
+        (fav.type === "heading" || fav.type === undefined)
+    ) ?? false;
+
+  // Handle star click for a specific weight
+  const handleStarClick = async (e: React.MouseEvent, weight: number) => {
     e.stopPropagation();
-    if (isFavorited) {
+    if (isWeightFavorited(weight)) {
       await removeFavorite({
         fontId: font.id,
-        weight: currentWeight,
+        weight,
         lineHeight,
         letterSpacing,
         type: "heading",
@@ -626,7 +632,7 @@ function FontPreview({
       await addFavorite({
         fontId: font.id,
         fontName: font.name,
-        weight: currentWeight,
+        weight,
         lineHeight,
         letterSpacing,
         type: "heading",
@@ -651,6 +657,7 @@ function FontPreview({
     : null;
 
   const isInexactMatch = specificWeight && !specificWeight.isExact;
+  const isSingleWeightFavorited = singleWeight !== null && isWeightFavorited(singleWeight);
 
   // Check if italic is available
   const hasItalic = font.styles.includes("italic");
@@ -662,13 +669,13 @@ function FontPreview({
         isInexactMatch ? "bg-neutral-100" : ""
       }`}
     >
-      {isSignedIn && (
+      {isSignedIn && !showAllWeights && singleWeight !== null && (
         <button
-          onClick={handleStarClick}
+          onClick={(e) => handleStarClick(e, singleWeight)}
           className="absolute top-3 right-3 p-1 rounded hover:bg-neutral-200 transition-colors"
-          title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+          title={isSingleWeightFavorited ? "Remove from favorites" : "Add to favorites"}
         >
-          {isFavorited ? (
+          {isSingleWeightFavorited ? (
             <IconStarFilled size={18} className="text-yellow-500" />
           ) : (
             <IconStar size={18} className="text-neutral-400" />
@@ -677,46 +684,62 @@ function FontPreview({
       )}
       {showAllWeights && displayWeights.length > 0 ? (
         <div className="space-y-2">
-          {displayWeights.map((weight) => (
-            <div key={weight} className="flex items-center gap-3">
-              <div className="overflow-hidden" style={{ width: previewWidth }}>
-                {isLoaded ? (
-                  <Textfit
-                    key={`${font.name}-${weight}-${showItalics}`}
-                    mode="single"
-                    max={200}
-                    className={italicUnavailable ? "opacity-30" : ""}
-                    style={{
-                      fontFamily: `"${font.name}", sans-serif`,
-                      fontWeight: weight,
-                      fontStyle: showItalics && hasItalic ? "italic" : "normal",
-                      lineHeight,
-                      letterSpacing: `${letterSpacing}em`,
-                    }}
+          {displayWeights.map((weight) => {
+            const weightFavorited = isWeightFavorited(weight);
+            return (
+              <div key={weight} className="flex items-center gap-3">
+                {isSignedIn && (
+                  <button
+                    onClick={(e) => handleStarClick(e, weight)}
+                    className="p-1 rounded hover:bg-neutral-200 transition-colors flex-shrink-0"
+                    title={weightFavorited ? "Remove from favorites" : "Add to favorites"}
                   >
-                    {renderText(previewText)}
-                  </Textfit>
-                ) : (
-                  <div
-                    className="opacity-30 truncate"
-                    style={{
-                      fontFamily: `"${font.name}", sans-serif`,
-                      fontWeight: weight,
-                      fontStyle: showItalics && hasItalic ? "italic" : "normal",
-                      lineHeight,
-                      letterSpacing: `${letterSpacing}em`,
-                      fontSize,
-                    }}
-                  >
-                    {renderText(previewText)}
-                  </div>
+                    {weightFavorited ? (
+                      <IconStarFilled size={16} className="text-yellow-500" />
+                    ) : (
+                      <IconStar size={16} className="text-neutral-400" />
+                    )}
+                  </button>
                 )}
+                <div className="overflow-hidden" style={{ width: previewWidth }}>
+                  {isLoaded ? (
+                    <Textfit
+                      key={`${font.name}-${weight}-${showItalics}`}
+                      mode="single"
+                      max={200}
+                      className={italicUnavailable ? "opacity-30" : ""}
+                      style={{
+                        fontFamily: `"${font.name}", sans-serif`,
+                        fontWeight: weight,
+                        fontStyle: showItalics && hasItalic ? "italic" : "normal",
+                        lineHeight,
+                        letterSpacing: `${letterSpacing}em`,
+                      }}
+                    >
+                      {renderText(previewText)}
+                    </Textfit>
+                  ) : (
+                    <div
+                      className="opacity-30 truncate"
+                      style={{
+                        fontFamily: `"${font.name}", sans-serif`,
+                        fontWeight: weight,
+                        fontStyle: showItalics && hasItalic ? "italic" : "normal",
+                        lineHeight,
+                        letterSpacing: `${letterSpacing}em`,
+                        fontSize,
+                      }}
+                    >
+                      {renderText(previewText)}
+                    </div>
+                  )}
+                </div>
+                <span className={`text-xs w-8 text-right ${isFailed ? "text-red-400" : "text-neutral-400"}`}>
+                  {weight}
+                </span>
               </div>
-              <span className={`text-xs w-8 text-right ${isFailed ? "text-red-400" : "text-neutral-400"}`}>
-                {weight}
-              </span>
-            </div>
-          ))}
+            );
+          })}
           <div className="flex items-center justify-between mt-2">
             <div className="flex items-center gap-2">
               <span className={`text-sm ${isFailed ? "text-red-400" : "text-neutral-400"}`}>{font.name}</span>
