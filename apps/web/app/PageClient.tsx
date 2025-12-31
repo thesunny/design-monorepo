@@ -240,7 +240,7 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                     onChange={(e) => setSearchInput(e.target.value)}
                     placeholder="Search fonts..."
                     style={{ fontSize: 13 }}
-                    className={`w-48 pl-7 pr-12 py-1.5 border border-neutral-200 rounded focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:border-transparent ${isSearchPending ? "bg-neutral-50" : ""}`}
+                    className={`w-48 pl-7 pr-12 py-1.5 border border-neutral-200 rounded focus:outline-none focus:border-neutral-400 ${isSearchPending ? "bg-neutral-50" : ""}`}
                   />
                   {searchInput ? (
                     <button
@@ -515,7 +515,7 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                   value={previewText}
                   onChange={(e) => setPreviewText(e.target.value)}
                   placeholder="Enter preview text..."
-                  className="w-full px-3 py-1.5 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-300"
+                  className="w-full px-3 py-1.5 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-400"
                 />
                 <div className="grid grid-cols-2 gap-1.5 ml-3">
                   {[
@@ -782,9 +782,8 @@ function ParagraphPreview({
         Typography is the art of arranging type. It makes text legible and
         appealing when displayed.
         <br /><br />
-        Good typography uses <strong>contrast</strong> and <em>spacing</em> to
-        create <u>visual hierarchy</u>. It guides the reader through{" "}
-        <strong>bold</strong> headings and <em>subtle</em> emphasis.
+        Good design uses <strong>contrast</strong> and <em>spacing</em> to
+        guide readers. Learn more at <u>yamfonts.com</u>.
       </NormalizedText>
       <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-100">
         <span className="text-sm text-neutral-500">{font.name}</span>
