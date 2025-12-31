@@ -424,13 +424,39 @@ export default function PageClient({ fontCategories }: PageClientProps) {
 
                 {/* Preview Text row */}
                 <span className="text-xs text-neutral-500">Text</span>
-                <input
-                  type="text"
-                  value={previewText}
-                  onChange={(e) => setPreviewText(e.target.value)}
-                  placeholder="Enter preview text..."
-                  className="px-3 py-1.5 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-300"
-                />
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    value={previewText}
+                    onChange={(e) => setPreviewText(e.target.value)}
+                    placeholder="Enter preview text..."
+                    className="w-full px-3 py-1.5 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-300"
+                  />
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { label: "Title", value: "The Quick Brown Fox Jumps" },
+                      { label: "Kerning", value: "AVATAR Hamburgefontsiv" },
+                      { label: "Numbers", value: "0123456789 $€£¥" },
+                      { label: "Alphabet", value: "abcdefghijklmnopqrstuvwxyz" },
+                    ].map(({ label, value }) => {
+                      const isActive = previewText === value;
+                      return (
+                        <button
+                          key={label}
+                          onClick={() => setPreviewText(value)}
+                          className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
+                            isActive
+                              ? "bg-neutral-300 text-neutral-700"
+                              : "bg-neutral-100 hover:bg-neutral-200 text-neutral-600"
+                          }`}
+                          style={{ fontSize: 10 }}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
                 <div /> {/* Empty cell for grid alignment */}
               </div>
             </div>
