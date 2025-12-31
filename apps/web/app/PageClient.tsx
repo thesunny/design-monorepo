@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Slider } from "@mantine/core";
 import { IconHeading, IconAlignLeft, IconCode, IconStar, IconStarFilled } from "@tabler/icons-react";
 import { useAuth } from "@clerk/nextjs";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@repo/convex/convex/_generated/api";
 import type {
-  EnrichedCategory,
-  EnrichedSubcategory,
+  Category,
+  Subcategory,
   Font,
 } from "../data/types";
 import { CategorySidebar } from "./CategorySidebar";
@@ -18,14 +18,15 @@ import { FontWeightRow } from "./FontWeightRow";
 import { NormalizedText } from "./components/NormalizedText";
 
 type PageClientProps = {
-  fontCategories: EnrichedCategory[];
+  fontCategories: Category[];
+  allFonts: Font[];
 };
 
-export default function PageClient({ fontCategories }: PageClientProps) {
+export default function PageClient({ fontCategories, allFonts }: PageClientProps) {
   const [selectedSubcategory, setSelectedSubcategory] =
-    useState<EnrichedSubcategory | null>(fontCategories[0]?.subcategories[0] ?? null);
+    useState<Subcategory | null>(fontCategories[0]?.subcategories[0] ?? null);
   const [hoveredSubcategory, setHoveredSubcategory] =
-    useState<EnrichedSubcategory | null>(null);
+    useState<Subcategory | null>(null);
   const [selectedWeight, setSelectedWeight] = useState(400);
   const [showAllWeights, setShowAllWeights] = useState(false);
   const [showItalics, setShowItalics] = useState(false);
@@ -55,18 +56,44 @@ export default function PageClient({ fontCategories }: PageClientProps) {
   // The subcategory to display: hovered takes priority, then selected
   const displayedSubcategory = hoveredSubcategory || selectedSubcategory;
 
-  // Create a map of all fonts for quick lookup (used for favorites)
-  const fontMap = useMemo(() => {
+  // Create a map of font name -> Font for fast lookup
+  const fontByNameMap = useMemo(() => {
     const map = new Map<string, Font>();
-    for (const category of fontCategories) {
-      for (const subcategory of category.subcategories) {
-        for (const font of subcategory.fonts) {
-          map.set(font.id, font);
-        }
-      }
+    for (const font of allFonts) {
+      map.set(font.name, font);
     }
     return map;
-  }, [fontCategories]);
+  }, [allFonts]);
+
+  // Create a map of font id -> Font for favorites lookup
+  const fontByIdMap = useMemo(() => {
+    const map = new Map<string, Font>();
+    for (const font of allFonts) {
+      map.set(font.id, font);
+    }
+    return map;
+  }, [allFonts]);
+
+  // Get Font objects for a subcategory's font names
+  const getFontsForSubcategory = useCallback(
+    (subcategory: Subcategory): Font[] => {
+      const fonts: Font[] = [];
+      for (const fontName of subcategory.fonts) {
+        const font = fontByNameMap.get(fontName);
+        if (font) {
+          fonts.push(font);
+        }
+      }
+      return fonts;
+    },
+    [fontByNameMap]
+  );
+
+  // Get fonts for the displayed subcategory
+  const displayedFonts = useMemo(() => {
+    if (!displayedSubcategory) return [];
+    return getFontsForSubcategory(displayedSubcategory);
+  }, [displayedSubcategory, getFontsForSubcategory]);
 
   // Compute all fonts that need to be loaded (category + favorites)
   const fontsToLoad = useMemo(() => {
@@ -74,12 +101,10 @@ export default function PageClient({ fontCategories }: PageClientProps) {
     const seenIds = new Set<string>();
 
     // Add fonts from displayed subcategory
-    if (displayedSubcategory) {
-      for (const font of displayedSubcategory.fonts) {
-        if (!seenIds.has(font.id)) {
-          seenIds.add(font.id);
-          fonts.push(font);
-        }
+    for (const font of displayedFonts) {
+      if (!seenIds.has(font.id)) {
+        seenIds.add(font.id);
+        fonts.push(font);
       }
     }
 
@@ -87,7 +112,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
     if (favorites) {
       for (const fav of favorites) {
         if (!seenIds.has(fav.fontId)) {
-          const font = fontMap.get(fav.fontId);
+          const font = fontByIdMap.get(fav.fontId);
           if (font) {
             seenIds.add(fav.fontId);
             fonts.push(font);
@@ -97,13 +122,13 @@ export default function PageClient({ fontCategories }: PageClientProps) {
     }
 
     return fonts;
-  }, [displayedSubcategory, favorites, fontMap]);
+  }, [displayedFonts, favorites, fontByIdMap]);
 
   // Load fonts using the optimized hook (one link per font)
   const { failedFonts } = useFontLoader(fontsToLoad);
 
   // Filter fonts based on active filters
-  const filteredFonts = displayedSubcategory?.fonts.filter((font) => {
+  const filteredFonts = displayedFonts.filter((font) => {
     if (filterBold) {
       const hasNormal = font.weights.some((w) => w >= 400 && w <= 500);
       const hasBold = font.weights.some((w) => w >= 600);
@@ -112,7 +137,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
     if (filterItalic && !font.styles.includes("italic")) return false;
     if (filterVariable && !font.variable) return false;
     return true;
-  }) ?? [];
+  });
 
   return (
     <main className="flex h-screen bg-white">
@@ -465,7 +490,7 @@ export default function PageClient({ fontCategories }: PageClientProps) {
         failedFonts={failedFonts}
         previewText={previewText}
         fontSize={FAVORITES_FONT_SIZE}
-        fontCategories={fontCategories}
+        fontByIdMap={fontByIdMap}
       />
     </main>
   );

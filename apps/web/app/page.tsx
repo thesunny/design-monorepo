@@ -1,12 +1,7 @@
 import { fontCategories } from "../data/fontCategories";
 import { googleFontsMetadata } from "../data/googleFontsMetadata";
-import type { EnrichedCategory, Font, FamilyMetadata } from "../data/types";
+import type { Font, FamilyMetadata } from "../data/types";
 import PageClient from "./PageClient";
-
-// Create a lookup map for fast font metadata access
-const fontMetadataMap = new Map<string, FamilyMetadata>(
-  googleFontsMetadata.familyMetadataList.map((font) => [font.family, font])
-);
 
 // Helper to extract weights from FamilyMetadata.fonts record
 function extractWeights(fonts: Record<string, unknown>): number[] {
@@ -44,17 +39,11 @@ function createFontId(name: string): string {
   return name.toLowerCase().replace(/\s+/g, "-");
 }
 
-// Process a font name into a full Font object
-function processFont(fontName: string): Font | null {
-  const metadata = fontMetadataMap.get(fontName);
-  if (!metadata) {
-    console.warn(`Font "${fontName}" not found in Google Fonts metadata`);
-    return null;
-  }
-
+// Process FamilyMetadata into a Font object
+function processFontMetadata(metadata: FamilyMetadata): Font {
   return {
-    id: createFontId(fontName),
-    name: fontName,
+    id: createFontId(metadata.family),
+    name: metadata.family,
     weights: extractWeights(metadata.fonts),
     styles: extractStyles(metadata.fonts),
     variable: isVariable(metadata.axes),
@@ -62,19 +51,9 @@ function processFont(fontName: string): Font | null {
   };
 }
 
-// Build enriched categories with full font data
-const enrichedFontCategories: EnrichedCategory[] = fontCategories.map((category) => ({
-  id: category.id,
-  name: category.name,
-  subcategories: category.subcategories.map((subcategory) => ({
-    id: subcategory.id,
-    name: subcategory.name,
-    fonts: subcategory.fonts
-      .map(processFont)
-      .filter((font): font is Font => font !== null),
-  })),
-}));
+// Process all fonts from Google Fonts metadata
+const allFonts: Font[] = googleFontsMetadata.familyMetadataList.map(processFontMetadata);
 
 export default function Page() {
-  return <PageClient fontCategories={enrichedFontCategories} />;
+  return <PageClient fontCategories={fontCategories} allFonts={allFonts} />;
 }

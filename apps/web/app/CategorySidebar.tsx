@@ -6,13 +6,13 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
-import type { EnrichedCategory, EnrichedSubcategory } from "../data/types";
+import type { Category, Subcategory } from "../data/types";
 
 type CategorySidebarProps = {
-  fontCategories: EnrichedCategory[];
-  selectedSubcategory: EnrichedSubcategory | null;
-  onSelectSubcategory: (subcategory: EnrichedSubcategory) => void;
-  onHoverSubcategory: (subcategory: EnrichedSubcategory | null) => void;
+  fontCategories: Category[];
+  selectedSubcategory: Subcategory | null;
+  onSelectSubcategory: (subcategory: Subcategory) => void;
+  onHoverSubcategory: (subcategory: Subcategory | null) => void;
 };
 
 export function CategorySidebar({

@@ -1,3 +1,6 @@
+// Re-export raw category types for convenience
+export type { Category, Subcategory } from "./fontCategories";
+
 export type AxisFallback = {
   name: string;
   value: number;

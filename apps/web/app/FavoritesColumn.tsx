@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@repo/convex/convex/_generated/api";
-import type { EnrichedCategory } from "../data/types";
+import type { Font } from "../data/types";
 import { FontWeightRow } from "./FontWeightRow";
 
 type Favorite = {
@@ -29,7 +29,7 @@ type FavoritesColumnProps = {
   failedFonts: Set<string>;
   previewText: string;
   fontSize: number;
-  fontCategories: EnrichedCategory[];
+  fontByIdMap: Map<string, Font>;
 };
 
 export function FavoritesColumn({
@@ -37,7 +37,7 @@ export function FavoritesColumn({
   failedFonts,
   previewText,
   fontSize,
-  fontCategories,
+  fontByIdMap,
 }: FavoritesColumnProps) {
   // Group favorites by fontId
   const groupedFavorites = useMemo(() => {
@@ -97,7 +97,7 @@ export function FavoritesColumn({
                 isFailed={failedFonts.has(group.fontId)}
                 previewText={previewText}
                 fontSize={fontSize}
-                fontCategories={fontCategories}
+                fontByIdMap={fontByIdMap}
               />
             ))}
           </div>
@@ -112,21 +112,18 @@ function GroupedFavoriteItem({
   isFailed,
   previewText,
   fontSize,
-  fontCategories,
+  fontByIdMap,
 }: {
   group: GroupedFavorite;
   isFailed?: boolean;
   previewText: string;
   fontSize: number;
-  fontCategories: EnrichedCategory[];
+  fontByIdMap: Map<string, Font>;
 }) {
   const removeFavorite = useMutation(api.favorites.removeFavorite);
 
-  // Look up font data from fontCategories
-  const fontData = fontCategories
-    .flatMap((cat) => cat.subcategories)
-    .flatMap((sub) => sub.fonts)
-    .find((f) => f.id === group.fontId);
+  // Look up font data from the map
+  const fontData = fontByIdMap.get(group.fontId);
 
   const handleRemoveWeight = (weightData: { weight: number; lineHeight: number; letterSpacing: number }) => {
     removeFavorite({
