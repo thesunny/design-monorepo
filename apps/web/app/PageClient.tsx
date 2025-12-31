@@ -15,6 +15,7 @@ import { CategorySidebar } from "./CategorySidebar";
 import { FavoritesColumn } from "./FavoritesColumn";
 import { useFontLoader } from "./hooks/useFontLoader";
 import { FontWeightRow } from "./FontWeightRow";
+import { NormalizedText } from "./components/NormalizedText";
 
 type PageClientProps = {
   fontCategories: EnrichedCategory[];
@@ -231,7 +232,6 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                     <ParagraphPreview
                       key={font.id}
                       font={font}
-                      isLoaded={loadedFonts.has(font.id)}
                       selectedWeight={selectedWeight}
                       showItalics={showItalics}
                       lineHeight={lineHeight}
@@ -612,9 +612,10 @@ function FontPreview({
   );
 }
 
+const PARAGRAPH_NORMALIZATION_TEXT = "this is a simple sample text that represents average spacing and letter frequency";
+
 function ParagraphPreview({
   font,
-  isLoaded,
   selectedWeight,
   showItalics,
   lineHeight,
@@ -622,7 +623,6 @@ function ParagraphPreview({
   fontSize,
 }: {
   font: Font;
-  isLoaded: boolean;
   selectedWeight: number;
   showItalics: boolean;
   lineHeight: number;
@@ -632,27 +632,25 @@ function ParagraphPreview({
   const { weight } = getClosestWeight(font.weights, selectedWeight);
   const hasItalic = font.styles.includes("italic");
   const italicUnavailable = showItalics && !hasItalic;
+  const fontStyle = showItalics && hasItalic ? "italic" : "normal";
 
   return (
     <div className="border rounded-lg p-4 border-neutral-200">
-      <p
-        className={`leading-relaxed transition-opacity ${
-          !isLoaded || italicUnavailable ? "opacity-30" : "opacity-100"
-        }`}
-        style={{
-          fontFamily: `"${font.name}", sans-serif`,
-          fontWeight: weight,
-          fontStyle: showItalics && hasItalic ? "italic" : "normal",
-          fontSize,
-          lineHeight,
-          letterSpacing: `${letterSpacing}em`,
-        }}
+      <NormalizedText
+        fontFamily={font.name}
+        fontWeight={weight}
+        fontStyle={fontStyle}
+        lineHeight={lineHeight}
+        letterSpacing={letterSpacing}
+        normalizedFontSize={fontSize}
+        normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+        className={italicUnavailable ? "opacity-30" : ""}
       >
         Typography is the art and technique of arranging type to make written
         language legible, readable, and appealing when displayed. The
         arrangement of type involves selecting typefaces, point sizes, line
         lengths, and letter-spacing.
-      </p>
+      </NormalizedText>
       <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-100">
         <span className="text-sm text-neutral-500">{font.name}</span>
         <div className="flex items-center gap-2">
