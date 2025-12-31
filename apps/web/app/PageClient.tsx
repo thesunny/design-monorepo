@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useCallback, useDeferredValue } from "react";
+import { useState, useMemo, useCallback, useDeferredValue, useRef, useEffect } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { Slider } from "@mantine/core";
 import { IconHeading, IconAlignLeft, IconCode, IconStar, IconStarFilled, IconSearch, IconX } from "@tabler/icons-react";
 import { useAuth } from "@clerk/nextjs";
@@ -45,6 +46,19 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
   const deferredSearchQuery = useDeferredValue(searchInput);
   const [headingsFontSize, setHeadingsFontSize] = useState(36);
   const [textFontSize, setTextFontSize] = useState(16);
+
+  // Search input ref for keyboard shortcut
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  useHotkeys("mod+k", (e) => {
+    e.preventDefault();
+    searchInputRef.current?.focus();
+  });
+
+  // Detect platform for keyboard shortcut display
+  const [isMac, setIsMac] = useState(true);
+  useEffect(() => {
+    setIsMac(navigator.platform.toUpperCase().indexOf("MAC") >= 0);
+  }, []);
 
   // Fixed font size for favorites column (not affected by slider)
   const FAVORITES_FONT_SIZE = 24;
@@ -220,20 +234,25 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                 <div className="relative">
                   <IconSearch size={14} className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${isSearchPending ? "text-neutral-300" : "text-neutral-400"}`} />
                   <input
+                    ref={searchInputRef}
                     type="text"
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                     placeholder="Search fonts..."
                     style={{ fontSize: 13 }}
-                    className={`w-48 pl-7 pr-6 py-1.5 border border-neutral-200 rounded focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:border-transparent ${isSearchPending ? "bg-neutral-50" : ""}`}
+                    className={`w-48 pl-7 pr-12 py-1.5 border border-neutral-200 rounded focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:border-transparent ${isSearchPending ? "bg-neutral-50" : ""}`}
                   />
-                  {searchInput && (
+                  {searchInput ? (
                     <button
                       onClick={() => setSearchInput("")}
                       className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
                     >
                       <IconX size={14} />
                     </button>
+                  ) : (
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[13px] text-neutral-400 pointer-events-none">
+                      {isMac ? "⌘K" : "Ctrl+K"}
+                    </span>
                   )}
                 </div>
               </div>
