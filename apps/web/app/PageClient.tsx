@@ -149,7 +149,7 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
       />
 
       {/* Column 2: Font List */}
-      <div className="flex-1 min-w-0 border-r border-neutral-200 flex flex-col">
+      <div className={`flex-1 min-w-0 border-r border-neutral-200 flex flex-col transition-opacity duration-150 ${hoveredSubcategory && hoveredSubcategory !== selectedSubcategory ? 'opacity-50' : ''}`}>
         {displayedSubcategory ? (
           <>
             {/* Tabs and Filters */}
