@@ -41,6 +41,10 @@ export default function PageClient({ fontCategories }: PageClientProps) {
   const [textFontSize, setTextFontSize] = useState(16);
   const [previewWidth, setPreviewWidth] = useState(640);
 
+  // Fixed font size for favorites column (not affected by slider)
+  const FAVORITES_FONT_SIZE = 24;
+  const [favoritesPreviewWidth, setFavoritesPreviewWidth] = useState(400);
+
   // Use headings font size for headings tab, text font size for paragraphs/code
   const fontSize = previewMode === "headings" ? headingsFontSize : textFontSize;
   const setFontSize = previewMode === "headings" ? setHeadingsFontSize : setTextFontSize;
@@ -120,6 +124,17 @@ export default function PageClient({ fontCategories }: PageClientProps) {
       setPreviewWidth(metrics.width);
     }
   }, [previewText, fontSize]);
+
+  // Measure preview width for favorites column using fixed 24px Arial
+  useEffect(() => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      ctx.font = `400 ${FAVORITES_FONT_SIZE}px Arial`;
+      const metrics = ctx.measureText(previewText);
+      setFavoritesPreviewWidth(metrics.width);
+    }
+  }, [previewText, FAVORITES_FONT_SIZE]);
 
   return (
     <main className="flex h-screen bg-white">
@@ -425,8 +440,8 @@ export default function PageClient({ fontCategories }: PageClientProps) {
         loadedFonts={loadedFonts}
         failedFonts={failedFonts}
         previewText={previewText}
-        previewWidth={previewWidth}
-        fontSize={headingsFontSize}
+        previewWidth={favoritesPreviewWidth}
+        fontSize={FAVORITES_FONT_SIZE}
         fontCategories={fontCategories}
       />
     </main>
