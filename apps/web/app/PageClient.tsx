@@ -290,29 +290,30 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                 </div>
               )}
             </div>
+            {/* Preview Controls */}
             <div className="bg-white border-t border-neutral-200 px-4 py-3">
-              <div className="flex items-center gap-6 mb-3">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <button
-                    role="switch"
-                    aria-checked={showItalics}
-                    onClick={() => setShowItalics(!showItalics)}
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                      showItalics ? "bg-neutral-900" : "bg-neutral-300"
+              {/* Italics toggle */}
+              <div className="flex items-center gap-3 mt-3 mb-4">
+                <span className="text-xs text-neutral-500 w-20">Italics</span>
+                <button
+                  role="switch"
+                  aria-checked={showItalics}
+                  onClick={() => setShowItalics(!showItalics)}
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                    showItalics ? "bg-neutral-900" : "bg-neutral-300"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      showItalics ? "translate-x-4" : "translate-x-0.5"
                     }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        showItalics ? "translate-x-4" : "translate-x-0.5"
-                      }`}
-                    />
-                  </button>
-                  <span className="text-xs text-neutral-500">Italics</span>
-                </label>
+                  />
+                </button>
               </div>
-              {/* Sliders grid: label | slider | optional toggle */}
+
+              {/* Controls grid: label | control | optional toggle */}
               <div
-                className="grid gap-x-3 gap-y-6 mb-8 items-center"
+                className="grid gap-x-3 gap-y-6 mb-2 items-center"
                 style={{ gridTemplateColumns: "5rem 1fr auto" }}
               >
                 {/* Weight row */}
@@ -420,14 +421,18 @@ export default function PageClient({ fontCategories }: PageClientProps) {
                   styles={{ markLabel: { fontSize: "12px" } }}
                 />
                 <div /> {/* Empty cell for grid alignment */}
+
+                {/* Preview Text row */}
+                <span className="text-xs text-neutral-500">Text</span>
+                <input
+                  type="text"
+                  value={previewText}
+                  onChange={(e) => setPreviewText(e.target.value)}
+                  placeholder="Enter preview text..."
+                  className="px-3 py-1.5 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-300"
+                />
+                <div /> {/* Empty cell for grid alignment */}
               </div>
-              <textarea
-                value={previewText}
-                onChange={(e) => setPreviewText(e.target.value)}
-                placeholder="Enter preview text..."
-                className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-neutral-300"
-                rows={2}
-              />
             </div>
           </>
         ) : (
