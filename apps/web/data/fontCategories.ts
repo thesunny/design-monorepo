@@ -399,7 +399,16 @@ const usedFonts = new Set<string>(
   )
 );
 
-// Group fonts by category and sort by popularity (lower number = more popular)
+// Create a map of font name to popularity for sorting
+const fontPopularity = new Map<string, number>(
+  googleFontsMetadata.familyMetadataList.map((font) => [font.family, font.popularity])
+);
+
+// Sort fonts by popularity (lower number = more popular)
+const sortByPopularity = (fonts: string[]): string[] =>
+  [...fonts].sort((a, b) => (fontPopularity.get(a) ?? Infinity) - (fontPopularity.get(b) ?? Infinity));
+
+// Group fonts by category and sort by popularity
 const fontsByCategory = new Map<string, string[]>();
 const sortedFonts = [...googleFontsMetadata.familyMetadataList].sort(
   (a, b) => a.popularity - b.popularity
@@ -417,11 +426,14 @@ const getMoreFonts = (categoryName: string): string[] => {
   return fonts.filter((font) => !usedFonts.has(font));
 };
 
-// Extend baseFontCategories with "More..." subcategory for each category
+// Extend baseFontCategories with "More..." subcategory and sort all fonts by popularity
 export const fontCategories: Category[] = baseFontCategories.map((category) => ({
   ...category,
   subcategories: [
-    ...category.subcategories,
+    ...category.subcategories.map((subcategory) => ({
+      ...subcategory,
+      fonts: sortByPopularity(subcategory.fonts),
+    })),
     {
       id: `${category.id}-more`,
       name: "More...",
