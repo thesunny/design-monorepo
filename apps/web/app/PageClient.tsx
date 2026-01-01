@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback, useDeferredValue, useRef, useEffect } f
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Slider } from "@mantine/core";
-import { IconHeading, IconAlignLeft, IconCode, IconStar, IconStarFilled, IconSearch, IconX } from "@tabler/icons-react";
+import { IconHeading, IconAlignLeft, IconStar, IconStarFilled, IconSearch, IconX } from "@tabler/icons-react";
 import { useAuth } from "@clerk/nextjs";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@repo/convex/convex/_generated/api";
@@ -451,11 +451,6 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
     return true;
   });
 
-  // For Code tab: only show monospace fonts
-  const monospaceFonts = filteredFonts.filter(
-    (font) => font.metadata.category === "Monospace"
-  );
-
   return (
     <main className="flex h-screen bg-white">
       <CategorySidebar
@@ -503,21 +498,6 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
               >
                 <IconAlignLeft size={16} className="mr-1.5" />
                 Text
-              </button>
-              <button
-                onClick={() => {
-                  setPreviewMode("code");
-                  updateUrl({ tab: "code" });
-                }}
-                style={{ fontSize: 13 }}
-                className={`px-3 h-full flex items-center font-medium transition-colors cursor-pointer mb-[-1px] border-b-2 ${
-                  previewMode === "code"
-                    ? "text-neutral-900 border-neutral-900"
-                    : "text-neutral-500 hover:text-neutral-700 border-transparent"
-                }`}
-              >
-                <IconCode size={16} className="mr-1.5" />
-                Code
               </button>
               <div className="flex items-center ml-auto mr-4">
                 <div className="relative">
@@ -635,36 +615,6 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                     />
                   ))}
                 </div>
-              )}
-              {previewMode === "code" && (
-                monospaceFonts.length > 0 ? (
-                  <div
-                    className="grid gap-4 p-4"
-                    style={{
-                      gridTemplateColumns:
-                        "repeat(auto-fill, minmax(320px, 1fr))",
-                    }}
-                  >
-                    {monospaceFonts.map((font) => (
-                      <CodePreview
-                        key={font.id}
-                        font={font}
-                        selectedWeight={selectedWeight}
-                        showItalics={showItalics}
-                        lineHeight={lineHeight}
-                        lineHeightAuto={lineHeightAuto}
-                        letterSpacing={letterSpacing}
-                        fontSize={fontSize}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center h-full p-8">
-                    <p className="text-neutral-400 text-lg">
-                      No monospace fonts in this category.
-                    </p>
-                  </div>
-                )
               )}
             </div>
             {/* Preview Controls */}
@@ -1077,115 +1027,6 @@ function FontPreview({
 
 const PARAGRAPH_NORMALIZATION_TEXT = "this is a simple sample text that represents average spacing and letter frequency";
 
-function ParagraphPreview({
-  font,
-  selectedWeight,
-  showItalics,
-  lineHeight,
-  lineHeightAuto,
-  letterSpacing,
-  fontSize,
-}: {
-  font: Font;
-  selectedWeight: number;
-  showItalics: boolean;
-  lineHeight: number;
-  lineHeightAuto: boolean;
-  letterSpacing: number;
-  fontSize: number;
-}) {
-  const { isSignedIn } = useAuth();
-  const favorites = useQuery(api.favorites.getFavorites);
-  const addFavorite = useMutation(api.favorites.addFavorite);
-  const removeFavorite = useMutation(api.favorites.removeFavorite);
-
-  const { weight } = getClosestWeight(font.weights, selectedWeight);
-  const hasItalic = font.styles.includes("italic");
-  const italicUnavailable = showItalics && !hasItalic;
-  const fontStyle = showItalics && hasItalic ? "italic" : "normal";
-  const isItalic = showItalics && hasItalic;
-  const effectiveLineHeight = lineHeightAuto
-    ? getFontLineHeight(font, weight, isItalic)
-    : lineHeight;
-
-  // Check if current font+weight is favorited as a paragraph
-  const isFavorited = favorites?.some(
-    (fav) =>
-      fav.fontId === font.id &&
-      fav.weight === weight &&
-      fav.type === "paragraph"
-  ) ?? false;
-
-  const handleStarClick = () => {
-    if (isFavorited) {
-      removeFavorite({
-        fontId: font.id,
-        weight,
-        lineHeight: 1.4,
-        letterSpacing: 0,
-        type: "paragraph",
-      });
-    } else {
-      addFavorite({
-        fontId: font.id,
-        fontName: font.name,
-        weight,
-        lineHeight: 1.4,
-        letterSpacing: 0,
-        type: "paragraph",
-      });
-    }
-  };
-
-  return (
-    <div className="border rounded-lg p-4 border-neutral-200 relative">
-      {isSignedIn && (
-        <button
-          onClick={handleStarClick}
-          className="absolute top-2 right-2 p-1 rounded hover:bg-neutral-100 transition-colors"
-          title={isFavorited ? "Remove from favorites" : "Add to favorites"}
-        >
-          {isFavorited ? (
-            <IconStarFilled size={16} className="text-yellow-500" />
-          ) : (
-            <IconStar size={16} className="text-neutral-400" />
-          )}
-        </button>
-      )}
-      <NormalizedText
-        fontFamily={font.name}
-        fontWeight={weight}
-        fontStyle={fontStyle}
-        lineHeight={effectiveLineHeight}
-        letterSpacing={letterSpacing}
-        normalizedFontSize={fontSize}
-        normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
-        isMonospace={isMonospaceFont(font)}
-        className={italicUnavailable ? "opacity-30" : ""}
-      >
-        Typography is the art of arranging type. It makes text legible and
-        appealing when displayed.
-        <br /><br />
-        Good design uses <strong>contrast</strong> and <em>spacing</em> to
-        guide readers.
-      </NormalizedText>
-      <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-100">
-        <span className="text-sm text-neutral-500">{font.name}</span>
-        <div className="flex items-center gap-2">
-          {font.styles.includes("italic") && (
-            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-              Italic
-            </span>
-          )}
-          <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-            {formatWeights(font.weights, font.variable)}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function TextPreview({
   font,
   selectedWeight,
@@ -1383,116 +1224,3 @@ const result = fibonacci(10);`}</NormalizedText>
     </div>
   );
 }
-
-function CodePreview({
-  font,
-  selectedWeight,
-  showItalics,
-  lineHeight,
-  lineHeightAuto,
-  letterSpacing,
-  fontSize,
-}: {
-  font: Font;
-  selectedWeight: number;
-  showItalics: boolean;
-  lineHeight: number;
-  lineHeightAuto: boolean;
-  letterSpacing: number;
-  fontSize: number;
-}) {
-  const { isSignedIn } = useAuth();
-  const favorites = useQuery(api.favorites.getFavorites);
-  const addFavorite = useMutation(api.favorites.addFavorite);
-  const removeFavorite = useMutation(api.favorites.removeFavorite);
-
-  const { weight } = getClosestWeight(font.weights, selectedWeight);
-  const hasItalic = font.styles.includes("italic");
-  const italicUnavailable = showItalics && !hasItalic;
-  const fontStyle = showItalics && hasItalic ? "italic" : "normal";
-  const isItalic = showItalics && hasItalic;
-  const effectiveLineHeight = lineHeightAuto
-    ? getFontLineHeight(font, weight, isItalic)
-    : lineHeight;
-
-  // Check if current font+weight is favorited as code
-  const isFavorited = favorites?.some(
-    (fav) =>
-      fav.fontId === font.id &&
-      fav.weight === weight &&
-      fav.type === "code"
-  ) ?? false;
-
-  const handleStarClick = () => {
-    if (isFavorited) {
-      removeFavorite({
-        fontId: font.id,
-        weight,
-        lineHeight: 1.4,
-        letterSpacing: 0,
-        type: "code",
-      });
-    } else {
-      addFavorite({
-        fontId: font.id,
-        fontName: font.name,
-        weight,
-        lineHeight: 1.4,
-        letterSpacing: 0,
-        type: "code",
-      });
-    }
-  };
-
-  return (
-    <div className="border rounded-lg p-4 border-neutral-200 relative">
-      {isSignedIn && (
-        <button
-          onClick={handleStarClick}
-          className="absolute top-2 right-2 p-1 rounded hover:bg-neutral-100 transition-colors"
-          title={isFavorited ? "Remove from favorites" : "Add to favorites"}
-        >
-          {isFavorited ? (
-            <IconStarFilled size={16} className="text-yellow-500" />
-          ) : (
-            <IconStar size={16} className="text-neutral-400" />
-          )}
-        </button>
-      )}
-      <div className="overflow-x-auto">
-        <NormalizedText
-          fontFamily={font.name}
-          fontWeight={weight}
-          fontStyle={fontStyle}
-          lineHeight={effectiveLineHeight}
-          letterSpacing={letterSpacing}
-          normalizedFontSize={fontSize}
-          normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
-          isMonospace={isMonospaceFont(font)}
-          className={italicUnavailable ? "opacity-30" : ""}
-          style={{ display: "block", whiteSpace: "pre" }}
-        >{`function fibonacci(n) {
-  if (n <= 1) return n;
-  return fibonacci(n - 1) + fibonacci(n - 2);
-}
-
-const result = fibonacci(10);
-console.log(result); // 55`}</NormalizedText>
-      </div>
-      <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-100">
-        <span className="text-sm text-neutral-500">{font.name}</span>
-        <div className="flex items-center gap-2">
-          {font.styles.includes("italic") && (
-            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-              Italic
-            </span>
-          )}
-          <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-            {formatWeights(font.weights, font.variable)}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
