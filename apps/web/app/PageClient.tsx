@@ -502,7 +502,7 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                 }`}
               >
                 <IconAlignLeft size={16} className="mr-1.5" />
-                Paragraphs
+                Text
               </button>
               <button
                 onClick={() => {
@@ -621,15 +621,9 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                 </div>
               )}
               {previewMode === "paragraphs" && (
-                <div
-                  className="grid gap-4 p-4"
-                  style={{
-                    gridTemplateColumns:
-                      "repeat(auto-fill, minmax(320px, 1fr))",
-                  }}
-                >
+                <div className="flex flex-col gap-4 p-4">
                   {filteredFonts.map((font) => (
-                    <ParagraphPreview
+                    <TextPreview
                       key={font.id}
                       font={font}
                       selectedWeight={selectedWeight}
@@ -1175,6 +1169,204 @@ function ParagraphPreview({
         Good design uses <strong>contrast</strong> and <em>spacing</em> to
         guide readers.
       </NormalizedText>
+      <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-100">
+        <span className="text-sm text-neutral-500">{font.name}</span>
+        <div className="flex items-center gap-2">
+          {font.styles.includes("italic") && (
+            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
+              Italic
+            </span>
+          )}
+          <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
+            {formatWeights(font.weights, font.variable)}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TextPreview({
+  font,
+  selectedWeight,
+  showItalics,
+  lineHeight,
+  lineHeightAuto,
+  letterSpacing,
+  fontSize,
+}: {
+  font: Font;
+  selectedWeight: number;
+  showItalics: boolean;
+  lineHeight: number;
+  lineHeightAuto: boolean;
+  letterSpacing: number;
+  fontSize: number;
+}) {
+  const { isSignedIn } = useAuth();
+  const favorites = useQuery(api.favorites.getFavorites);
+  const addFavorite = useMutation(api.favorites.addFavorite);
+  const removeFavorite = useMutation(api.favorites.removeFavorite);
+
+  const { weight } = getClosestWeight(font.weights, selectedWeight);
+  const hasItalic = font.styles.includes("italic");
+  const italicUnavailable = showItalics && !hasItalic;
+  const fontStyle = showItalics && hasItalic ? "italic" : "normal";
+  const isItalic = showItalics && hasItalic;
+  const effectiveLineHeight = lineHeightAuto
+    ? getFontLineHeight(font, weight, isItalic)
+    : lineHeight;
+  const isMonospace = isMonospaceFont(font);
+
+  // Check if current font+weight is favorited as a paragraph
+  const isFavorited = favorites?.some(
+    (fav) =>
+      fav.fontId === font.id &&
+      fav.weight === weight &&
+      fav.type === "paragraph"
+  ) ?? false;
+
+  const handleStarClick = () => {
+    if (isFavorited) {
+      removeFavorite({
+        fontId: font.id,
+        weight,
+        lineHeight: 1.4,
+        letterSpacing: 0,
+        type: "paragraph",
+      });
+    } else {
+      addFavorite({
+        fontId: font.id,
+        fontName: font.name,
+        weight,
+        lineHeight: 1.4,
+        letterSpacing: 0,
+        type: "paragraph",
+      });
+    }
+  };
+
+  return (
+    <div className="border rounded-lg p-4 border-neutral-200 relative">
+      {isSignedIn && (
+        <button
+          onClick={handleStarClick}
+          className="absolute top-2 right-2 p-1 rounded hover:bg-neutral-100 transition-colors z-10"
+          title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+        >
+          {isFavorited ? (
+            <IconStarFilled size={16} className="text-yellow-500" />
+          ) : (
+            <IconStar size={16} className="text-neutral-400" />
+          )}
+        </button>
+      )}
+      <div className="flex gap-6">
+        {/* Left: Paragraph preview */}
+        <div className="flex-1 min-w-0">
+          <NormalizedText
+            fontFamily={font.name}
+            fontWeight={weight}
+            fontStyle={fontStyle}
+            lineHeight={effectiveLineHeight}
+            letterSpacing={letterSpacing}
+            normalizedFontSize={fontSize}
+            normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+            isMonospace={isMonospace}
+            className={italicUnavailable ? "opacity-30" : ""}
+          >
+            Typography is the art of arranging type. It makes text legible and
+            appealing when displayed.
+            <br /><br />
+            Good design uses <strong>contrast</strong> and <em>spacing</em> to
+            guide readers.
+          </NormalizedText>
+        </div>
+        {/* Right: Code preview (monospace) or UI sample (non-monospace) */}
+        <div className="flex-1 min-w-0">
+          {isMonospace ? (
+            <div className="overflow-x-auto bg-neutral-50 rounded p-3">
+              <NormalizedText
+                fontFamily={font.name}
+                fontWeight={weight}
+                fontStyle={fontStyle}
+                lineHeight={effectiveLineHeight}
+                letterSpacing={letterSpacing}
+                normalizedFontSize={fontSize}
+                normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+                isMonospace={true}
+                className={italicUnavailable ? "opacity-30" : ""}
+                style={{ display: "block", whiteSpace: "pre" }}
+              >{`function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1);
+}
+
+const result = fibonacci(10);`}</NormalizedText>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div>
+                <label
+                  className={italicUnavailable ? "opacity-30" : ""}
+                  style={{
+                    fontFamily: `"${font.name}", sans-serif`,
+                    fontWeight: weight,
+                    fontStyle,
+                    fontSize: 14,
+                    display: "block",
+                    marginBottom: 4,
+                    color: "#525252",
+                  }}
+                >
+                  Email address
+                </label>
+                <input
+                  type="text"
+                  placeholder="you@example.com"
+                  readOnly
+                  className={`w-full border border-neutral-300 rounded px-3 py-2 ${italicUnavailable ? "opacity-30" : ""}`}
+                  style={{
+                    fontFamily: `"${font.name}", sans-serif`,
+                    fontWeight: weight,
+                    fontStyle,
+                    fontSize: 14,
+                  }}
+                />
+              </div>
+              <div>
+                <label
+                  className={italicUnavailable ? "opacity-30" : ""}
+                  style={{
+                    fontFamily: `"${font.name}", sans-serif`,
+                    fontWeight: weight,
+                    fontStyle,
+                    fontSize: 14,
+                    display: "block",
+                    marginBottom: 4,
+                    color: "#525252",
+                  }}
+                >
+                  Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="Enter password"
+                  readOnly
+                  className={`w-full border border-neutral-300 rounded px-3 py-2 ${italicUnavailable ? "opacity-30" : ""}`}
+                  style={{
+                    fontFamily: `"${font.name}", sans-serif`,
+                    fontWeight: weight,
+                    fontStyle,
+                    fontSize: 14,
+                  }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
       <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-100">
         <span className="text-sm text-neutral-500">{font.name}</span>
         <div className="flex items-center gap-2">
