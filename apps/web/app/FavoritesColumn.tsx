@@ -47,6 +47,7 @@ type FavoritesColumnProps = {
 const PARAGRAPH_PREVIEW_TEXT = "Typography gives language a visual form, shaping how we experience text.";
 const CODE_PREVIEW_TEXT = `const sum = (a, b) => a + b;`;
 const PARAGRAPH_NORMALIZATION_TEXT = "this is a simple sample text that represents average spacing and letter frequency";
+const CODE_NORMALIZATION_TEXT = "0000000000";
 
 export function FavoritesColumn({
   favorites,
@@ -322,8 +323,8 @@ function CodeFavoriteRow({
           fontStyle="normal"
           lineHeight={1.4}
           letterSpacing={0}
-          normalizedFontSize={16}
-          normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+          normalizedFontSize={15}
+          normalizationText={CODE_NORMALIZATION_TEXT}
           style={{ whiteSpace: "nowrap" }}
         >
           {CODE_PREVIEW_TEXT}

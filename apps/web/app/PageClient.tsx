@@ -400,6 +400,11 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
     return true;
   });
 
+  // For Code tab: only show monospace fonts
+  const monospaceFonts = filteredFonts.filter(
+    (font) => font.metadata.category === "Monospace"
+  );
+
   return (
     <main className="flex h-screen bg-white">
       <CategorySidebar
@@ -587,26 +592,34 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                 </div>
               )}
               {previewMode === "code" && (
-                <div
-                  className="grid gap-4 p-4"
-                  style={{
-                    gridTemplateColumns:
-                      "repeat(auto-fill, minmax(320px, 1fr))",
-                  }}
-                >
-                  {filteredFonts.map((font) => (
-                    <CodePreview
-                      key={font.id}
-                      font={font}
-                      selectedWeight={selectedWeight}
-                      showItalics={showItalics}
-                      lineHeight={lineHeight}
-                      lineHeightAuto={lineHeightAuto}
-                      letterSpacing={letterSpacing}
-                      fontSize={fontSize}
-                    />
-                  ))}
-                </div>
+                monospaceFonts.length > 0 ? (
+                  <div
+                    className="grid gap-4 p-4"
+                    style={{
+                      gridTemplateColumns:
+                        "repeat(auto-fill, minmax(320px, 1fr))",
+                    }}
+                  >
+                    {monospaceFonts.map((font) => (
+                      <CodePreview
+                        key={font.id}
+                        font={font}
+                        selectedWeight={selectedWeight}
+                        showItalics={showItalics}
+                        lineHeight={lineHeight}
+                        lineHeightAuto={lineHeightAuto}
+                        letterSpacing={letterSpacing}
+                        fontSize={fontSize}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-full p-8">
+                    <p className="text-neutral-400 text-lg">
+                      No monospace fonts in this category.
+                    </p>
+                  </div>
+                )
               )}
             </div>
             {/* Preview Controls */}
