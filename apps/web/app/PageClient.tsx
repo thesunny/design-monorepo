@@ -1120,7 +1120,7 @@ function ParagraphPreview({
         appealing when displayed.
         <br /><br />
         Good design uses <strong>contrast</strong> and <em>spacing</em> to
-        guide readers. Learn more at <u>yamfonts.com</u>.
+        guide readers.
       </NormalizedText>
       <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-100">
         <span className="text-sm text-neutral-500">{font.name}</span>
