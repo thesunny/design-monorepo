@@ -18,6 +18,7 @@ import { FavoritesColumn } from "./FavoritesColumn";
 import { useFontLoader } from "./hooks/useFontLoader";
 import { FontWeightRow } from "./FontWeightRow";
 import { NormalizedText } from "./components/NormalizedText";
+import { isMonospaceFont } from "./utils";
 
 type PageClientProps = {
   fontCategories: Category[];
@@ -976,6 +977,7 @@ function FontPreview({
             letterSpacing={letterSpacing}
             previewText={previewText}
             fontSize={fontSize}
+            isMonospace={isMonospaceFont(font)}
             isFailed={isFailed}
             showItalics={showItalics}
             hasItalic={hasItalic}
@@ -1114,6 +1116,7 @@ function ParagraphPreview({
         letterSpacing={letterSpacing}
         normalizedFontSize={fontSize}
         normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+        isMonospace={isMonospaceFont(font)}
         className={italicUnavailable ? "opacity-30" : ""}
       >
         Typography is the art of arranging type. It makes text legible and
@@ -1223,6 +1226,7 @@ function CodePreview({
           letterSpacing={letterSpacing}
           normalizedFontSize={fontSize}
           normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+          isMonospace={isMonospaceFont(font)}
           className={italicUnavailable ? "opacity-30" : ""}
           style={{ display: "block", whiteSpace: "pre" }}
         >{`function fibonacci(n) {

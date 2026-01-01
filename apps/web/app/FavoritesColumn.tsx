@@ -7,6 +7,7 @@ import { api } from "@repo/convex/convex/_generated/api";
 import type { Font } from "../data/types";
 import { FontWeightRow } from "./FontWeightRow";
 import { NormalizedText } from "./components/NormalizedText";
+import { isMonospaceFont } from "./utils";
 
 type Favorite = {
   _id: string;
@@ -194,6 +195,7 @@ function GroupedFavoriteItem({
             letterSpacing={weightData.letterSpacing}
             previewText={previewText}
             fontSize={fontSize}
+            isMonospace={isMonospaceFont(fontData)}
             isFailed={isFailed}
             showStar={true}
             isFavorited={true}
@@ -206,6 +208,7 @@ function GroupedFavoriteItem({
             key={weightData._id}
             fontName={group.fontName}
             weight={weightData.weight}
+            isMonospace={isMonospaceFont(fontData)}
             isFailed={isFailed}
             onRemove={() => handleRemoveParagraph(weightData)}
           />
@@ -216,6 +219,7 @@ function GroupedFavoriteItem({
             key={weightData._id}
             fontName={group.fontName}
             weight={weightData.weight}
+            isMonospace={isMonospaceFont(fontData)}
             isFailed={isFailed}
             onRemove={() => handleRemoveCode(weightData)}
           />
@@ -254,11 +258,13 @@ function GroupedFavoriteItem({
 function ParagraphFavoriteRow({
   fontName,
   weight,
+  isMonospace,
   isFailed,
   onRemove,
 }: {
   fontName: string;
   weight: number;
+  isMonospace?: boolean;
   isFailed?: boolean;
   onRemove: () => void;
 }) {
@@ -274,6 +280,7 @@ function ParagraphFavoriteRow({
           letterSpacing={0}
           normalizedFontSize={16}
           normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+          isMonospace={isMonospace}
         >
           {PARAGRAPH_PREVIEW_TEXT}
         </NormalizedText>
@@ -299,11 +306,13 @@ function ParagraphFavoriteRow({
 function CodeFavoriteRow({
   fontName,
   weight,
+  isMonospace,
   isFailed,
   onRemove,
 }: {
   fontName: string;
   weight: number;
+  isMonospace?: boolean;
   isFailed?: boolean;
   onRemove: () => void;
 }) {
@@ -325,6 +334,7 @@ function CodeFavoriteRow({
           letterSpacing={0}
           normalizedFontSize={15}
           normalizationText={CODE_NORMALIZATION_TEXT}
+          isMonospace={isMonospace}
           style={{ whiteSpace: "nowrap" }}
         >
           {CODE_PREVIEW_TEXT}

@@ -11,6 +11,7 @@ type NormalizedTextProps = {
   lineHeight?: number;
   normalizedFontSize: number;
   normalizationText: string;
+  isMonospace?: boolean;
   children: ReactNode;
   className?: string;
   style?: CSSProperties;
@@ -43,6 +44,9 @@ function measureTextWidth(
  * and the target font, then scaling the font size so all fonts render at a consistent
  * visual width for the same normalizedFontSize value.
  *
+ * For monospace fonts (when isMonospace is true), a fixed alphanumeric string is used
+ * for consistent normalization across all monospace fonts.
+ *
  * Example: If Arial renders "Hello" at 100px width and the target font renders it at 125px,
  * the scale factor is 0.8. A normalizedFontSize of 32px becomes 25.6px actual.
  */
@@ -54,6 +58,7 @@ export function NormalizedText({
   lineHeight,
   normalizedFontSize,
   normalizationText,
+  isMonospace = false,
   children,
   className,
   style,
@@ -66,7 +71,7 @@ export function NormalizedText({
 
   // Wait for font to load and calculate scale
   useEffect(() => {
-    const fontKey = `${fontFamily}-${fontWeight}-${fontStyle}-${normalizationText}`;
+    const fontKey = `${fontFamily}-${fontWeight}-${fontStyle}-${normalizationText}-${isMonospace}`;
 
     // If font config changed, reset state
     if (fontKeyRef.current !== fontKey) {
@@ -87,10 +92,13 @@ export function NormalizedText({
       .then(() => {
         if (cancelled) return;
 
+        // For monospace fonts, use a fixed alphanumeric string for consistent normalization
+        const effectiveNormalizationText = isMonospace ? "abcdefghijklmnopqrstuvwxyz0123456789" : normalizationText;
+
         // Measure Arial as the reference (always use weight 400 since Arial
         // only has regular/bold, and we want consistent scaling across all weights)
         const arialWidth = measureTextWidth(
-          normalizationText,
+          effectiveNormalizationText,
           "Arial",
           BASE_MEASURE_SIZE,
           400,
@@ -99,7 +107,7 @@ export function NormalizedText({
 
         // Measure the target font
         const targetWidth = measureTextWidth(
-          normalizationText,
+          effectiveNormalizationText,
           `"${fontFamily}"`,
           BASE_MEASURE_SIZE,
           fontWeight,
@@ -120,7 +128,7 @@ export function NormalizedText({
     return () => {
       cancelled = true;
     };
-  }, [fontFamily, fontWeight, fontStyle, normalizationText]);
+  }, [fontFamily, fontWeight, fontStyle, normalizationText, isMonospace]);
 
   const actualFontSize = normalizedFontSize * scale;
 

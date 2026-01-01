@@ -10,6 +10,7 @@ type FontWeightRowProps = {
   letterSpacing: number;
   previewText: string;
   fontSize: number;
+  isMonospace?: boolean;
   isFailed?: boolean;
   showItalics?: boolean;
   hasItalic?: boolean;
@@ -26,6 +27,7 @@ export function FontWeightRow({
   letterSpacing,
   previewText,
   fontSize,
+  isMonospace,
   isFailed,
   showItalics,
   hasItalic,
@@ -65,6 +67,7 @@ export function FontWeightRow({
           letterSpacing={letterSpacing}
           normalizedFontSize={fontSize}
           normalizationText={previewText}
+          isMonospace={isMonospace}
           className={italicUnavailable ? "opacity-30" : ""}
         >
           {renderText(previewText)}
