@@ -2,9 +2,11 @@
 
 import { useMemo } from "react";
 import { useMutation } from "convex/react";
+import { IconStar, IconStarFilled } from "@tabler/icons-react";
 import { api } from "@repo/convex/convex/_generated/api";
 import type { Font } from "../data/types";
 import { FontWeightRow } from "./FontWeightRow";
+import { NormalizedText } from "./components/NormalizedText";
 
 type Favorite = {
   _id: string;
@@ -17,11 +19,20 @@ type Favorite = {
   createdAt: number;
 };
 
-// Group favorites by fontId
+type FavoriteWeight = {
+  weight: number;
+  lineHeight: number;
+  letterSpacing: number;
+  _id: string;
+  type: "heading" | "paragraph" | "code";
+};
+
+// Group favorites by fontId, with separate headings and paragraphs
 type GroupedFavorite = {
   fontId: string;
   fontName: string;
-  weights: { weight: number; lineHeight: number; letterSpacing: number; _id: string }[];
+  headings: FavoriteWeight[];
+  paragraphs: FavoriteWeight[];
 };
 
 type FavoritesColumnProps = {
@@ -32,6 +43,9 @@ type FavoritesColumnProps = {
   fontByIdMap: Map<string, Font>;
 };
 
+const PARAGRAPH_PREVIEW_TEXT = "Typography gives language a visual form, shaping how we experience text.";
+const PARAGRAPH_NORMALIZATION_TEXT = "this is a simple sample text that represents average spacing and letter frequency";
+
 export function FavoritesColumn({
   favorites,
   failedFonts,
@@ -39,38 +53,43 @@ export function FavoritesColumn({
   fontSize,
   fontByIdMap,
 }: FavoritesColumnProps) {
-  // Group favorites by fontId
+  // Group favorites by fontId, separating headings and paragraphs
   const groupedFavorites = useMemo(() => {
     if (!favorites) return [];
 
     const groups = new Map<string, GroupedFavorite>();
 
     for (const fav of favorites) {
+      const favType = fav.type || "heading";
+      const weightData: FavoriteWeight = {
+        weight: fav.weight,
+        lineHeight: fav.lineHeight,
+        letterSpacing: fav.letterSpacing,
+        _id: fav._id,
+        type: favType,
+      };
+
       const existing = groups.get(fav.fontId);
       if (existing) {
-        existing.weights.push({
-          weight: fav.weight,
-          lineHeight: fav.lineHeight,
-          letterSpacing: fav.letterSpacing,
-          _id: fav._id,
-        });
+        if (favType === "paragraph") {
+          existing.paragraphs.push(weightData);
+        } else {
+          existing.headings.push(weightData);
+        }
       } else {
         groups.set(fav.fontId, {
           fontId: fav.fontId,
           fontName: fav.fontName,
-          weights: [{
-            weight: fav.weight,
-            lineHeight: fav.lineHeight,
-            letterSpacing: fav.letterSpacing,
-            _id: fav._id,
-          }],
+          headings: favType === "heading" || favType === "code" ? [weightData] : [],
+          paragraphs: favType === "paragraph" ? [weightData] : [],
         });
       }
     }
 
     // Sort weights within each group
     for (const group of groups.values()) {
-      group.weights.sort((a, b) => a.weight - b.weight);
+      group.headings.sort((a, b) => a.weight - b.weight);
+      group.paragraphs.sort((a, b) => a.weight - b.weight);
     }
 
     return Array.from(groups.values());
@@ -125,7 +144,7 @@ function GroupedFavoriteItem({
   // Look up font data from the map
   const fontData = fontByIdMap.get(group.fontId);
 
-  const handleRemoveWeight = (weightData: { weight: number; lineHeight: number; letterSpacing: number }) => {
+  const handleRemoveHeading = (weightData: FavoriteWeight) => {
     removeFavorite({
       fontId: group.fontId,
       weight: weightData.weight,
@@ -135,10 +154,21 @@ function GroupedFavoriteItem({
     });
   };
 
+  const handleRemoveParagraph = (weightData: FavoriteWeight) => {
+    removeFavorite({
+      fontId: group.fontId,
+      weight: weightData.weight,
+      lineHeight: weightData.lineHeight,
+      letterSpacing: weightData.letterSpacing,
+      type: "paragraph",
+    });
+  };
+
   return (
     <div className="border border-neutral-200 rounded-lg px-4 py-4 overflow-hidden">
       <div className="space-y-2">
-        {group.weights.map((weightData) => (
+        {/* Headings first */}
+        {group.headings.map((weightData) => (
           <FontWeightRow
             key={weightData._id}
             fontName={group.fontName}
@@ -150,7 +180,17 @@ function GroupedFavoriteItem({
             isFailed={isFailed}
             showStar={true}
             isFavorited={true}
-            onStarClick={() => handleRemoveWeight(weightData)}
+            onStarClick={() => handleRemoveHeading(weightData)}
+          />
+        ))}
+        {/* Paragraphs below headings */}
+        {group.paragraphs.map((weightData) => (
+          <ParagraphFavoriteRow
+            key={weightData._id}
+            fontName={group.fontName}
+            weight={weightData.weight}
+            isFailed={isFailed}
+            onRemove={() => handleRemoveParagraph(weightData)}
           />
         ))}
       </div>
@@ -179,6 +219,51 @@ function GroupedFavoriteItem({
             </span>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ParagraphFavoriteRow({
+  fontName,
+  weight,
+  isFailed,
+  onRemove,
+}: {
+  fontName: string;
+  weight: number;
+  isFailed?: boolean;
+  onRemove: () => void;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      {/* Paragraph preview with multiline text */}
+      <div className="flex-1 min-w-0">
+        <NormalizedText
+          fontFamily={fontName}
+          fontWeight={weight}
+          fontStyle="normal"
+          lineHeight={1.4}
+          letterSpacing={0}
+          normalizedFontSize={16}
+          normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+        >
+          {PARAGRAPH_PREVIEW_TEXT}
+        </NormalizedText>
+      </div>
+
+      {/* Weight and star grouped on the right */}
+      <div className="flex items-center gap-3 flex-shrink-0">
+        <span className={`text-xs w-8 text-right ${isFailed ? "text-red-400" : "text-neutral-400"}`}>
+          {weight}
+        </span>
+        <button
+          onClick={onRemove}
+          className="p-1 rounded hover:bg-neutral-200 transition-colors"
+          title="Remove from favorites"
+        >
+          <IconStarFilled size={16} className="text-yellow-500" />
+        </button>
       </div>
     </div>
   );

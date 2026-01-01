@@ -1035,6 +1035,11 @@ function ParagraphPreview({
   letterSpacing: number;
   fontSize: number;
 }) {
+  const { isSignedIn } = useAuth();
+  const favorites = useQuery(api.favorites.getFavorites);
+  const addFavorite = useMutation(api.favorites.addFavorite);
+  const removeFavorite = useMutation(api.favorites.removeFavorite);
+
   const { weight } = getClosestWeight(font.weights, selectedWeight);
   const hasItalic = font.styles.includes("italic");
   const italicUnavailable = showItalics && !hasItalic;
@@ -1044,8 +1049,50 @@ function ParagraphPreview({
     ? getFontLineHeight(font, weight, isItalic)
     : lineHeight;
 
+  // Check if current font+weight is favorited as a paragraph
+  const isFavorited = favorites?.some(
+    (fav) =>
+      fav.fontId === font.id &&
+      fav.weight === weight &&
+      fav.type === "paragraph"
+  ) ?? false;
+
+  const handleStarClick = () => {
+    if (isFavorited) {
+      removeFavorite({
+        fontId: font.id,
+        weight,
+        lineHeight: 1.4,
+        letterSpacing: 0,
+        type: "paragraph",
+      });
+    } else {
+      addFavorite({
+        fontId: font.id,
+        fontName: font.name,
+        weight,
+        lineHeight: 1.4,
+        letterSpacing: 0,
+        type: "paragraph",
+      });
+    }
+  };
+
   return (
-    <div className="border rounded-lg p-4 border-neutral-200">
+    <div className="border rounded-lg p-4 border-neutral-200 relative">
+      {isSignedIn && (
+        <button
+          onClick={handleStarClick}
+          className="absolute top-2 right-2 p-1 rounded hover:bg-neutral-100 transition-colors"
+          title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+        >
+          {isFavorited ? (
+            <IconStarFilled size={16} className="text-yellow-500" />
+          ) : (
+            <IconStar size={16} className="text-neutral-400" />
+          )}
+        </button>
+      )}
       <NormalizedText
         fontFamily={font.name}
         fontWeight={weight}
