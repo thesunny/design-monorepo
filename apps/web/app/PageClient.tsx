@@ -1143,6 +1143,11 @@ function CodePreview({
   letterSpacing: number;
   fontSize: number;
 }) {
+  const { isSignedIn } = useAuth();
+  const favorites = useQuery(api.favorites.getFavorites);
+  const addFavorite = useMutation(api.favorites.addFavorite);
+  const removeFavorite = useMutation(api.favorites.removeFavorite);
+
   const { weight } = getClosestWeight(font.weights, selectedWeight);
   const hasItalic = font.styles.includes("italic");
   const italicUnavailable = showItalics && !hasItalic;
@@ -1152,8 +1157,50 @@ function CodePreview({
     ? getFontLineHeight(font, weight, isItalic)
     : lineHeight;
 
+  // Check if current font+weight is favorited as code
+  const isFavorited = favorites?.some(
+    (fav) =>
+      fav.fontId === font.id &&
+      fav.weight === weight &&
+      fav.type === "code"
+  ) ?? false;
+
+  const handleStarClick = () => {
+    if (isFavorited) {
+      removeFavorite({
+        fontId: font.id,
+        weight,
+        lineHeight: 1.4,
+        letterSpacing: 0,
+        type: "code",
+      });
+    } else {
+      addFavorite({
+        fontId: font.id,
+        fontName: font.name,
+        weight,
+        lineHeight: 1.4,
+        letterSpacing: 0,
+        type: "code",
+      });
+    }
+  };
+
   return (
-    <div className="border rounded-lg p-4 border-neutral-200">
+    <div className="border rounded-lg p-4 border-neutral-200 relative">
+      {isSignedIn && (
+        <button
+          onClick={handleStarClick}
+          className="absolute top-2 right-2 p-1 rounded hover:bg-neutral-100 transition-colors"
+          title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+        >
+          {isFavorited ? (
+            <IconStarFilled size={16} className="text-yellow-500" />
+          ) : (
+            <IconStar size={16} className="text-neutral-400" />
+          )}
+        </button>
+      )}
       <div className="overflow-x-auto">
         <NormalizedText
           fontFamily={font.name}
