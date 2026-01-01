@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useDeferredValue, useRef, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Slider } from "@mantine/core";
 import { IconHeading, IconAlignLeft, IconCode, IconStar, IconStarFilled, IconSearch, IconX } from "@tabler/icons-react";
@@ -23,29 +24,249 @@ type PageClientProps = {
   allFonts: Font[];
 };
 
+// Default values for URL state
+const DEFAULTS = {
+  previewMode: "headings" as const,
+  searchInput: "",
+  filterBold: false,
+  filterItalic: false,
+  filterVariable: false,
+  selectedWeight: 400,
+  headingsFontSize: 36,
+  textFontSize: 16,
+  letterSpacing: 0,
+  lineHeight: 1.2,
+  lineHeightAuto: true,
+  showAllWeights: false,
+  showItalics: false,
+  previewText: "The Quick Brown Fox Jumps",
+};
+
+// Helper to find subcategory by ID across all categories
+function findSubcategoryById(categories: Category[], id: string): Subcategory | null {
+  for (const category of categories) {
+    for (const subcategory of category.subcategories) {
+      if (subcategory.id === id) {
+        return subcategory;
+      }
+    }
+  }
+  return null;
+}
+
 export default function PageClient({ fontCategories, allFonts }: PageClientProps) {
+  // URL state management
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const isInitialized = useRef(false);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Get default subcategory
+  const defaultSubcategory = fontCategories[0]?.subcategories[0] ?? null;
+
+  // Initialize state from URL params
+  const getInitialSubcategory = () => {
+    const categoryId = searchParams.get("category");
+    if (categoryId) {
+      const found = findSubcategoryById(fontCategories, categoryId);
+      if (found) return found;
+    }
+    return defaultSubcategory;
+  };
+
   const [selectedSubcategory, setSelectedSubcategory] =
-    useState<Subcategory | null>(fontCategories[0]?.subcategories[0] ?? null);
+    useState<Subcategory | null>(getInitialSubcategory);
   const [hoveredSubcategory, setHoveredSubcategory] =
     useState<Subcategory | null>(null);
-  const [selectedWeight, setSelectedWeight] = useState(400);
-  const [showAllWeights, setShowAllWeights] = useState(false);
-  const [showItalics, setShowItalics] = useState(false);
-  const [previewText, setPreviewText] = useState("The Quick Brown Fox Jumps");
-  const [lineHeight, setLineHeight] = useState(1.2);
-  const [lineHeightAuto, setLineHeightAuto] = useState(true);
-  const [letterSpacing, setLetterSpacing] = useState(0);
-  const [previewMode, setPreviewMode] = useState<"headings" | "paragraphs" | "code">(
-    "headings"
+  const [selectedWeight, setSelectedWeight] = useState(() => {
+    const w = searchParams.get("weight");
+    return w ? parseInt(w, 10) : DEFAULTS.selectedWeight;
+  });
+  const [showAllWeights, setShowAllWeights] = useState(() =>
+    searchParams.get("allWeights") === "1"
   );
-  const [filterBold, setFilterBold] = useState(false);
-  const [filterItalic, setFilterItalic] = useState(false);
-  const [filterVariable, setFilterVariable] = useState(false);
-  const [searchInput, setSearchInput] = useState("");
+  const [showItalics, setShowItalics] = useState(() =>
+    searchParams.get("italics") === "1"
+  );
+  const [previewText, setPreviewText] = useState(() =>
+    searchParams.get("text") ?? DEFAULTS.previewText
+  );
+  const [lineHeight, setLineHeight] = useState(() => {
+    const lh = searchParams.get("lineHeight");
+    return lh ? parseFloat(lh) : DEFAULTS.lineHeight;
+  });
+  const [lineHeightAuto, setLineHeightAuto] = useState(() =>
+    searchParams.get("lineHeightAuto") !== "0"
+  );
+  const [letterSpacing, setLetterSpacing] = useState(() => {
+    const ls = searchParams.get("tracking");
+    return ls ? parseFloat(ls) : DEFAULTS.letterSpacing;
+  });
+  const [previewMode, setPreviewMode] = useState<"headings" | "paragraphs" | "code">(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "paragraphs" || tab === "code") return tab;
+    return DEFAULTS.previewMode;
+  });
+  const [filterBold, setFilterBold] = useState(() =>
+    searchParams.get("bold") === "1"
+  );
+  const [filterItalic, setFilterItalic] = useState(() =>
+    searchParams.get("italic") === "1"
+  );
+  const [filterVariable, setFilterVariable] = useState(() =>
+    searchParams.get("variable") === "1"
+  );
+  const [searchInput, setSearchInput] = useState(() =>
+    searchParams.get("q") ?? DEFAULTS.searchInput
+  );
   // Defer the search query so typing stays responsive
   const deferredSearchQuery = useDeferredValue(searchInput);
-  const [headingsFontSize, setHeadingsFontSize] = useState(36);
-  const [textFontSize, setTextFontSize] = useState(16);
+  const [headingsFontSize, setHeadingsFontSize] = useState(() => {
+    const hs = searchParams.get("headingSize");
+    return hs ? parseInt(hs, 10) : DEFAULTS.headingsFontSize;
+  });
+  const [textFontSize, setTextFontSize] = useState(() => {
+    const ts = searchParams.get("textSize");
+    return ts ? parseInt(ts, 10) : DEFAULTS.textFontSize;
+  });
+
+  // Helper to build and update URL with current state
+  const updateUrl = useCallback((overrides: {
+    category?: string | null;
+    tab?: "headings" | "paragraphs" | "code";
+    q?: string;
+    bold?: boolean;
+    italic?: boolean;
+    variable?: boolean;
+    weight?: number;
+    headingSize?: number;
+    textSize?: number;
+    tracking?: number;
+    lineHeight?: number;
+    lineHeightAuto?: boolean;
+    allWeights?: boolean;
+    italics?: boolean;
+    text?: string;
+  } = {}) => {
+    const params = new URLSearchParams();
+
+    // Category
+    const categoryId = overrides.category !== undefined
+      ? overrides.category
+      : selectedSubcategory?.id ?? null;
+    if (categoryId && categoryId !== defaultSubcategory?.id) {
+      params.set("category", categoryId);
+    }
+
+    // Tab
+    const tab = overrides.tab !== undefined ? overrides.tab : previewMode;
+    if (tab !== DEFAULTS.previewMode) {
+      params.set("tab", tab);
+    }
+
+    // Search query
+    const q = overrides.q !== undefined ? overrides.q : searchInput;
+    if (q !== DEFAULTS.searchInput) {
+      params.set("q", q);
+    }
+
+    // Filters
+    const bold = overrides.bold !== undefined ? overrides.bold : filterBold;
+    if (bold !== DEFAULTS.filterBold) {
+      params.set("bold", "1");
+    }
+
+    const italic = overrides.italic !== undefined ? overrides.italic : filterItalic;
+    if (italic !== DEFAULTS.filterItalic) {
+      params.set("italic", "1");
+    }
+
+    const variable = overrides.variable !== undefined ? overrides.variable : filterVariable;
+    if (variable !== DEFAULTS.filterVariable) {
+      params.set("variable", "1");
+    }
+
+    // Weight
+    const weight = overrides.weight !== undefined ? overrides.weight : selectedWeight;
+    if (weight !== DEFAULTS.selectedWeight) {
+      params.set("weight", weight.toString());
+    }
+
+    // Heading size
+    const headingSize = overrides.headingSize !== undefined ? overrides.headingSize : headingsFontSize;
+    if (headingSize !== DEFAULTS.headingsFontSize) {
+      params.set("headingSize", headingSize.toString());
+    }
+
+    // Text size
+    const textSize = overrides.textSize !== undefined ? overrides.textSize : textFontSize;
+    if (textSize !== DEFAULTS.textFontSize) {
+      params.set("textSize", textSize.toString());
+    }
+
+    // Tracking
+    const tracking = overrides.tracking !== undefined ? overrides.tracking : letterSpacing;
+    if (tracking !== DEFAULTS.letterSpacing) {
+      params.set("tracking", tracking.toString());
+    }
+
+    // Line height
+    const lh = overrides.lineHeight !== undefined ? overrides.lineHeight : lineHeight;
+    if (lh !== DEFAULTS.lineHeight) {
+      params.set("lineHeight", lh.toString());
+    }
+
+    // Line height auto
+    const lhAuto = overrides.lineHeightAuto !== undefined ? overrides.lineHeightAuto : lineHeightAuto;
+    if (lhAuto !== DEFAULTS.lineHeightAuto) {
+      params.set("lineHeightAuto", "0");
+    }
+
+    // Show all weights
+    const allWeights = overrides.allWeights !== undefined ? overrides.allWeights : showAllWeights;
+    if (allWeights !== DEFAULTS.showAllWeights) {
+      params.set("allWeights", "1");
+    }
+
+    // Show italics
+    const italics = overrides.italics !== undefined ? overrides.italics : showItalics;
+    if (italics !== DEFAULTS.showItalics) {
+      params.set("italics", "1");
+    }
+
+    // Preview text
+    const text = overrides.text !== undefined ? overrides.text : previewText;
+    if (text !== DEFAULTS.previewText) {
+      params.set("text", text);
+    }
+
+    const queryString = params.toString();
+    const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+    router.replace(newUrl, { scroll: false });
+  }, [
+    pathname, router, defaultSubcategory?.id,
+    selectedSubcategory?.id, previewMode, searchInput,
+    filterBold, filterItalic, filterVariable,
+    selectedWeight, headingsFontSize, textFontSize,
+    letterSpacing, lineHeight, lineHeightAuto,
+    showAllWeights, showItalics, previewText
+  ]);
+
+  // Debounced URL update for text inputs
+  const updateUrlDebounced = useCallback((overrides: Parameters<typeof updateUrl>[0]) => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    debounceTimerRef.current = setTimeout(() => {
+      updateUrl(overrides);
+    }, 300);
+  }, [updateUrl]);
+
+  // Mark as initialized after first render
+  useEffect(() => {
+    isInitialized.current = true;
+  }, []);
 
   // Search input ref for keyboard shortcut
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -184,7 +405,10 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
       <CategorySidebar
         fontCategories={fontCategories}
         selectedSubcategory={selectedSubcategory}
-        onSelectSubcategory={setSelectedSubcategory}
+        onSelectSubcategory={(subcategory) => {
+          setSelectedSubcategory(subcategory);
+          updateUrl({ category: subcategory?.id ?? null });
+        }}
         onHoverSubcategory={setHoveredSubcategory}
       />
 
@@ -195,7 +419,10 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
             {/* Tabs and Filters */}
             <div className="flex border-b border-neutral-200 pl-4 pr-4 h-12">
               <button
-                onClick={() => setPreviewMode("headings")}
+                onClick={() => {
+                  setPreviewMode("headings");
+                  updateUrl({ tab: "headings" });
+                }}
                 style={{ fontSize: 13 }}
                 className={`px-3 h-full flex items-center font-medium transition-colors cursor-pointer mb-[-1px] border-b-2 ${
                   previewMode === "headings"
@@ -207,7 +434,10 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                 Headings
               </button>
               <button
-                onClick={() => setPreviewMode("paragraphs")}
+                onClick={() => {
+                  setPreviewMode("paragraphs");
+                  updateUrl({ tab: "paragraphs" });
+                }}
                 style={{ fontSize: 13 }}
                 className={`px-3 h-full flex items-center font-medium transition-colors cursor-pointer mb-[-1px] border-b-2 ${
                   previewMode === "paragraphs"
@@ -219,7 +449,10 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                 Paragraphs
               </button>
               <button
-                onClick={() => setPreviewMode("code")}
+                onClick={() => {
+                  setPreviewMode("code");
+                  updateUrl({ tab: "code" });
+                }}
                 style={{ fontSize: 13 }}
                 className={`px-3 h-full flex items-center font-medium transition-colors cursor-pointer mb-[-1px] border-b-2 ${
                   previewMode === "code"
@@ -237,14 +470,20 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                     ref={searchInputRef}
                     type="text"
                     value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
+                    onChange={(e) => {
+                      setSearchInput(e.target.value);
+                      updateUrlDebounced({ q: e.target.value });
+                    }}
                     placeholder="Search fonts..."
                     style={{ fontSize: 13 }}
                     className={`w-48 pl-7 pr-12 py-1.5 border border-neutral-200 rounded focus:outline-none focus:border-neutral-400 ${isSearchPending ? "bg-neutral-50" : ""}`}
                   />
                   {searchInput ? (
                     <button
-                      onClick={() => setSearchInput("")}
+                      onClick={() => {
+                        setSearchInput("");
+                        updateUrl({ q: "" });
+                      }}
                       className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
                     >
                       <IconX size={14} />
@@ -258,7 +497,11 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setFilterBold(!filterBold)}
+                  onClick={() => {
+                    const newValue = !filterBold;
+                    setFilterBold(newValue);
+                    updateUrl({ bold: newValue });
+                  }}
                   style={{ fontSize: 12 }}
                   className={`px-2 py-1 rounded transition-colors cursor-pointer ${
                     filterBold
@@ -269,7 +512,11 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                   Bold
                 </button>
                 <button
-                  onClick={() => setFilterItalic(!filterItalic)}
+                  onClick={() => {
+                    const newValue = !filterItalic;
+                    setFilterItalic(newValue);
+                    updateUrl({ italic: newValue });
+                  }}
                   style={{ fontSize: 12 }}
                   className={`px-2 py-1 rounded transition-colors cursor-pointer ${
                     filterItalic
@@ -280,7 +527,11 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                   Italic
                 </button>
                 <button
-                  onClick={() => setFilterVariable(!filterVariable)}
+                  onClick={() => {
+                    const newValue = !filterVariable;
+                    setFilterVariable(newValue);
+                    updateUrl({ variable: newValue });
+                  }}
                   style={{ fontSize: 12 }}
                   className={`px-2 py-1 rounded transition-colors cursor-pointer ${
                     filterVariable
@@ -370,6 +621,7 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                 <Slider
                   value={selectedWeight}
                   onChange={setSelectedWeight}
+                  onChangeEnd={(value) => updateUrl({ weight: value })}
                   min={100}
                   max={900}
                   step={100}
@@ -392,7 +644,11 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                   <button
                     role="switch"
                     aria-checked={showAllWeights}
-                    onClick={() => setShowAllWeights(!showAllWeights)}
+                    onClick={() => {
+                      const newValue = !showAllWeights;
+                      setShowAllWeights(newValue);
+                      updateUrl({ allWeights: newValue });
+                    }}
                     className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                       showAllWeights ? "bg-neutral-900" : "bg-neutral-300"
                     }`}
@@ -411,6 +667,11 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                 <Slider
                   value={fontSize}
                   onChange={setFontSize}
+                  onChangeEnd={(value) => updateUrl(
+                    previewMode === "headings"
+                      ? { headingSize: value }
+                      : { textSize: value }
+                  )}
                   min={12}
                   max={72}
                   step={1}
@@ -430,7 +691,11 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                   <button
                     role="switch"
                     aria-checked={showItalics}
-                    onClick={() => setShowItalics(!showItalics)}
+                    onClick={() => {
+                      const newValue = !showItalics;
+                      setShowItalics(newValue);
+                      updateUrl({ italics: newValue });
+                    }}
                     className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                       showItalics ? "bg-neutral-900" : "bg-neutral-300"
                     }`}
@@ -449,6 +714,7 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                 <Slider
                   value={letterSpacing}
                   onChange={setLetterSpacing}
+                  onChangeEnd={(value) => updateUrl({ tracking: value })}
                   min={-0.1}
                   max={0.3}
                   step={0.01}
@@ -472,6 +738,7 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                     <Slider
                       value={lineHeight}
                       onChange={setLineHeight}
+                      onChangeEnd={(value) => updateUrl({ lineHeight: value })}
                       min={0.8}
                       max={2.5}
                       step={0.1}
@@ -492,7 +759,11 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                       <button
                         role="switch"
                         aria-checked={lineHeightAuto}
-                        onClick={() => setLineHeightAuto(!lineHeightAuto)}
+                        onClick={() => {
+                          const newValue = !lineHeightAuto;
+                          setLineHeightAuto(newValue);
+                          updateUrl({ lineHeightAuto: newValue });
+                        }}
                         className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                           lineHeightAuto ? "bg-neutral-900" : "bg-neutral-300"
                         }`}
@@ -513,7 +784,10 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                 <input
                   type="text"
                   value={previewText}
-                  onChange={(e) => setPreviewText(e.target.value)}
+                  onChange={(e) => {
+                    setPreviewText(e.target.value);
+                    updateUrlDebounced({ text: e.target.value });
+                  }}
                   placeholder="Enter preview text..."
                   className="w-full px-3 py-1.5 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-400"
                 />
@@ -528,7 +802,10 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                     return (
                       <button
                         key={label}
-                        onClick={() => setPreviewText(value)}
+                        onClick={() => {
+                          setPreviewText(value);
+                          updateUrl({ text: value });
+                        }}
                         className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
                           isActive
                             ? "bg-neutral-300 text-neutral-700"

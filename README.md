@@ -1,62 +1,45 @@
-# Turborepo Tailwind CSS starter
+# Font Picker
 
-This Turborepo starter is maintained by the Turborepo core team.
+An interactive web application for exploring, previewing, and managing Google Fonts. Font Picker helps designers and developers discover the perfect typography for their projects.
 
-## Google Fonts Info
+## What It Does
 
-https://fonts.google.com/metadata/fonts
+Font Picker provides a streamlined way to browse hundreds of Google Fonts organized into intuitive categories like Sans Serif, Serif, Display, and Monospace. Instead of navigating through the Google Fonts website, you get all fonts in one place with powerful preview and customization tools.
 
-## Using this example
+## Features
 
-Run the following command:
+### Font Discovery
 
-```sh
-npx create-turbo@latest -e with-tailwind
-```
+Browse fonts through a curated, hierarchical catalog. Fonts are organized by style (Sans Serif, Serif, Display, Monospace) and further grouped by characteristics like Modern, Classic, Geometric, and more. Each font shows its available weights and whether it supports italic or variable weight ranges.
 
-## What's inside?
+### Interactive Previews
 
-This Turborepo includes the following packages/apps:
+See how fonts actually look before committing to them:
 
-### Apps and Packages
+- **Headings Mode** - Preview fonts at large display sizes with adjustable weight and spacing
+- **Paragraphs Mode** - See fonts in body text context with a grid layout for easy comparison
+- **Code Mode** - Evaluate monospace fonts with real code snippets
 
-- `docs`: a [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/)
-- `web`: another [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/)
-- `ui`: a stub React component library with [Tailwind CSS](https://tailwindcss.com/) shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Fine-Tuned Customization
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+Adjust typography settings in real-time:
 
-### Building packages/ui
+- Font weight (100-900)
+- Line height
+- Letter spacing
+- Custom preview text to see fonts with your own content
 
-This example is set up to produce compiled styles for `ui` components into the `dist` directory. The component `.tsx` files are consumed by the Next.js apps directly using `transpilePackages` in `next.config.ts`. This was chosen for several reasons:
+### Smart Filtering
 
-- Make sharing one `tailwind.config.ts` to apps and packages as easy as possible.
-- Make package compilation simple by only depending on the Next.js Compiler and `tailwindcss`.
-- Ensure Tailwind classes do not overwrite each other. The `ui` package uses a `ui-` prefix for it's classes.
-- Maintain clear package export boundaries.
+Quickly narrow down options by filtering for fonts that support bold weights, italic styles, or variable font capabilities.
 
-Another option is to consume `packages/ui` directly from source without building. If using this option, you will need to update the `tailwind.config.ts` in your apps to be aware of your package locations, so it can find all usages of the `tailwindcss` class names for CSS compilation.
+### Favorites Collection
 
-For example, in [tailwind.config.ts](packages/tailwind-config/tailwind.config.ts):
+Save specific font configurations with exact weight, line height, and letter spacing settings. Your favorites persist across sessions, making it easy to build and reference your personal typography library. You can save the same font multiple times with different styling configurations for different use cases.
 
-```js
-  content: [
-    // app content
-    `src/**/*.{js,ts,jsx,tsx}`,
-    // include packages if not transpiling
-    "../../packages/ui/*.{js,ts,jsx,tsx}",
-  ],
-```
+## Why Use Font Picker
 
-If you choose this strategy, you can remove the `tailwindcss` and `autoprefixer` dependencies from the `ui` package.
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [Tailwind CSS](https://tailwindcss.com/) for styles
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+- **Faster Discovery** - All Google Fonts organized and searchable in one interface
+- **Better Comparisons** - Normalized preview widths let you fairly compare fonts side by side
+- **Contextual Previews** - See fonts in the context you'll actually use them (headings, body text, code)
+- **Save Your Research** - Keep track of fonts and exact settings you like instead of starting from scratch each time
