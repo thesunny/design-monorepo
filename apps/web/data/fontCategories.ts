@@ -60,7 +60,6 @@ const baseFontCategories: Category[] = [
           "Space Grotesk",
           "Sora",
           "Prompt",
-          "Rubik Mono One",
           "Questrial",
         ],
       },
@@ -119,6 +118,8 @@ const baseFontCategories: Category[] = [
           "Archivo",
           "Cinzel",
           "Poiret One",
+          "Rubik Mono One",
+          "League Gothic",
         ],
       },
     ],
@@ -365,11 +366,7 @@ const baseFontCategories: Category[] = [
       {
         id: "gothic",
         name: "Gothic",
-        fonts: [
-          "UnifrakturMaguntia",
-          "UnifrakturCook",
-          "Pirata One",
-        ],
+        fonts: ["UnifrakturMaguntia", "UnifrakturCook", "Pirata One"],
       },
       {
         id: "experimental",
@@ -401,12 +398,18 @@ const usedFonts = new Set<string>(
 
 // Create a map of font name to popularity for sorting
 const fontPopularity = new Map<string, number>(
-  googleFontsMetadata.familyMetadataList.map((font) => [font.family, font.popularity])
+  googleFontsMetadata.familyMetadataList.map((font) => [
+    font.family,
+    font.popularity,
+  ])
 );
 
 // Sort fonts by popularity (lower number = more popular)
 const sortByPopularity = (fonts: string[]): string[] =>
-  [...fonts].sort((a, b) => (fontPopularity.get(a) ?? Infinity) - (fontPopularity.get(b) ?? Infinity));
+  [...fonts].sort(
+    (a, b) =>
+      (fontPopularity.get(a) ?? Infinity) - (fontPopularity.get(b) ?? Infinity)
+  );
 
 // Group fonts by category and sort by popularity
 const fontsByCategory = new Map<string, string[]>();
@@ -420,24 +423,35 @@ for (const font of sortedFonts) {
   fontsByCategory.get(font.category)!.push(font.family);
 }
 
-// Get fonts for a category, filtering out already used fonts
+// Create a set of Noto fonts to exclude from "More..." subcategories
+// (We intentionally exclude Noto fonts from auto-populated subcategories,
+// but preserve any explicitly defined Noto fonts in baseFontCategories)
+const notoFonts = new Set<string>(
+  googleFontsMetadata.familyMetadataList
+    .filter((font) => font.isNoto)
+    .map((font) => font.family)
+);
+
+// Get fonts for a category, filtering out already used fonts and Noto fonts
 const getMoreFonts = (categoryName: string): string[] => {
   const fonts = fontsByCategory.get(categoryName) || [];
-  return fonts.filter((font) => !usedFonts.has(font));
+  return fonts.filter((font) => !usedFonts.has(font) && !notoFonts.has(font));
 };
 
 // Extend baseFontCategories with "More..." subcategory and sort all fonts by popularity
-export const fontCategories: Category[] = baseFontCategories.map((category) => ({
-  ...category,
-  subcategories: [
-    ...category.subcategories.map((subcategory) => ({
-      ...subcategory,
-      fonts: sortByPopularity(subcategory.fonts),
-    })),
-    {
-      id: `${category.id}-more`,
-      name: "More...",
-      fonts: getMoreFonts(category.name),
-    },
-  ],
-}));
+export const fontCategories: Category[] = baseFontCategories.map(
+  (category) => ({
+    ...category,
+    subcategories: [
+      ...category.subcategories.map((subcategory) => ({
+        ...subcategory,
+        fonts: sortByPopularity(subcategory.fonts),
+      })),
+      {
+        id: `${category.id}-more`,
+        name: "More...",
+        fonts: getMoreFonts(category.name),
+      },
+    ],
+  })
+);
