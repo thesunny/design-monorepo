@@ -1,3 +1,5 @@
+import { googleFontsMetadata } from "./googleFontsMetadata";
+
 export type Subcategory = {
   id: string;
   name: string;
@@ -10,7 +12,7 @@ export type Category = {
   subcategories: Subcategory[];
 };
 
-export const fontCategories: Category[] = [
+const baseFontCategories: Category[] = [
   {
     id: "sans-serif",
     name: "Sans Serif",
@@ -389,3 +391,41 @@ export const fontCategories: Category[] = [
     ],
   },
 ];
+
+// Extract all fonts already used in baseFontCategories
+const usedFonts = new Set<string>(
+  baseFontCategories.flatMap((category) =>
+    category.subcategories.flatMap((subcategory) => subcategory.fonts)
+  )
+);
+
+// Group fonts by category and sort by popularity (lower number = more popular)
+const fontsByCategory = new Map<string, string[]>();
+const sortedFonts = [...googleFontsMetadata.familyMetadataList].sort(
+  (a, b) => a.popularity - b.popularity
+);
+for (const font of sortedFonts) {
+  if (!fontsByCategory.has(font.category)) {
+    fontsByCategory.set(font.category, []);
+  }
+  fontsByCategory.get(font.category)!.push(font.family);
+}
+
+// Get fonts for a category, filtering out already used fonts
+const getMoreFonts = (categoryName: string): string[] => {
+  const fonts = fontsByCategory.get(categoryName) || [];
+  return fonts.filter((font) => !usedFonts.has(font));
+};
+
+// Extend baseFontCategories with "More..." subcategory for each category
+export const fontCategories: Category[] = baseFontCategories.map((category) => ({
+  ...category,
+  subcategories: [
+    ...category.subcategories,
+    {
+      id: `${category.id}-more`,
+      name: "More...",
+      fonts: getMoreFonts(category.name),
+    },
+  ],
+}));
