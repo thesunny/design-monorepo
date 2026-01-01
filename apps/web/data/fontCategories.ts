@@ -438,7 +438,27 @@ const getMoreFonts = (categoryName: string): string[] => {
   return fonts.filter((font) => !usedFonts.has(font) && !notoFonts.has(font));
 };
 
-// Extend baseFontCategories with "More..." subcategory and sort all fonts by popularity
+// Break fonts into chunks of 100 for performance, creating subcategories like
+// "100 More", "200 More", "300 More", ... "469 More"
+const CHUNK_SIZE = 100;
+const createMoreSubcategories = (
+  categoryId: string,
+  fonts: string[]
+): Subcategory[] => {
+  const subcategories: Subcategory[] = [];
+  for (let i = 0; i < fonts.length; i += CHUNK_SIZE) {
+    const chunk = fonts.slice(i, i + CHUNK_SIZE);
+    const end = Math.min(i + CHUNK_SIZE, fonts.length);
+    subcategories.push({
+      id: `${categoryId}-more-${end}`,
+      name: `${end} More`,
+      fonts: chunk,
+    });
+  }
+  return subcategories;
+};
+
+// Extend baseFontCategories with "More" subcategories and sort all fonts by popularity
 export const fontCategories: Category[] = baseFontCategories.map(
   (category) => ({
     ...category,
@@ -447,11 +467,7 @@ export const fontCategories: Category[] = baseFontCategories.map(
         ...subcategory,
         fonts: sortByPopularity(subcategory.fonts),
       })),
-      {
-        id: `${category.id}-more`,
-        name: "More...",
-        fonts: getMoreFonts(category.name),
-      },
+      ...createMoreSubcategories(category.id, getMoreFonts(category.name)),
     ],
   })
 );
