@@ -132,6 +132,56 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
     return ts ? parseInt(ts, 10) : DEFAULTS.textFontSize;
   });
 
+  // Sync state with URL when user navigates back/forward
+  useEffect(() => {
+    // Skip the initial render since state is already initialized from URL
+    if (!isInitialized.current) {
+      isInitialized.current = true;
+      return;
+    }
+
+    // Update all state from current URL params
+    const categoryId = searchParams.get("category");
+    if (categoryId) {
+      const found = findSubcategoryById(fontCategories, categoryId);
+      if (found) setSelectedSubcategory(found);
+    } else {
+      setSelectedSubcategory(defaultSubcategory);
+    }
+
+    const tab = searchParams.get("tab");
+    if (tab === "paragraphs" || tab === "code") {
+      setPreviewMode(tab);
+    } else {
+      setPreviewMode(DEFAULTS.previewMode);
+    }
+
+    setSearchInput(searchParams.get("q") ?? DEFAULTS.searchInput);
+    setFilterBold(searchParams.get("bold") === "1");
+    setFilterItalic(searchParams.get("italic") === "1");
+    setFilterVariable(searchParams.get("variable") === "1");
+
+    const w = searchParams.get("weight");
+    setSelectedWeight(w ? parseInt(w, 10) : DEFAULTS.selectedWeight);
+
+    const hs = searchParams.get("headingSize");
+    setHeadingsFontSize(hs ? parseInt(hs, 10) : DEFAULTS.headingsFontSize);
+
+    const ts = searchParams.get("textSize");
+    setTextFontSize(ts ? parseInt(ts, 10) : DEFAULTS.textFontSize);
+
+    const ls = searchParams.get("tracking");
+    setLetterSpacing(ls ? parseFloat(ls) : DEFAULTS.letterSpacing);
+
+    const lh = searchParams.get("lineHeight");
+    setLineHeight(lh ? parseFloat(lh) : DEFAULTS.lineHeight);
+
+    setLineHeightAuto(searchParams.get("lineHeightAuto") !== "0");
+    setShowAllWeights(searchParams.get("allWeights") === "1");
+    setShowItalics(searchParams.get("italics") === "1");
+    setPreviewText(searchParams.get("text") ?? DEFAULTS.previewText);
+  }, [searchParams, fontCategories, defaultSubcategory]);
+
   // Helper to build and update URL with current state
   const updateUrl = useCallback((overrides: {
     category?: string | null;
@@ -244,7 +294,7 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
 
     const queryString = params.toString();
     const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
-    router.replace(newUrl, { scroll: false });
+    router.push(newUrl, { scroll: false });
   }, [
     pathname, router, defaultSubcategory?.id,
     selectedSubcategory?.id, previewMode, searchInput,
