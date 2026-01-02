@@ -49,7 +49,22 @@
       },
       {
         "name": "Square",
-        "fonts": ["Saira", "Share Tech", "Smooch Sans"]
+        "fonts": [
+          "Saira",
+          "Share Tech",
+          "Smooch Sans",
+          "Kanit",
+          "Titillium Web",
+          "Chakra Petch",
+          "Play",
+          "Barlow Semi Condensed",
+          "Saira Condensed",
+          "Alumni Sans",
+          "Jura",
+          "Bai Jamjuree",
+          "Quantico",
+          "WDXL Lubrifont JP N"
+        ]
       },
       {
         "name": "Friendly",
@@ -329,8 +344,58 @@
         ]
       },
       {
+        "name": "Fun",
+        "fonts": []
+      },
+      {
+        "name": "Colorful",
+        "fonts": [
+          "Bungee Spice"
+        ]
+      },
+      {
+        "name": "Blocks",
+        "fonts": [
+          "Monofett"
+        ]
+      },
+      {
+        "name": "Pixel",
+        "fonts": [
+          "Micro 5 Charted",
+          "Bitcount Single",
+          "Bitcount",
+          "Bitcount Prop Single",
+          "Jersey 25 Charted",
+          "Bitcount Prop Double Ink",
+          "Jersey 10 Charted",
+          "Jersey 20 Charted",
+          "Jersey 15 Charted",
+          "Bitcount Prop Single Ink",
+          "Bitcount Prop Double",
+          "Bitcount Grid Single Ink",
+          "Bitcount Grid Double Ink",
+          "Bitcount Ink",
+          "Jacquarda Bastarda 9 Charted",
+          "Yarndings 12 Charted",
+          "Yarndings 20 Charted",
+          "Rubik Iso",
+          "Bitcount Grid Single",
+          "Jacquarda Bastarda 9",
+          "Jacquard 12 Charted",
+          "Bitcount Single Ink",
+          "Handjet",
+          "Jacquard 12",
+          "Jersey 20"
+        ]
+      },
+      {
         "name": "Gothic",
-        "fonts": ["UnifrakturMaguntia", "UnifrakturCook", "Pirata One"]
+        "fonts": [
+          "UnifrakturMaguntia",
+          "UnifrakturCook",
+          "Pirata One"
+        ]
       },
       {
         "name": "Experimental",

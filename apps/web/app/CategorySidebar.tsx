@@ -6,6 +6,7 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+import { ArrowLeft } from "lucide-react";
 import type { Category, Subcategory } from "../data/types";
 
 type CategorySidebarProps = {
@@ -13,6 +14,8 @@ type CategorySidebarProps = {
   selectedSubcategory: Subcategory | null;
   onSelectSubcategory: (subcategory: Subcategory) => void;
   onHoverSubcategory: (subcategory: Subcategory | null) => void;
+  checkedFontNames: string[];
+  onMoveFonts: (categoryName: string, subcategoryName: string) => void;
 };
 
 export function CategorySidebar({
@@ -20,7 +23,10 @@ export function CategorySidebar({
   selectedSubcategory,
   onSelectSubcategory,
   onHoverSubcategory,
+  checkedFontNames,
+  onMoveFonts,
 }: CategorySidebarProps) {
+  const hasCheckedFonts = checkedFontNames.length > 0;
   return (
     <div className="w-40 flex-shrink-0 bg-[#2f251a] flex flex-col">
       <div className="h-12 flex items-center px-4">
@@ -42,7 +48,7 @@ export function CategorySidebar({
             </h2>
             <ul className="ml-2 border-l border-white/10">
               {category.subcategories.map((subcategory) => (
-                <li key={subcategory.id}>
+                <li key={subcategory.id} className="relative">
                   <button
                     onClick={() => onSelectSubcategory(subcategory)}
                     onMouseEnter={() => onHoverSubcategory(subcategory)}
@@ -56,6 +62,15 @@ export function CategorySidebar({
                   >
                     {subcategory.name}
                   </button>
+                  {hasCheckedFonts && (
+                    <button
+                      onClick={() => onMoveFonts(category.name, subcategory.name)}
+                      className="absolute -right-3 top-0 bottom-0 px-2 flex items-center text-white/50 hover:text-white bg-[#382d1f] hover:bg-[#3d3022] rounded transition-colors cursor-pointer"
+                      title={`Move ${checkedFontNames.length} font${checkedFontNames.length > 1 ? "s" : ""} to ${subcategory.name}`}
+                    >
+                      <ArrowLeft size={16} />
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>

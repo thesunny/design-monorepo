@@ -27,6 +27,7 @@ import { api } from "@repo/convex/convex/_generated/api";
 import type { Category, Subcategory, Font } from "../data/types";
 import { CategorySidebar } from "./CategorySidebar";
 import { FavoritesColumn } from "./FavoritesColumn";
+import { moveFontsToSubcategory } from "./actions/moveFonts";
 import { useFontLoader } from "./hooks/useFontLoader";
 import { FontWeightRow } from "./FontWeightRow";
 import { NormalizedText } from "./components/NormalizedText";
@@ -422,6 +423,27 @@ export default function PageClient({
     return map;
   }, [allFonts]);
 
+  // Get font names from checked font IDs
+  const checkedFontNames = useMemo(() => {
+    return Array.from(checkedFonts)
+      .map((fontId) => fontByIdMap.get(fontId)?.name)
+      .filter((name): name is string => name !== undefined);
+  }, [checkedFonts, fontByIdMap]);
+
+  // Handler to move checked fonts to a subcategory
+  const handleMoveFonts = useCallback(
+    async (categoryName: string, subcategoryName: string) => {
+      if (checkedFontNames.length === 0) return;
+      await moveFontsToSubcategory({
+        categoryName,
+        subcategoryName,
+        fontNames: checkedFontNames,
+      });
+      setCheckedFonts(new Set());
+    },
+    [checkedFontNames]
+  );
+
   // Get Font objects for a subcategory's font names
   const getFontsForSubcategory = useCallback(
     (subcategory: Subcategory): Font[] => {
@@ -521,6 +543,8 @@ export default function PageClient({
           updateUrl({ category: subcategory?.id ?? null });
         }}
         onHoverSubcategory={setHoveredSubcategory}
+        checkedFontNames={checkedFontNames}
+        onMoveFonts={handleMoveFonts}
       />
 
       {/* Column 2: Font List */}
