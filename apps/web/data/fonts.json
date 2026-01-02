@@ -233,7 +233,9 @@
           "Nova Mono",
           "Overpass Mono",
           "Cutive Mono",
-          "Special Elite"
+          "Special Elite",
+          "Workbench",
+          "Sixtyfour"
         ]
       }
     ]
@@ -304,6 +306,21 @@
           "Bad Script",
           "Cookie"
         ]
+      },
+      {
+        "name": "Lined",
+        "fonts": [
+          "Playwrite CZ Guides",
+          "Playwrite DE SAS Guides",
+          "Playwrite NO Guides",
+          "Playwrite RO Guides",
+          "Playwrite AU NSW Guides",
+          "Playwrite AR Guides",
+          "Playwrite IS Guides",
+          "Playwrite SK Guides",
+          "Playwrite CA Guides",
+          "Playwrite IN Guides"
+        ]
       }
     ]
   },
@@ -345,18 +362,75 @@
       },
       {
         "name": "Fun",
-        "fonts": []
+        "fonts": [
+          "Kablammo",
+          "Fontdiner Swanky",
+          "Finger Paint",
+          "Rubik Gemstones",
+          "Freckle Face",
+          "Astloch",
+          "Fruktur",
+          "Butcherman",
+          "Piedra",
+          "Rubik Vinyl",
+          "Bigelow Rules",
+          "Eater",
+          "Potta One",
+          "Protest Revolution",
+          "Cabin Sketch",
+          "Koulen",
+          "DynaPuff",
+          "Rampart One",
+          "Cherry Bomb One",
+          "Modak",
+          "Love Ya Like A Sister",
+          "Vina Sans",
+          "Chango",
+          "Mountains of Christmas",
+          "Bungee Inline",
+          "Sigmar One",
+          "Barriecito",
+          "Slackey",
+          "Bubblegum Sans",
+          "Coiny",
+          "Akronim",
+          "Barrio"
+        ]
       },
       {
         "name": "Colorful",
         "fonts": [
-          "Bungee Spice"
+          "Bungee Spice",
+          "Honk",
+          "Sixtyfour Convergence"
         ]
       },
       {
         "name": "Blocks",
         "fonts": [
           "Monofett"
+        ]
+      },
+      {
+        "name": "Slanted",
+        "fonts": [
+          "Oleo Script",
+          "Racing Sans One",
+          "Shrikhand",
+          "Faster One",
+          "Allan",
+          "Fugaz One"
+        ]
+      },
+      {
+        "name": "Stencil",
+        "fonts": [
+          "Allerta Stencil",
+          "Big Shoulders Stencil",
+          "Saira Stencil One",
+          "Sirin Stencil",
+          "Stardos Stencil",
+          "Keania One"
         ]
       },
       {
@@ -386,7 +460,11 @@
           "Bitcount Single Ink",
           "Handjet",
           "Jacquard 12",
-          "Jersey 20"
+          "Jersey 20",
+          "Silkscreen",
+          "Bitcount Grid Double",
+          "Pixelify Sans",
+          "Jersey 10"
         ]
       },
       {
@@ -394,7 +472,8 @@
         "fonts": [
           "UnifrakturMaguntia",
           "UnifrakturCook",
-          "Pirata One"
+          "Pirata One",
+          "Manufacturing Consent"
         ]
       },
       {
