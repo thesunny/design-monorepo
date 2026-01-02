@@ -145,8 +145,7 @@
           "Libre Caslon Text",
           "Cormorant",
           "Cormorant Garamond",
-          "PT Serif",
-          "Kalam"
+          "PT Serif"
         ]
       },
       {
@@ -247,7 +246,6 @@
         "name": "Casual",
         "fonts": [
           "Caveat",
-          "Kalam",
           "Patrick Hand",
           "Indie Flower",
           "Architects Daughter",
@@ -259,7 +257,8 @@
           "Waiting for the Sunrise",
           "Just Another Hand",
           "Coming Soon",
-          "Gowun Batang"
+          "Gowun Batang",
+          "Kalam"
         ]
       },
       {
@@ -394,7 +393,10 @@
           "Bubblegum Sans",
           "Coiny",
           "Akronim",
-          "Barrio"
+          "Barrio",
+          "Rammetto One",
+          "Hi Melody",
+          "Rancho"
         ]
       },
       {

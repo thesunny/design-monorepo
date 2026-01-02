@@ -89,9 +89,9 @@ const getMoreFonts = (categoryName: string): string[] => {
   return fonts.filter((font) => !usedFonts.has(font) && !notoFonts.has(font));
 };
 
-// Break fonts into chunks of 100 for performance, creating subcategories like
-// "100 More", "200 More", "300 More", ... "469 More"
-const CHUNK_SIZE = 100;
+// Break fonts into chunks of 50 for performance, creating subcategories like
+// "50 More", "100 More", "150 More", etc.
+const CHUNK_SIZE = 50;
 const createMoreSubcategories = (
   categoryId: string,
   fonts: string[]

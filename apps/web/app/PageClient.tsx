@@ -149,6 +149,7 @@ export default function PageClient({
     const hs = searchParams.get("headingSize");
     return hs ? parseInt(hs, 10) : DEFAULTS.headingsFontSize;
   });
+  const [compactMode, setCompactMode] = useState(false);
   const [textFontSize, setTextFontSize] = useState(() => {
     const ts = searchParams.get("textSize");
     return ts ? parseInt(ts, 10) : DEFAULTS.textFontSize;
@@ -666,6 +667,23 @@ export default function PageClient({
                 >
                   Variable
                 </button>
+                <label className="flex items-center gap-1.5 cursor-pointer ml-2">
+                  <button
+                    role="switch"
+                    aria-checked={compactMode}
+                    onClick={() => setCompactMode(!compactMode)}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                      compactMode ? "bg-neutral-900" : "bg-neutral-300"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        compactMode ? "translate-x-4" : "translate-x-0.5"
+                      }`}
+                    />
+                  </button>
+                  <span className="text-xs text-neutral-500">Compact</span>
+                </label>
               </div>
             </div>
 
@@ -687,6 +705,7 @@ export default function PageClient({
                       fontSize={fontSize}
                       isChecked={checkedFonts.has(font.id)}
                       anyChecked={checkedFonts.size > 0}
+                      compactMode={compactMode}
                       onCheckChange={(checked) => {
                         setCheckedFonts((prev) => {
                           const next = new Set(prev);
@@ -714,6 +733,7 @@ export default function PageClient({
                       lineHeightAuto={lineHeightAuto}
                       letterSpacing={letterSpacing}
                       fontSize={fontSize}
+                      compactMode={compactMode}
                     />
                   ))}
                 </div>
@@ -1051,6 +1071,7 @@ function HeadingPreview({
   isChecked,
   onCheckChange,
   anyChecked,
+  compactMode,
 }: {
   font: Font;
   isFailed?: boolean;
@@ -1065,6 +1086,7 @@ function HeadingPreview({
   isChecked?: boolean;
   onCheckChange?: (checked: boolean) => void;
   anyChecked?: boolean;
+  compactMode?: boolean;
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const { isSignedIn } = useAuth();
@@ -1111,7 +1133,7 @@ function HeadingPreview({
 
   return (
     <div
-      className={`relative pl-12 pr-8 pt-4 pb-5 ${
+      className={`relative pl-12 pr-8 ${compactMode ? "py-2" : "pt-4 pb-5"} ${
         isInexactMatch ? "bg-neutral-100" : ""
       }`}
       onMouseEnter={() => setIsHovered(true)}
@@ -1174,7 +1196,7 @@ function HeadingPreview({
           );
         })}
       </div>
-      <FontMetadata font={font} isFailed={isFailed} />
+      {!compactMode && <FontMetadata font={font} isFailed={isFailed} />}
     </div>
   );
 }
@@ -1191,6 +1213,7 @@ function TextPreview({
   lineHeightAuto,
   letterSpacing,
   fontSize,
+  compactMode,
 }: {
   font: Font;
   selectedWeight: number;
@@ -1199,6 +1222,7 @@ function TextPreview({
   lineHeightAuto: boolean;
   letterSpacing: number;
   fontSize: number;
+  compactMode?: boolean;
 }) {
   const { isSignedIn } = useAuth();
   const favorites = useQuery(api.favorites.getFavorites);
@@ -1368,7 +1392,7 @@ const result = fibonacci(10);`}</NormalizedText>
           </div>
         </div>
       </div>
-      <FontMetadata font={font} />
+      {!compactMode && <FontMetadata font={font} />}
     </div>
   );
 }
