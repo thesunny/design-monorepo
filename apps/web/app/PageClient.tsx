@@ -1026,6 +1026,7 @@ function FontPreview({
 }
 
 const PARAGRAPH_NORMALIZATION_TEXT = "this is a simple sample text that represents average spacing and letter frequency";
+const FORM_LABEL_SIZE_SCALE = 0.875;
 
 function TextPreview({
   font,
@@ -1120,8 +1121,7 @@ function TextPreview({
             Typography is the art of arranging type. It makes text legible and
             appealing when displayed.
             <br /><br />
-            Good design uses <strong>contrast</strong> and <em>spacing</em> to
-            guide readers.
+            Good design uses <strong>contrast</strong> and <em>spacing</em>.
           </NormalizedText>
         </div>
         {/* Right: Code preview (monospace) or UI sample (non-monospace) */}
@@ -1147,57 +1147,62 @@ function TextPreview({
 const result = fibonacci(10);`}</NormalizedText>
             </div>
           ) : (
-            <div className="space-y-3">
-              <div>
-                <label
+            <div className="space-y-4 pt-2">
+              <div className="flex flex-col gap-0.5">
+                <NormalizedText
+                  fontFamily={font.name}
+                  fontWeight={weight}
+                  fontStyle={fontStyle}
+                  lineHeight={effectiveLineHeight}
+                  letterSpacing={letterSpacing}
+                  normalizedFontSize={fontSize * FORM_LABEL_SIZE_SCALE}
+                  normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+                  isMonospace={false}
                   className={italicUnavailable ? "opacity-30" : ""}
-                  style={{
-                    fontFamily: `"${font.name}", sans-serif`,
-                    fontWeight: weight,
-                    fontStyle,
-                    fontSize: 14,
-                    display: "block",
-                    marginBottom: 4,
-                    color: "#525252",
-                  }}
+                  style={{ display: "block", marginBottom: 4, color: "#525252" }}
                 >
                   Email address
-                </label>
-                <input
-                  type="text"
-                  placeholder="you@example.com"
-                  readOnly
-                  className={`w-full border border-neutral-300 rounded px-3 py-2 ${italicUnavailable ? "opacity-30" : ""}`}
-                  style={{
-                    fontFamily: `"${font.name}", sans-serif`,
-                    fontWeight: weight,
-                    fontStyle,
-                    fontSize: 14,
-                  }}
-                />
+                </NormalizedText>
+                <NormalizedText
+                  fontFamily={font.name}
+                  fontWeight={weight}
+                  fontStyle={fontStyle}
+                  lineHeight={effectiveLineHeight}
+                  letterSpacing={letterSpacing}
+                  normalizedFontSize={fontSize}
+                  normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+                  isMonospace={false}
+                  className={`block w-full border border-neutral-300 rounded px-3 py-2 ${italicUnavailable ? "opacity-30" : ""}`}
+                  style={{ color: "#a3a3a3" }}
+                >
+                  you@example.com
+                </NormalizedText>
               </div>
-              <label
-                className={`flex items-center gap-2 ${italicUnavailable ? "opacity-30" : ""}`}
-                style={{
-                  fontFamily: `"${font.name}", sans-serif`,
-                  fontWeight: weight,
-                  fontStyle,
-                  fontSize: 14,
-                  color: "#525252",
-                }}
-              >
+              <div className={`flex items-center gap-2 ${italicUnavailable ? "opacity-30" : ""}`}>
                 <input
                   type="checkbox"
                   readOnly
                   className="rounded border-neutral-300"
                 />
-                Keep me signed in
-              </label>
+                <NormalizedText
+                  fontFamily={font.name}
+                  fontWeight={weight}
+                  fontStyle={fontStyle}
+                  lineHeight={effectiveLineHeight}
+                  letterSpacing={letterSpacing}
+                  normalizedFontSize={fontSize * FORM_LABEL_SIZE_SCALE}
+                  normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+                  isMonospace={false}
+                  style={{ color: "#525252" }}
+                >
+                  Keep me signed in
+                </NormalizedText>
+              </div>
             </div>
           )}
         </div>
       </div>
-      <div className="flex items-center justify-between mt-2">
+      <div className="flex items-center justify-between mt-4">
         <span className="text-sm text-neutral-400">{font.name}</span>
         <div className="flex items-center gap-2">
           {font.styles.includes("italic") && (
