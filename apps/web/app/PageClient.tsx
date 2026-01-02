@@ -584,7 +584,7 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
               {previewMode === "headings" && (
                 <div className="divide-y divide-neutral-200">
                   {filteredFonts.map((font) => (
-                    <FontPreview
+                    <HeadingPreview
                       key={font.id}
                       font={font}
                       isFailed={failedFonts.has(font.id)}
@@ -891,7 +891,7 @@ function getFontLineHeight(font: Font, weight: number, isItalic: boolean): numbe
   return variant?.lineHeight ?? 1.2;
 }
 
-function FontPreview({
+function HeadingPreview({
   font,
   isFailed,
   selectedWeight,
