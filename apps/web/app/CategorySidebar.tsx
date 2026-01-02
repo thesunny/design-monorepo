@@ -47,7 +47,7 @@ export function CategorySidebar({
                     onClick={() => onSelectSubcategory(subcategory)}
                     onMouseEnter={() => onHoverSubcategory(subcategory)}
                     onMouseLeave={() => onHoverSubcategory(null)}
-                    className={`w-full text-left pl-4 pr-2 py-0.5 rounded-r transition-colors ${
+                    className={`w-full text-left pl-3 pr-2 py-0.5 rounded-r transition-colors cursor-pointer ${
                       selectedSubcategory?.id === subcategory.id
                         ? "bg-white/10 text-white font-semibold"
                         : "text-white/70 hover:bg-white/5"
