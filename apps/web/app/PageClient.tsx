@@ -787,45 +787,49 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                   </>
                 )}
 
-                {/* Preview Text row */}
-                <span className="text-xs text-neutral-500">Text</span>
-                <input
-                  type="text"
-                  value={previewText}
-                  onChange={(e) => {
-                    setPreviewText(e.target.value);
-                    updateUrlDebounced({ text: e.target.value });
-                  }}
-                  placeholder="Enter preview text..."
-                  className="w-full px-3 py-1.5 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-400"
-                />
-                <div className="grid grid-cols-2 gap-1.5 ml-3">
-                  {[
-                    { label: "Title", value: "The Quick Brown Fox Jumps" },
-                    { label: "Kerning", value: "AVATAR Hamburgefontsiv" },
-                    { label: "Numbers", value: "0123456789 $€£¥" },
-                    { label: "Alphabet", value: "abcdefghijklmnopqrstuvwxyz" },
-                  ].map(({ label, value }) => {
-                    const isActive = previewText === value;
-                    return (
-                      <button
-                        key={label}
-                        onClick={() => {
-                          setPreviewText(value);
-                          updateUrl({ text: value });
-                        }}
-                        className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
-                          isActive
-                            ? "bg-neutral-300 text-neutral-700"
-                            : "bg-neutral-100 hover:bg-neutral-200 text-neutral-600"
-                        }`}
-                        style={{ fontSize: 10 }}
-                      >
-                        {label}
-                      </button>
-                    );
-                  })}
-                </div>
+                {/* Preview Text row - hidden for paragraphs/text tab */}
+                {previewMode !== "paragraphs" && (
+                  <>
+                    <span className="text-xs text-neutral-500">Text</span>
+                    <input
+                      type="text"
+                      value={previewText}
+                      onChange={(e) => {
+                        setPreviewText(e.target.value);
+                        updateUrlDebounced({ text: e.target.value });
+                      }}
+                      placeholder="Enter preview text..."
+                      className="w-full px-3 py-1.5 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-400"
+                    />
+                    <div className="grid grid-cols-2 gap-1.5 ml-3">
+                      {[
+                        { label: "Title", value: "The Quick Brown Fox Jumps" },
+                        { label: "Kerning", value: "AVATAR Hamburgefontsiv" },
+                        { label: "Numbers", value: "0123456789 $€£¥" },
+                        { label: "Alphabet", value: "abcdefghijklmnopqrstuvwxyz" },
+                      ].map(({ label, value }) => {
+                        const isActive = previewText === value;
+                        return (
+                          <button
+                            key={label}
+                            onClick={() => {
+                              setPreviewText(value);
+                              updateUrl({ text: value });
+                            }}
+                            className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
+                              isActive
+                                ? "bg-neutral-300 text-neutral-700"
+                                : "bg-neutral-100 hover:bg-neutral-200 text-neutral-600"
+                            }`}
+                            style={{ fontSize: 10 }}
+                          >
+                            {label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </>
@@ -1026,7 +1030,7 @@ function FontPreview({
 }
 
 const PARAGRAPH_NORMALIZATION_TEXT = "this is a simple sample text that represents average spacing and letter frequency";
-const FORM_LABEL_SIZE_SCALE = 0.875;
+const FORM_LABEL_SIZE_SCALE = 0.9375; // 15/16 (15px when base font size is 16px)
 
 function TextPreview({
   font,
