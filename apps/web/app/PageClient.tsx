@@ -1176,34 +1176,23 @@ const result = fibonacci(10);`}</NormalizedText>
                   }}
                 />
               </div>
-              <div>
-                <label
-                  className={italicUnavailable ? "opacity-30" : ""}
-                  style={{
-                    fontFamily: `"${font.name}", sans-serif`,
-                    fontWeight: weight,
-                    fontStyle,
-                    fontSize: 14,
-                    display: "block",
-                    marginBottom: 4,
-                    color: "#525252",
-                  }}
-                >
-                  Password
-                </label>
+              <label
+                className={`flex items-center gap-2 ${italicUnavailable ? "opacity-30" : ""}`}
+                style={{
+                  fontFamily: `"${font.name}", sans-serif`,
+                  fontWeight: weight,
+                  fontStyle,
+                  fontSize: 14,
+                  color: "#525252",
+                }}
+              >
                 <input
-                  type="password"
-                  placeholder="Enter password"
+                  type="checkbox"
                   readOnly
-                  className={`w-full border border-neutral-300 rounded px-3 py-2 ${italicUnavailable ? "opacity-30" : ""}`}
-                  style={{
-                    fontFamily: `"${font.name}", sans-serif`,
-                    fontWeight: weight,
-                    fontStyle,
-                    fontSize: 14,
-                  }}
+                  className="rounded border-neutral-300"
                 />
-              </div>
+                Keep me signed in
+              </label>
             </div>
           )}
         </div>
