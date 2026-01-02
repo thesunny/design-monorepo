@@ -1,18 +1,28 @@
 "use client";
 
-import { useState, useMemo, useCallback, useDeferredValue, useRef, useEffect } from "react";
+import {
+  useState,
+  useMemo,
+  useCallback,
+  useDeferredValue,
+  useRef,
+  useEffect,
+} from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Slider } from "@mantine/core";
-import { IconHeading, IconAlignLeft, IconStar, IconStarFilled, IconSearch, IconX } from "@tabler/icons-react";
+import {
+  IconHeading,
+  IconAlignLeft,
+  IconStar,
+  IconStarFilled,
+  IconSearch,
+  IconX,
+} from "@tabler/icons-react";
 import { useAuth } from "@clerk/nextjs";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@repo/convex/convex/_generated/api";
-import type {
-  Category,
-  Subcategory,
-  Font,
-} from "../data/types";
+import type { Category, Subcategory, Font } from "../data/types";
 import { CategorySidebar } from "./CategorySidebar";
 import { FavoritesColumn } from "./FavoritesColumn";
 import { useFontLoader } from "./hooks/useFontLoader";
@@ -44,7 +54,10 @@ const DEFAULTS = {
 };
 
 // Helper to find subcategory by ID across all categories
-function findSubcategoryById(categories: Category[], id: string): Subcategory | null {
+function findSubcategoryById(
+  categories: Category[],
+  id: string
+): Subcategory | null {
   for (const category of categories) {
     for (const subcategory of category.subcategories) {
       if (subcategory.id === id) {
@@ -55,7 +68,10 @@ function findSubcategoryById(categories: Category[], id: string): Subcategory | 
   return null;
 }
 
-export default function PageClient({ fontCategories, allFonts }: PageClientProps) {
+export default function PageClient({
+  fontCategories,
+  allFonts,
+}: PageClientProps) {
   // URL state management
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -84,42 +100,44 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
     const w = searchParams.get("weight");
     return w ? parseInt(w, 10) : DEFAULTS.selectedWeight;
   });
-  const [showAllWeights, setShowAllWeights] = useState(() =>
-    searchParams.get("allWeights") === "1"
+  const [showAllWeights, setShowAllWeights] = useState(
+    () => searchParams.get("allWeights") === "1"
   );
-  const [showItalics, setShowItalics] = useState(() =>
-    searchParams.get("italics") === "1"
+  const [showItalics, setShowItalics] = useState(
+    () => searchParams.get("italics") === "1"
   );
-  const [previewText, setPreviewText] = useState(() =>
-    searchParams.get("text") ?? DEFAULTS.previewText
+  const [previewText, setPreviewText] = useState(
+    () => searchParams.get("text") ?? DEFAULTS.previewText
   );
   const [lineHeight, setLineHeight] = useState(() => {
     const lh = searchParams.get("lineHeight");
     return lh ? parseFloat(lh) : DEFAULTS.lineHeight;
   });
-  const [lineHeightAuto, setLineHeightAuto] = useState(() =>
-    searchParams.get("lineHeightAuto") !== "0"
+  const [lineHeightAuto, setLineHeightAuto] = useState(
+    () => searchParams.get("lineHeightAuto") !== "0"
   );
   const [letterSpacing, setLetterSpacing] = useState(() => {
     const ls = searchParams.get("tracking");
     return ls ? parseFloat(ls) : DEFAULTS.letterSpacing;
   });
-  const [previewMode, setPreviewMode] = useState<"headings" | "paragraphs" | "code">(() => {
+  const [previewMode, setPreviewMode] = useState<
+    "headings" | "paragraphs" | "code"
+  >(() => {
     const tab = searchParams.get("tab");
     if (tab === "paragraphs" || tab === "code") return tab;
     return DEFAULTS.previewMode;
   });
-  const [filterBold, setFilterBold] = useState(() =>
-    searchParams.get("bold") === "1"
+  const [filterBold, setFilterBold] = useState(
+    () => searchParams.get("bold") === "1"
   );
-  const [filterItalic, setFilterItalic] = useState(() =>
-    searchParams.get("italic") === "1"
+  const [filterItalic, setFilterItalic] = useState(
+    () => searchParams.get("italic") === "1"
   );
-  const [filterVariable, setFilterVariable] = useState(() =>
-    searchParams.get("variable") === "1"
+  const [filterVariable, setFilterVariable] = useState(
+    () => searchParams.get("variable") === "1"
   );
-  const [searchInput, setSearchInput] = useState(() =>
-    searchParams.get("q") ?? DEFAULTS.searchInput
+  const [searchInput, setSearchInput] = useState(
+    () => searchParams.get("q") ?? DEFAULTS.searchInput
   );
   // Defer the search query so typing stays responsive
   const deferredSearchQuery = useDeferredValue(searchInput);
@@ -183,136 +201,173 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
   }, [searchParams, fontCategories, defaultSubcategory]);
 
   // Helper to build and update URL with current state
-  const updateUrl = useCallback((overrides: {
-    category?: string | null;
-    tab?: "headings" | "paragraphs" | "code";
-    q?: string;
-    bold?: boolean;
-    italic?: boolean;
-    variable?: boolean;
-    weight?: number;
-    headingSize?: number;
-    textSize?: number;
-    tracking?: number;
-    lineHeight?: number;
-    lineHeightAuto?: boolean;
-    allWeights?: boolean;
-    italics?: boolean;
-    text?: string;
-  } = {}) => {
-    const params = new URLSearchParams();
+  const updateUrl = useCallback(
+    (
+      overrides: {
+        category?: string | null;
+        tab?: "headings" | "paragraphs" | "code";
+        q?: string;
+        bold?: boolean;
+        italic?: boolean;
+        variable?: boolean;
+        weight?: number;
+        headingSize?: number;
+        textSize?: number;
+        tracking?: number;
+        lineHeight?: number;
+        lineHeightAuto?: boolean;
+        allWeights?: boolean;
+        italics?: boolean;
+        text?: string;
+      } = {}
+    ) => {
+      const params = new URLSearchParams();
 
-    // Category
-    const categoryId = overrides.category !== undefined
-      ? overrides.category
-      : selectedSubcategory?.id ?? null;
-    if (categoryId && categoryId !== defaultSubcategory?.id) {
-      params.set("category", categoryId);
-    }
+      // Category
+      const categoryId =
+        overrides.category !== undefined
+          ? overrides.category
+          : (selectedSubcategory?.id ?? null);
+      if (categoryId && categoryId !== defaultSubcategory?.id) {
+        params.set("category", categoryId);
+      }
 
-    // Tab
-    const tab = overrides.tab !== undefined ? overrides.tab : previewMode;
-    if (tab !== DEFAULTS.previewMode) {
-      params.set("tab", tab);
-    }
+      // Tab
+      const tab = overrides.tab !== undefined ? overrides.tab : previewMode;
+      if (tab !== DEFAULTS.previewMode) {
+        params.set("tab", tab);
+      }
 
-    // Search query
-    const q = overrides.q !== undefined ? overrides.q : searchInput;
-    if (q !== DEFAULTS.searchInput) {
-      params.set("q", q);
-    }
+      // Search query
+      const q = overrides.q !== undefined ? overrides.q : searchInput;
+      if (q !== DEFAULTS.searchInput) {
+        params.set("q", q);
+      }
 
-    // Filters
-    const bold = overrides.bold !== undefined ? overrides.bold : filterBold;
-    if (bold !== DEFAULTS.filterBold) {
-      params.set("bold", "1");
-    }
+      // Filters
+      const bold = overrides.bold !== undefined ? overrides.bold : filterBold;
+      if (bold !== DEFAULTS.filterBold) {
+        params.set("bold", "1");
+      }
 
-    const italic = overrides.italic !== undefined ? overrides.italic : filterItalic;
-    if (italic !== DEFAULTS.filterItalic) {
-      params.set("italic", "1");
-    }
+      const italic =
+        overrides.italic !== undefined ? overrides.italic : filterItalic;
+      if (italic !== DEFAULTS.filterItalic) {
+        params.set("italic", "1");
+      }
 
-    const variable = overrides.variable !== undefined ? overrides.variable : filterVariable;
-    if (variable !== DEFAULTS.filterVariable) {
-      params.set("variable", "1");
-    }
+      const variable =
+        overrides.variable !== undefined ? overrides.variable : filterVariable;
+      if (variable !== DEFAULTS.filterVariable) {
+        params.set("variable", "1");
+      }
 
-    // Weight
-    const weight = overrides.weight !== undefined ? overrides.weight : selectedWeight;
-    if (weight !== DEFAULTS.selectedWeight) {
-      params.set("weight", weight.toString());
-    }
+      // Weight
+      const weight =
+        overrides.weight !== undefined ? overrides.weight : selectedWeight;
+      if (weight !== DEFAULTS.selectedWeight) {
+        params.set("weight", weight.toString());
+      }
 
-    // Heading size
-    const headingSize = overrides.headingSize !== undefined ? overrides.headingSize : headingsFontSize;
-    if (headingSize !== DEFAULTS.headingsFontSize) {
-      params.set("headingSize", headingSize.toString());
-    }
+      // Heading size
+      const headingSize =
+        overrides.headingSize !== undefined
+          ? overrides.headingSize
+          : headingsFontSize;
+      if (headingSize !== DEFAULTS.headingsFontSize) {
+        params.set("headingSize", headingSize.toString());
+      }
 
-    // Text size
-    const textSize = overrides.textSize !== undefined ? overrides.textSize : textFontSize;
-    if (textSize !== DEFAULTS.textFontSize) {
-      params.set("textSize", textSize.toString());
-    }
+      // Text size
+      const textSize =
+        overrides.textSize !== undefined ? overrides.textSize : textFontSize;
+      if (textSize !== DEFAULTS.textFontSize) {
+        params.set("textSize", textSize.toString());
+      }
 
-    // Tracking
-    const tracking = overrides.tracking !== undefined ? overrides.tracking : letterSpacing;
-    if (tracking !== DEFAULTS.letterSpacing) {
-      params.set("tracking", tracking.toString());
-    }
+      // Tracking
+      const tracking =
+        overrides.tracking !== undefined ? overrides.tracking : letterSpacing;
+      if (tracking !== DEFAULTS.letterSpacing) {
+        params.set("tracking", tracking.toString());
+      }
 
-    // Line height
-    const lh = overrides.lineHeight !== undefined ? overrides.lineHeight : lineHeight;
-    if (lh !== DEFAULTS.lineHeight) {
-      params.set("lineHeight", lh.toString());
-    }
+      // Line height
+      const lh =
+        overrides.lineHeight !== undefined ? overrides.lineHeight : lineHeight;
+      if (lh !== DEFAULTS.lineHeight) {
+        params.set("lineHeight", lh.toString());
+      }
 
-    // Line height auto
-    const lhAuto = overrides.lineHeightAuto !== undefined ? overrides.lineHeightAuto : lineHeightAuto;
-    if (lhAuto !== DEFAULTS.lineHeightAuto) {
-      params.set("lineHeightAuto", "0");
-    }
+      // Line height auto
+      const lhAuto =
+        overrides.lineHeightAuto !== undefined
+          ? overrides.lineHeightAuto
+          : lineHeightAuto;
+      if (lhAuto !== DEFAULTS.lineHeightAuto) {
+        params.set("lineHeightAuto", "0");
+      }
 
-    // Show all weights
-    const allWeights = overrides.allWeights !== undefined ? overrides.allWeights : showAllWeights;
-    if (allWeights !== DEFAULTS.showAllWeights) {
-      params.set("allWeights", "1");
-    }
+      // Show all weights
+      const allWeights =
+        overrides.allWeights !== undefined
+          ? overrides.allWeights
+          : showAllWeights;
+      if (allWeights !== DEFAULTS.showAllWeights) {
+        params.set("allWeights", "1");
+      }
 
-    // Show italics
-    const italics = overrides.italics !== undefined ? overrides.italics : showItalics;
-    if (italics !== DEFAULTS.showItalics) {
-      params.set("italics", "1");
-    }
+      // Show italics
+      const italics =
+        overrides.italics !== undefined ? overrides.italics : showItalics;
+      if (italics !== DEFAULTS.showItalics) {
+        params.set("italics", "1");
+      }
 
-    // Preview text
-    const text = overrides.text !== undefined ? overrides.text : previewText;
-    if (text !== DEFAULTS.previewText) {
-      params.set("text", text);
-    }
+      // Preview text
+      const text = overrides.text !== undefined ? overrides.text : previewText;
+      if (text !== DEFAULTS.previewText) {
+        params.set("text", text);
+      }
 
-    const queryString = params.toString();
-    const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
-    router.push(newUrl, { scroll: false });
-  }, [
-    pathname, router, defaultSubcategory?.id,
-    selectedSubcategory?.id, previewMode, searchInput,
-    filterBold, filterItalic, filterVariable,
-    selectedWeight, headingsFontSize, textFontSize,
-    letterSpacing, lineHeight, lineHeightAuto,
-    showAllWeights, showItalics, previewText
-  ]);
+      const queryString = params.toString();
+      const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+      router.push(newUrl, { scroll: false });
+    },
+    [
+      pathname,
+      router,
+      defaultSubcategory?.id,
+      selectedSubcategory?.id,
+      previewMode,
+      searchInput,
+      filterBold,
+      filterItalic,
+      filterVariable,
+      selectedWeight,
+      headingsFontSize,
+      textFontSize,
+      letterSpacing,
+      lineHeight,
+      lineHeightAuto,
+      showAllWeights,
+      showItalics,
+      previewText,
+    ]
+  );
 
   // Debounced URL update for text inputs
-  const updateUrlDebounced = useCallback((overrides: Parameters<typeof updateUrl>[0]) => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-    debounceTimerRef.current = setTimeout(() => {
-      updateUrl(overrides);
-    }, 300);
-  }, [updateUrl]);
+  const updateUrlDebounced = useCallback(
+    (overrides: Parameters<typeof updateUrl>[0]) => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      debounceTimerRef.current = setTimeout(() => {
+        updateUrl(overrides);
+      }, 300);
+    },
+    [updateUrl]
+  );
 
   // Mark as initialized after first render
   useEffect(() => {
@@ -337,7 +392,8 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
 
   // Use headings font size for headings tab, text font size for paragraphs/code
   const fontSize = previewMode === "headings" ? headingsFontSize : textFontSize;
-  const setFontSize = previewMode === "headings" ? setHeadingsFontSize : setTextFontSize;
+  const setFontSize =
+    previewMode === "headings" ? setHeadingsFontSize : setTextFontSize;
 
   // Fetch favorites for Column 3
   const favorites = useQuery(api.favorites.getFavorites);
@@ -464,7 +520,9 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
       />
 
       {/* Column 2: Font List */}
-      <div className={`flex-1 min-w-0 border-r border-neutral-200 flex flex-col transition-opacity duration-150 ${hoveredSubcategory && hoveredSubcategory.id !== selectedSubcategory?.id ? 'opacity-50' : ''}`}>
+      <div
+        className={`flex-1 min-w-0 border-r border-neutral-200 flex flex-col transition-opacity duration-150 ${hoveredSubcategory && hoveredSubcategory.id !== selectedSubcategory?.id ? "opacity-50" : ""}`}
+      >
         {displayedSubcategory ? (
           <>
             {/* Tabs and Filters */}
@@ -501,7 +559,10 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
               </button>
               <div className="flex items-center ml-auto mr-4">
                 <div className="relative">
-                  <IconSearch size={14} className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${isSearchPending ? "text-neutral-300" : "text-neutral-400"}`} />
+                  <IconSearch
+                    size={14}
+                    className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${isSearchPending ? "text-neutral-300" : "text-neutral-400"}`}
+                  />
                   <input
                     ref={searchInputRef}
                     type="text"
@@ -667,19 +728,22 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                       }`}
                     />
                   </button>
-                  <span className="text-xs text-neutral-500 whitespace-nowrap">All Weights</span>
+                  <span className="text-xs text-neutral-500 whitespace-nowrap">
+                    All Weights
+                  </span>
                 </label>
-
                 {/* Size row */}
                 <span className="text-xs text-neutral-500">Size</span>
                 <Slider
                   value={fontSize}
                   onChange={setFontSize}
-                  onChangeEnd={(value) => updateUrl(
-                    previewMode === "headings"
-                      ? { headingSize: value }
-                      : { textSize: value }
-                  )}
+                  onChangeEnd={(value) =>
+                    updateUrl(
+                      previewMode === "headings"
+                        ? { headingSize: value }
+                        : { textSize: value }
+                    )
+                  }
                   min={12}
                   max={72}
                   step={1}
@@ -714,9 +778,10 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                       }`}
                     />
                   </button>
-                  <span className="text-xs text-neutral-500 whitespace-nowrap">Italics</span>
+                  <span className="text-xs text-neutral-500 whitespace-nowrap">
+                    Italics
+                  </span>
                 </label>
-
                 {/* Tracking row */}
                 <span className="text-xs text-neutral-500">Tracking</span>
                 <Slider
@@ -738,11 +803,12 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                   styles={{ markLabel: { fontSize: "12px" } }}
                 />
                 <div /> {/* Empty cell for grid alignment */}
-
                 {/* Line Height row - hidden for headings tab */}
                 {previewMode !== "headings" && (
                   <>
-                    <span className="text-xs text-neutral-500">Line Height</span>
+                    <span className="text-xs text-neutral-500">
+                      Line Height
+                    </span>
                     <Slider
                       value={lineHeight}
                       onChange={setLineHeight}
@@ -782,11 +848,12 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                           }`}
                         />
                       </button>
-                      <span className="text-xs text-neutral-500 whitespace-nowrap">Auto</span>
+                      <span className="text-xs text-neutral-500 whitespace-nowrap">
+                        Auto
+                      </span>
                     </label>
                   </>
                 )}
-
                 {/* Preview Text row - hidden for paragraphs/text tab */}
                 {previewMode !== "paragraphs" && (
                   <>
@@ -806,7 +873,10 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                         { label: "Title", value: "The Quick Brown Fox Jumps" },
                         { label: "Kerning", value: "AVATAR Hamburgefontsiv" },
                         { label: "Numbers", value: "0123456789 $€£¥" },
-                        { label: "Alphabet", value: "abcdefghijklmnopqrstuvwxyz" },
+                        {
+                          label: "Alphabet",
+                          value: "abcdefghijklmnopqrstuvwxyz",
+                        },
                       ].map(({ label, value }) => {
                         const isActive = previewText === value;
                         return (
@@ -885,25 +955,27 @@ function getClosestWeight(
  * Gets the lineHeight from font metadata for a specific weight and style.
  * Falls back to 1.2 if not found.
  */
-function getFontLineHeight(font: Font, weight: number, isItalic: boolean): number {
+function getFontLineHeight(
+  font: Font,
+  weight: number,
+  isItalic: boolean
+): number {
   const key = isItalic ? `${weight}i` : `${weight}`;
   const variant = font.metadata.fonts[key];
   return variant?.lineHeight ?? 1.2;
 }
 
-function FontMetadata({
-  font,
-  isFailed,
-}: {
-  font: Font;
-  isFailed?: boolean;
-}) {
+function FontMetadata({ font, isFailed }: { font: Font; isFailed?: boolean }) {
   const hasItalic = font.styles.includes("italic");
 
   return (
     <div className="flex items-center justify-between mt-2">
       <div className="flex items-center gap-2">
-        <span className={`text-sm ${isFailed ? "text-red-400" : "text-neutral-400"}`}>{font.name}</span>
+        <span
+          className={`text-sm ${isFailed ? "text-red-400" : "text-neutral-400"}`}
+        >
+          {font.name}
+        </span>
         {isFailed && (
           <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-600 rounded">
             Not Found
@@ -989,7 +1061,7 @@ function HeadingPreview({
 
   return (
     <div
-      className={`px-8 py-4 ${
+      className={`pl-12 pr-8 pt-4 pb-5 ${
         isInexactMatch ? "bg-neutral-100" : ""
       }`}
     >
@@ -1000,42 +1072,42 @@ function HeadingPreview({
             ? getFontLineHeight(font, weight, isItalic)
             : lineHeight;
           return (
-          <FontWeightRow
-            key={weight}
-            fontName={font.name}
-            weight={weight}
-            lineHeight={effectiveLineHeight}
-            letterSpacing={letterSpacing}
-            previewText={previewText}
-            fontSize={fontSize}
-            isMonospace={isMonospaceFont(font)}
-            isFailed={isFailed}
-            showItalics={showItalics}
-            hasItalic={hasItalic}
-            showStar={isSignedIn}
-            isFavorited={isWeightFavorited(weight)}
-            onStarClick={() => {
-              if (isWeightFavorited(weight)) {
-                removeFavorite({
-                  fontId: font.id,
-                  weight,
-                  lineHeight,
-                  letterSpacing,
-                  type: "heading",
-                });
-              } else {
-                addFavorite({
-                  fontId: font.id,
-                  fontName: font.name,
-                  weight,
-                  lineHeight,
-                  letterSpacing,
-                  type: "heading",
-                });
-              }
-            }}
-          />
-        );
+            <FontWeightRow
+              key={weight}
+              fontName={font.name}
+              weight={weight}
+              lineHeight={effectiveLineHeight}
+              letterSpacing={letterSpacing}
+              previewText={previewText}
+              fontSize={fontSize}
+              isMonospace={isMonospaceFont(font)}
+              isFailed={isFailed}
+              showItalics={showItalics}
+              hasItalic={hasItalic}
+              showStar={isSignedIn}
+              isFavorited={isWeightFavorited(weight)}
+              onStarClick={() => {
+                if (isWeightFavorited(weight)) {
+                  removeFavorite({
+                    fontId: font.id,
+                    weight,
+                    lineHeight,
+                    letterSpacing,
+                    type: "heading",
+                  });
+                } else {
+                  addFavorite({
+                    fontId: font.id,
+                    fontName: font.name,
+                    weight,
+                    lineHeight,
+                    letterSpacing,
+                    type: "heading",
+                  });
+                }
+              }}
+            />
+          );
         })}
       </div>
       <FontMetadata font={font} isFailed={isFailed} />
@@ -1043,7 +1115,8 @@ function HeadingPreview({
   );
 }
 
-const PARAGRAPH_NORMALIZATION_TEXT = "this is a simple sample text that represents average spacing and letter frequency";
+const PARAGRAPH_NORMALIZATION_TEXT =
+  "this is a simple sample text that represents average spacing and letter frequency";
 const FORM_LABEL_SIZE_SCALE = 0.9375; // 15/16 (15px when base font size is 16px)
 
 function TextPreview({
@@ -1079,12 +1152,13 @@ function TextPreview({
   const isMonospace = isMonospaceFont(font);
 
   // Check if current font+weight is favorited as a paragraph
-  const isFavorited = favorites?.some(
-    (fav) =>
-      fav.fontId === font.id &&
-      fav.weight === weight &&
-      fav.type === "paragraph"
-  ) ?? false;
+  const isFavorited =
+    favorites?.some(
+      (fav) =>
+        fav.fontId === font.id &&
+        fav.weight === weight &&
+        fav.type === "paragraph"
+    ) ?? false;
 
   const handleStarClick = () => {
     if (isFavorited) {
@@ -1114,75 +1188,41 @@ function TextPreview({
           <button
             onClick={handleStarClick}
             className="absolute p-1 rounded hover:bg-neutral-100 transition-colors z-10"
-            style={{ top: -8, right: -8 }}
+            style={{ top: -10, right: -28 }}
             title={isFavorited ? "Remove from favorites" : "Add to favorites"}
           >
             {isFavorited ? (
-              <IconStarFilled size={16} className="text-yellow-500" />
+              <IconStarFilled size={18} className="text-yellow-500" />
             ) : (
-              <IconStar size={16} className="text-neutral-400" />
+              <IconStar size={18} className="text-neutral-400" stroke={1.25} />
             )}
           </button>
         )}
         <div className="flex gap-6">
-        {/* Left: Paragraph preview */}
-        <div className="flex-1 min-w-0">
-          <NormalizedText
-            fontFamily={font.name}
-            fontWeight={weight}
-            fontStyle={fontStyle}
-            lineHeight={effectiveLineHeight}
-            letterSpacing={letterSpacing}
-            normalizedFontSize={fontSize}
-            normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
-            isMonospace={isMonospace}
-            className={italicUnavailable ? "opacity-30" : ""}
-          >
-            Typography is the art of arranging type. It makes text legible and
-            appealing when displayed.
-            <br /><br />
-            Good design uses <strong>contrast</strong> and <em>spacing</em>.
-          </NormalizedText>
-        </div>
-        {/* Right: Code preview (monospace) or UI sample (non-monospace) */}
-        <div className="flex-1 min-w-0">
-          {isMonospace ? (
-            <div className="overflow-x-auto bg-neutral-50 rounded p-3">
-              <NormalizedText
-                fontFamily={font.name}
-                fontWeight={weight}
-                fontStyle={fontStyle}
-                lineHeight={effectiveLineHeight}
-                letterSpacing={letterSpacing}
-                normalizedFontSize={fontSize}
-                normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
-                isMonospace={true}
-                className={italicUnavailable ? "opacity-30" : ""}
-                style={{ display: "block", whiteSpace: "pre" }}
-              >{`function fibonacci(n) {
-  if (n <= 1) return n;
-  return fibonacci(n - 1);
-}
-
-const result = fibonacci(10);`}</NormalizedText>
-            </div>
-          ) : (
-            <div className="space-y-4 pt-2">
-              <div className="flex flex-col gap-0.5">
-                <NormalizedText
-                  fontFamily={font.name}
-                  fontWeight={weight}
-                  fontStyle={fontStyle}
-                  lineHeight={effectiveLineHeight}
-                  letterSpacing={letterSpacing}
-                  normalizedFontSize={fontSize * FORM_LABEL_SIZE_SCALE}
-                  normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
-                  isMonospace={false}
-                  className={italicUnavailable ? "opacity-30" : ""}
-                  style={{ display: "block", marginBottom: 4, color: "#525252" }}
-                >
-                  Email address
-                </NormalizedText>
+          {/* Left: Paragraph preview */}
+          <div className="flex-1 min-w-0">
+            <NormalizedText
+              fontFamily={font.name}
+              fontWeight={weight}
+              fontStyle={fontStyle}
+              lineHeight={effectiveLineHeight}
+              letterSpacing={letterSpacing}
+              normalizedFontSize={fontSize}
+              normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+              isMonospace={isMonospace}
+              className={italicUnavailable ? "opacity-30" : ""}
+            >
+              Typography is the art of arranging type. It makes text legible and
+              appealing when displayed.
+              <br />
+              <br />
+              Good design uses <strong>contrast</strong> and <em>spacing</em>.
+            </NormalizedText>
+          </div>
+          {/* Right: Code preview (monospace) or UI sample (non-monospace) */}
+          <div className="flex-1 min-w-0">
+            {isMonospace ? (
+              <div className="overflow-x-auto bg-neutral-50 rounded p-3">
                 <NormalizedText
                   fontFamily={font.name}
                   fontWeight={weight}
@@ -1191,36 +1231,77 @@ const result = fibonacci(10);`}</NormalizedText>
                   letterSpacing={letterSpacing}
                   normalizedFontSize={fontSize}
                   normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
-                  isMonospace={false}
-                  className={`block w-full border border-neutral-300 rounded px-3 py-2 ${italicUnavailable ? "opacity-30" : ""}`}
-                  style={{ color: "#a3a3a3" }}
-                >
-                  you@example.com
-                </NormalizedText>
+                  isMonospace={true}
+                  className={italicUnavailable ? "opacity-30" : ""}
+                  style={{ display: "block", whiteSpace: "pre" }}
+                >{`function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1);
+}
+
+const result = fibonacci(10);`}</NormalizedText>
               </div>
-              <div className={`flex items-center gap-2 ${italicUnavailable ? "opacity-30" : ""}`}>
-                <input
-                  type="checkbox"
-                  readOnly
-                  className="rounded border-neutral-300"
-                />
-                <NormalizedText
-                  fontFamily={font.name}
-                  fontWeight={weight}
-                  fontStyle={fontStyle}
-                  lineHeight={effectiveLineHeight}
-                  letterSpacing={letterSpacing}
-                  normalizedFontSize={fontSize * FORM_LABEL_SIZE_SCALE}
-                  normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
-                  isMonospace={false}
-                  style={{ color: "#525252" }}
+            ) : (
+              <div className="space-y-4 pt-2">
+                <div className="flex flex-col gap-0.5">
+                  <NormalizedText
+                    fontFamily={font.name}
+                    fontWeight={weight}
+                    fontStyle={fontStyle}
+                    lineHeight={effectiveLineHeight}
+                    letterSpacing={letterSpacing}
+                    normalizedFontSize={fontSize * FORM_LABEL_SIZE_SCALE}
+                    normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+                    isMonospace={false}
+                    className={italicUnavailable ? "opacity-30" : ""}
+                    style={{
+                      display: "block",
+                      marginBottom: 4,
+                      color: "#525252",
+                    }}
+                  >
+                    Email address
+                  </NormalizedText>
+                  <NormalizedText
+                    fontFamily={font.name}
+                    fontWeight={weight}
+                    fontStyle={fontStyle}
+                    lineHeight={effectiveLineHeight}
+                    letterSpacing={letterSpacing}
+                    normalizedFontSize={fontSize}
+                    normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+                    isMonospace={false}
+                    className={`block w-full border border-neutral-300 rounded px-3 py-2 ${italicUnavailable ? "opacity-30" : ""}`}
+                    style={{ color: "#a3a3a3" }}
+                  >
+                    you@example.com
+                  </NormalizedText>
+                </div>
+                <div
+                  className={`flex items-center gap-2 ${italicUnavailable ? "opacity-30" : ""}`}
                 >
-                  Keep me signed in
-                </NormalizedText>
+                  <input
+                    type="checkbox"
+                    readOnly
+                    className="rounded border-neutral-300"
+                  />
+                  <NormalizedText
+                    fontFamily={font.name}
+                    fontWeight={weight}
+                    fontStyle={fontStyle}
+                    lineHeight={effectiveLineHeight}
+                    letterSpacing={letterSpacing}
+                    normalizedFontSize={fontSize * FORM_LABEL_SIZE_SCALE}
+                    normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+                    isMonospace={false}
+                    style={{ color: "#525252" }}
+                  >
+                    Keep me signed in
+                  </NormalizedText>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
         </div>
       </div>
       <FontMetadata font={font} />

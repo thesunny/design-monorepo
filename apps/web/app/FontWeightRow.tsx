@@ -86,9 +86,9 @@ export function FontWeightRow({
             title={isFavorited ? "Remove from favorites" : "Add to favorites"}
           >
             {isFavorited ? (
-              <IconStarFilled size={16} className="text-yellow-500" />
+              <IconStarFilled size={18} className="text-yellow-500" />
             ) : (
-              <IconStar size={16} className="text-neutral-400" />
+              <IconStar size={18} className="text-neutral-400" stroke={1.25} />
             )}
           </button>
         )}
