@@ -1,5 +1,9 @@
 import { googleFontsMetadata } from "./googleFontsMetadata";
 
+// Helper to convert "Sans Serif" to "sans-serif"
+const dasherize = (str: string): string =>
+  str.toLowerCase().replace(/\s+/g, "-");
+
 export type Subcategory = {
   id: string;
   name: string;
@@ -12,13 +16,17 @@ export type Category = {
   subcategories: Subcategory[];
 };
 
-const baseFontCategories: Category[] = [
+type BaseSubcategory = Omit<Subcategory, "id">;
+type BaseCategory = {
+  name: string;
+  subcategories: BaseSubcategory[];
+};
+
+const baseFontCategories: BaseCategory[] = [
   {
-    id: "sans-serif",
     name: "Sans Serif",
     subcategories: [
       {
-        id: "modern-sans",
         name: "Modern",
         fonts: [
           "Roboto",
@@ -43,7 +51,6 @@ const baseFontCategories: Category[] = [
         ],
       },
       {
-        id: "geometric-sans",
         name: "Geometric",
         fonts: [
           "Montserrat",
@@ -64,7 +71,6 @@ const baseFontCategories: Category[] = [
         ],
       },
       {
-        id: "humanist-sans",
         name: "Friendly",
         fonts: [
           "DM Sans",
@@ -87,7 +93,6 @@ const baseFontCategories: Category[] = [
         ],
       },
       {
-        id: "condensed-sans",
         name: "Condensed",
         fonts: [
           "Roboto Condensed",
@@ -102,7 +107,6 @@ const baseFontCategories: Category[] = [
         ],
       },
       {
-        id: "display-sans",
         name: "Display",
         fonts: [
           "Anton",
@@ -126,11 +130,9 @@ const baseFontCategories: Category[] = [
   },
 
   {
-    id: "serif",
     name: "Serif",
     subcategories: [
       {
-        id: "classic",
         name: "Classic",
         fonts: [
           "Lora",
@@ -153,7 +155,6 @@ const baseFontCategories: Category[] = [
         ],
       },
       {
-        id: "transitional",
         name: "Modern",
         fonts: [
           "Merriweather",
@@ -168,7 +169,6 @@ const baseFontCategories: Category[] = [
         ],
       },
       {
-        id: "thin-serif",
         name: "Thin",
         fonts: [
           "Playfair Display",
@@ -181,7 +181,6 @@ const baseFontCategories: Category[] = [
         ],
       },
       {
-        id: "slab-serif",
         name: "Slab",
         fonts: [
           "Roboto Slab",
@@ -203,11 +202,9 @@ const baseFontCategories: Category[] = [
   },
 
   {
-    id: "monospace",
     name: "Monospace",
     subcategories: [
       {
-        id: "coding-monospace",
         name: "Code",
         fonts: [
           "JetBrains Mono",
@@ -233,7 +230,6 @@ const baseFontCategories: Category[] = [
         ],
       },
       {
-        id: "retro-monospace",
         name: "Retro",
         fonts: [
           "VT323",
@@ -250,11 +246,9 @@ const baseFontCategories: Category[] = [
   },
 
   {
-    id: "handwriting-script",
     name: "Handwriting",
     subcategories: [
       {
-        id: "casual",
         name: "Casual",
         fonts: [
           "Caveat",
@@ -274,7 +268,6 @@ const baseFontCategories: Category[] = [
         ],
       },
       {
-        id: "marker-comic",
         name: "Marker",
         fonts: [
           "Permanent Marker",
@@ -287,7 +280,6 @@ const baseFontCategories: Category[] = [
         ],
       },
       {
-        id: "brush",
         name: "Brush",
         fonts: [
           "Pacifico",
@@ -304,7 +296,6 @@ const baseFontCategories: Category[] = [
         ],
       },
       {
-        id: "calligraphic",
         name: "Calligraphy",
         fonts: [
           "Dancing Script",
@@ -325,11 +316,9 @@ const baseFontCategories: Category[] = [
   },
 
   {
-    id: "display-decorative",
     name: "Display",
     subcategories: [
       {
-        id: "modern-display",
         name: "Modern",
         fonts: [
           "Abril Fatface",
@@ -347,7 +336,6 @@ const baseFontCategories: Category[] = [
         ],
       },
       {
-        id: "retro-vintage",
         name: "Retro",
         fonts: [
           "Limelight",
@@ -364,12 +352,10 @@ const baseFontCategories: Category[] = [
         ],
       },
       {
-        id: "gothic",
         name: "Gothic",
         fonts: ["UnifrakturMaguntia", "UnifrakturCook", "Pirata One"],
       },
       {
-        id: "experimental",
         name: "Experimental",
         fonts: [
           "Fascinate Inline",
@@ -461,13 +447,18 @@ const createMoreSubcategories = (
 // Extend baseFontCategories with "More" subcategories and sort all fonts by popularity
 export const fontCategories: Category[] = baseFontCategories.map(
   (category) => ({
-    ...category,
+    id: dasherize(category.name),
+    name: category.name,
     subcategories: [
       ...category.subcategories.map((subcategory) => ({
-        ...subcategory,
+        id: dasherize(subcategory.name),
+        name: subcategory.name,
         fonts: sortByPopularity(subcategory.fonts),
       })),
-      ...createMoreSubcategories(category.id, getMoreFonts(category.name)),
+      ...createMoreSubcategories(
+        dasherize(category.name),
+        getMoreFonts(category.name)
+      ),
     ],
   })
 );
