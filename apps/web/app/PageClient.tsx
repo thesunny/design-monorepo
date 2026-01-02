@@ -18,6 +18,8 @@ import {
   IconStarFilled,
   IconSearch,
   IconX,
+  IconSquare,
+  IconCheckbox,
 } from "@tabler/icons-react";
 import { useAuth } from "@clerk/nextjs";
 import { useQuery, useMutation } from "convex/react";
@@ -109,6 +111,7 @@ export default function PageClient({
   const [previewText, setPreviewText] = useState(
     () => searchParams.get("text") ?? DEFAULTS.previewText
   );
+  const [checkedFonts, setCheckedFonts] = useState<Set<string>>(new Set());
   const [lineHeight, setLineHeight] = useState(() => {
     const lh = searchParams.get("lineHeight");
     return lh ? parseFloat(lh) : DEFAULTS.lineHeight;
@@ -514,6 +517,7 @@ export default function PageClient({
         selectedSubcategory={selectedSubcategory}
         onSelectSubcategory={(subcategory) => {
           setSelectedSubcategory(subcategory);
+          setCheckedFonts(new Set());
           updateUrl({ category: subcategory?.id ?? null });
         }}
         onHoverSubcategory={setHoveredSubcategory}
@@ -657,6 +661,19 @@ export default function PageClient({
                       lineHeightAuto={lineHeightAuto}
                       letterSpacing={letterSpacing}
                       fontSize={fontSize}
+                      isChecked={checkedFonts.has(font.id)}
+                      anyChecked={checkedFonts.size > 0}
+                      onCheckChange={(checked) => {
+                        setCheckedFonts((prev) => {
+                          const next = new Set(prev);
+                          if (checked) {
+                            next.add(font.id);
+                          } else {
+                            next.delete(font.id);
+                          }
+                          return next;
+                        });
+                      }}
                     />
                   ))}
                 </div>
@@ -1007,6 +1024,9 @@ function HeadingPreview({
   lineHeightAuto,
   letterSpacing,
   fontSize,
+  isChecked,
+  onCheckChange,
+  anyChecked,
 }: {
   font: Font;
   isFailed?: boolean;
@@ -1018,7 +1038,11 @@ function HeadingPreview({
   lineHeightAuto: boolean;
   letterSpacing: number;
   fontSize: number;
+  isChecked?: boolean;
+  onCheckChange?: (checked: boolean) => void;
+  anyChecked?: boolean;
 }) {
+  const [isHovered, setIsHovered] = useState(false);
   const { isSignedIn } = useAuth();
   const favorites = useQuery(api.favorites.getFavorites);
   const addFavorite = useMutation(api.favorites.addFavorite);
@@ -1059,12 +1083,28 @@ function HeadingPreview({
     ? displayWeights
     : [specificWeight?.weight ?? 400];
 
+  const showCheckbox = isHovered || anyChecked;
+
   return (
     <div
-      className={`pl-12 pr-8 pt-4 pb-5 ${
+      className={`relative pl-12 pr-8 pt-4 pb-5 ${
         isInexactMatch ? "bg-neutral-100" : ""
       }`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
+      {showCheckbox && (
+        <button
+          onClick={() => onCheckChange?.(!isChecked)}
+          className={`absolute left-0 top-0 bottom-0 w-10 flex items-center justify-center transition-colors cursor-pointer ${isChecked ? "bg-blue-100" : "hover:bg-neutral-100"}`}
+        >
+          {isChecked ? (
+            <IconCheckbox size={24} className="text-neutral-500" stroke={1.5} />
+          ) : (
+            <IconSquare size={24} className="text-neutral-300" stroke={1.5} />
+          )}
+        </button>
+      )}
       <div className="space-y-2">
         {weightsToDisplay.map((weight) => {
           const isItalic = showItalics && hasItalic;
