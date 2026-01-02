@@ -601,7 +601,7 @@ export default function PageClient({ fontCategories, allFonts }: PageClientProps
                 </div>
               )}
               {previewMode === "paragraphs" && (
-                <div className="flex flex-col gap-4 p-4">
+                <div className="divide-y divide-neutral-200">
                   {filteredFonts.map((font) => (
                     <TextPreview
                       key={font.id}
@@ -1089,7 +1089,7 @@ function TextPreview({
   };
 
   return (
-    <div className="border rounded-lg p-4 border-neutral-200 relative">
+    <div className="px-8 py-4 relative">
       {isSignedIn && (
         <button
           onClick={handleStarClick}
@@ -1208,8 +1208,8 @@ const result = fibonacci(10);`}</NormalizedText>
           )}
         </div>
       </div>
-      <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-100">
-        <span className="text-sm text-neutral-500">{font.name}</span>
+      <div className="flex items-center justify-between mt-2">
+        <span className="text-sm text-neutral-400">{font.name}</span>
         <div className="flex items-center gap-2">
           {font.styles.includes("italic") && (
             <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
