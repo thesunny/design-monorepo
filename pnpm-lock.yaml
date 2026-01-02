@@ -124,6 +124,9 @@ importers:
       react-textfit:
         specifier: ^1.1.1
         version: 1.1.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      zod:
+        specifier: ^4.3.4
+        version: 4.3.4
     devDependencies:
       '@next/eslint-plugin-next':
         specifier: ^15.4.6
@@ -2724,6 +2727,9 @@ packages:
   zod@4.2.1:
     resolution: {integrity: sha512-0wZ1IRqGGhMP76gLqz8EyfBXKk0J2qo2+H3fi4mcUP/KtTocoX08nmIAHl1Z2kJIZbZee8KOpBCSNPRgauucjw==}
 
+  zod@4.3.4:
+    resolution: {integrity: sha512-Zw/uYiiyF6pUT1qmKbZziChgNPRu+ZRneAsMUDU6IwmXdWt5JwcUfy2bvLOCUtz5UniaN/Zx5aFttZYbYc7O/A==}
+
 snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
@@ -5193,3 +5199,5 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   zod@4.2.1: {}
+
+  zod@4.3.4: {}
