@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { googleFontsMetadata } from "./googleFontsMetadata";
-import baseFontCategoriesJson from "./baseFontCategories.json";
+import baseFontCategoriesJson from "./fonts.json";
 
 // Helper to convert "Sans Serif" to "sans-serif"
 const dasherize = (str: string): string =>
