@@ -891,6 +891,39 @@ function getFontLineHeight(font: Font, weight: number, isItalic: boolean): numbe
   return variant?.lineHeight ?? 1.2;
 }
 
+function FontMetadata({
+  font,
+  isFailed,
+}: {
+  font: Font;
+  isFailed?: boolean;
+}) {
+  const hasItalic = font.styles.includes("italic");
+
+  return (
+    <div className="flex items-center justify-between mt-2">
+      <div className="flex items-center gap-2">
+        <span className={`text-sm ${isFailed ? "text-red-400" : "text-neutral-400"}`}>{font.name}</span>
+        {isFailed && (
+          <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-600 rounded">
+            Not Found
+          </span>
+        )}
+      </div>
+      <div className="flex items-center gap-2">
+        {hasItalic && (
+          <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
+            Italic
+          </span>
+        )}
+        <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
+          {formatWeights(font.weights, font.variable)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function HeadingPreview({
   font,
   isFailed,
@@ -1005,26 +1038,7 @@ function HeadingPreview({
         );
         })}
       </div>
-      <div className="flex items-center justify-between mt-2">
-        <div className="flex items-center gap-2">
-          <span className={`text-sm ${isFailed ? "text-red-400" : "text-neutral-400"}`}>{font.name}</span>
-          {isFailed && (
-            <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-600 rounded">
-              Not Found
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          {hasItalic && (
-            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-              Italic
-            </span>
-          )}
-          <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-            {formatWeights(font.weights, font.variable)}
-          </span>
-        </div>
-      </div>
+      <FontMetadata font={font} isFailed={isFailed} />
     </div>
   );
 }
@@ -1094,21 +1108,23 @@ function TextPreview({
   };
 
   return (
-    <div className="px-8 py-4 relative">
-      {isSignedIn && (
-        <button
-          onClick={handleStarClick}
-          className="absolute top-2 right-2 p-1 rounded hover:bg-neutral-100 transition-colors z-10"
-          title={isFavorited ? "Remove from favorites" : "Add to favorites"}
-        >
-          {isFavorited ? (
-            <IconStarFilled size={16} className="text-yellow-500" />
-          ) : (
-            <IconStar size={16} className="text-neutral-400" />
-          )}
-        </button>
-      )}
-      <div className="flex gap-6">
+    <div className="px-8 py-4">
+      <div className="relative">
+        {isSignedIn && (
+          <button
+            onClick={handleStarClick}
+            className="absolute p-1 rounded hover:bg-neutral-100 transition-colors z-10"
+            style={{ top: -8, right: -8 }}
+            title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+          >
+            {isFavorited ? (
+              <IconStarFilled size={16} className="text-yellow-500" />
+            ) : (
+              <IconStar size={16} className="text-neutral-400" />
+            )}
+          </button>
+        )}
+        <div className="flex gap-6">
         {/* Left: Paragraph preview */}
         <div className="flex-1 min-w-0">
           <NormalizedText
@@ -1205,20 +1221,9 @@ const result = fibonacci(10);`}</NormalizedText>
             </div>
           )}
         </div>
-      </div>
-      <div className="flex items-center justify-between mt-4">
-        <span className="text-sm text-neutral-400">{font.name}</span>
-        <div className="flex items-center gap-2">
-          {font.styles.includes("italic") && (
-            <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-              Italic
-            </span>
-          )}
-          <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
-            {formatWeights(font.weights, font.variable)}
-          </span>
         </div>
       </div>
+      <FontMetadata font={font} />
     </div>
   );
 }
