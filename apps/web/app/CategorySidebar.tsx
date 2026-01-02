@@ -40,14 +40,14 @@ export function CategorySidebar({
             >
               {category.name}
             </h2>
-            <ul>
+            <ul className="ml-2 border-l border-white/10">
               {category.subcategories.map((subcategory) => (
                 <li key={subcategory.id}>
                   <button
                     onClick={() => onSelectSubcategory(subcategory)}
                     onMouseEnter={() => onHoverSubcategory(subcategory)}
                     onMouseLeave={() => onHoverSubcategory(null)}
-                    className={`w-full text-left px-2 py-1 rounded transition-colors ${
+                    className={`w-full text-left pl-4 pr-2 py-0.5 rounded-r transition-colors ${
                       selectedSubcategory?.id === subcategory.id
                         ? "bg-white/10 text-white font-semibold"
                         : "text-white/70 hover:bg-white/5"

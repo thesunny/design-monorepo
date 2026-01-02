@@ -116,7 +116,7 @@ export const fontCategories: Category[] = baseFontCategories.map(
     name: category.name,
     subcategories: [
       ...category.subcategories.map((subcategory) => ({
-        id: dasherize(subcategory.name),
+        id: `${dasherize(category.name)}-${dasherize(subcategory.name)}`,
         name: subcategory.name,
         fonts: sortByPopularity(subcategory.fonts),
       })),
