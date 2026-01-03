@@ -41,10 +41,13 @@
           "Outfit",
           "Jost",
           "Epilogue",
-          "Space Grotesk",
           "Sora",
           "Prompt",
-          "Questrial"
+          "Questrial",
+          "Alata",
+          "Readex Pro",
+          "BIZ UDPGothic",
+          "Lexend Deca"
         ]
       },
       {
@@ -63,7 +66,9 @@
           "Jura",
           "Bai Jamjuree",
           "Quantico",
-          "WDXL Lubrifont JP N"
+          "WDXL Lubrifont JP N",
+          "Space Grotesk",
+          "Oxanium"
         ]
       },
       {
@@ -106,12 +111,9 @@
         "name": "Display",
         "fonts": [
           "Anton",
-          "Bebas Neue",
           "League Spartan",
           "Lexend",
           "Archivo Black",
-          "Staatliches",
-          "Bungee",
           "Righteous",
           "Fredoka",
           "Comfortaa",
@@ -171,7 +173,8 @@
           "DM Serif Display",
           "DM Serif Text",
           "Fanwood Text",
-          "GFS Didot"
+          "GFS Didot",
+          "Rozha One"
         ]
       },
       {
@@ -223,7 +226,6 @@
       {
         "name": "Retro",
         "fonts": [
-          "VT323",
           "Press Start 2P",
           "Major Mono Display",
           "Syne Mono",
@@ -289,22 +291,54 @@
           "Bad Script",
           "Cedarville Cursive",
           "Nothing You Could Do",
-          "Yuji Boku"
+          "Yuji Boku",
+          "Single Day",
+          "The Girl Next Door",
+          "Solitreo",
+          "Mynerve",
+          "Long Cang",
+          "Grape Nuts",
+          "Short Stack",
+          "Edu QLD Beginner",
+          "Iansui",
+          "Edu VIC WA NT Beginner",
+          "Cause",
+          "Edu SA Hand",
+          "Playpen Sans Hebrew",
+          "Playpen Sans Thai",
+          "Playpen Sans Deva",
+          "Playwrite NG Modern",
+          "Chilanka",
+          "Edu NSW ACT Hand Pre",
+          "Playpen Sans Arabic",
+          "Edu NSW ACT Foundation",
+          "Dekko",
+          "Delius Swash Caps",
+          "Swanky and Moo Moo",
+          "Kavivanar",
+          "Playpen Sans",
+          "Delius Unicase",
+          "Shadows Into Light Two",
+          "Playwrite DE Grund",
+          "LXGW WenKai TC",
+          "Edu AU VIC WA NT Hand"
         ]
       },
       {
         "name": "Marker",
         "fonts": [
           "Permanent Marker",
-          "Bangers",
-          "Luckiest Guy",
           "Chewy",
           "Caveat Brush",
           "East Sea Dokdo",
           "Just Another Hand",
           "Delicious Handrawn",
-          "Zhi Mang Xing",
-          "Protest Riot"
+          "Protest Riot",
+          "Nerko One",
+          "Sriracha",
+          "Damion",
+          "Leckerli One",
+          "Sedgwick Ave Display"
         ]
       },
       {
@@ -320,7 +354,11 @@
           "Norican",
           "Sacramento",
           "Allura",
-          "Yesteryear"
+          "Yesteryear",
+          "Mr Dafoe",
+          "Praise",
+          "Kolker Brush",
+          "Engagement"
         ]
       },
       {
@@ -336,7 +374,97 @@
           "Italianno",
           "Marck Script",
           "Cookie",
-          "Great Vibes"
+          "Great Vibes",
+          "Niconne",
+          "Mr De Haviland",
+          "Carattere",
+          "Ballet",
+          "MonteCarlo",
+          "Clicker Script"
+        ]
+      },
+      {
+        "name": "Writing Neat",
+        "fonts": [
+          "Playwrite GB S",
+          "Playwrite HR Lijeva",
+          "Playwrite BE VLG",
+          "Playwrite RO",
+          "Playwrite ZA",
+          "Playwrite CA",
+          "Playwrite NZ",
+          "Playwrite DK Loopet",
+          "Playwrite HU",
+          "Playwrite IT Moderna",
+          "Playwrite MX",
+          "Playwrite ES",
+          "Playwrite BE WAL",
+          "Playwrite DE LA",
+          "Playwrite FR Moderne",
+          "Playwrite CZ",
+          "Playwrite PT",
+          "Playwrite CO",
+          "Playwrite VN",
+          "Playwrite DK Uloopet",
+          "Playwrite AU TAS",
+          "Playwrite BR",
+          "Playwrite DE VA",
+          "Playwrite IE",
+          "Playwrite SK",
+          "Playwrite TZ",
+          "Playwrite ES Deco",
+          "Playwrite PE",
+          "Playwrite PL",
+          "Playwrite AU QLD",
+          "Playwrite AU NSW",
+          "Playwrite CU",
+          "Playwrite IN",
+          "Playwrite NO",
+          "Playwrite FR Trad",
+          "Playwrite ID",
+          "Playwrite IT Trad",
+          "Edu VIC WA NT Hand",
+          "Edu VIC WA NT Hand Pre",
+          "Edu QLD Hand",
+          "Playwrite CL",
+          "Playwrite AT",
+          "Playwrite AR",
+          "Playwrite AU VIC",
+          "Playwrite GB J",
+          "Playwrite NL",
+          "Playwrite DE SAS",
+          "Playwrite US Modern",
+          "Playwrite AU SA",
+          "Playwrite HR",
+          "Playwrite IS",
+          "Playwrite US Trad",
+          "Borel"
+        ]
+      },
+      {
+        "name": "Writing Wild",
+        "fonts": [
+          "Lovers Quarrel",
+          "Smooch",
+          "Condiment",
+          "Bilbo",
+          "Comforter",
+          "Bonheur Royale",
+          "Grey Qo",
+          "Fuggles",
+          "Charmonman",
+          "The Nautigal",
+          "Lavishly Yours",
+          "Ma Shan Zheng",
+          "Allison",
+          "Ms Madi",
+          "Arizonia",
+          "Oooh Baby",
+          "Ruthie",
+          "Comforter Brush",
+          "Water Brush",
+          "Passions Conflict",
+          "Zhi Mang Xing"
         ]
       },
       {
@@ -373,7 +501,27 @@
           "Playwrite FR Trad Guides",
           "Playwrite GB J Guides",
           "Playwrite IT Trad Guides",
-          "Playwrite US Modern Guides"
+          "Playwrite US Modern Guides",
+          "Playwrite MX Guides",
+          "Edu AU VIC WA NT Guides",
+          "Playwrite US Trad Guides",
+          "Playwrite CO Guides",
+          "Playwrite DE Grund Guides",
+          "Playwrite NL Guides",
+          "Playwrite NZ Guides",
+          "Playwrite AU VIC Guides",
+          "Playwrite PE Guides",
+          "Playwrite PT Guides",
+          "Playwrite PL Guides",
+          "Playwrite BE WAL Guides",
+          "Playwrite TZ Guides",
+          "Playwrite IE Guides",
+          "Playwrite ZA Guides",
+          "Playwrite DE VA Guides",
+          "Playwrite ES Deco Guides",
+          "Playwrite IT Moderna Guides",
+          "Playwrite FR Moderne Guides",
+          "Playwrite VN Guides"
         ]
       }
     ]
@@ -388,11 +536,8 @@
           "Exo",
           "Orbitron",
           "Audiowide",
-          "Syncopate",
           "Titan One",
           "Righteous",
-          "Bungee",
-          "Staatliches",
           "Anton",
           "Fredoka One"
         ]
@@ -402,12 +547,9 @@
         "fonts": [
           "Limelight",
           "Bowlby One",
-          "Bowlby One SC",
-          "Bebas Neue",
           "Alfa Slab One",
           "Fascinate",
-          "Jomhuria",
-          "Luckiest Guy"
+          "Jomhuria"
         ]
       },
       {
@@ -422,16 +564,12 @@
           "Bigelow Rules",
           "Potta One",
           "Protest Revolution",
-          "Koulen",
           "DynaPuff",
-          "Rampart One",
           "Cherry Bomb One",
           "Modak",
           "Love Ya Like A Sister",
-          "Vina Sans",
           "Chango",
           "Mountains of Christmas",
-          "Bungee Inline",
           "Sigmar One",
           "Barriecito",
           "Slackey",
@@ -471,7 +609,32 @@
           "Spicy Rice",
           "Kirang Haerang",
           "Chela One",
-          "Yuji Mai"
+          "Yuji Mai",
+          "Griffy",
+          "Flavors",
+          "Oleo Script Swash Caps",
+          "Bagel Fat One",
+          "Akaya Telivigala",
+          "Protest Strike",
+          "Poor Story",
+          "Gugi",
+          "Karantina",
+          "Mystery Quest",
+          "Lily Script One",
+          "Spirax",
+          "Unlock",
+          "Bonbon",
+          "Are You Serious",
+          "Ingrid Darling",
+          "Ruge Boogie",
+          "Pangolin",
+          "Hachi Maru Pop",
+          "Schoolbell",
+          "Molle",
+          "Lakki Reddy",
+          "Princess Sofia",
+          "Mrs Sheppards",
+          "Butterfly Kids"
         ]
       },
       {
@@ -518,7 +681,8 @@
           "Rubik Microbe",
           "Rubik Storm",
           "Rubik Distressed",
-          "Rubik Dirt"
+          "Rubik Dirt",
+          "Rubik Marker Hatch"
         ]
       },
       {
@@ -547,7 +711,8 @@
           "Knewave",
           "Carter One",
           "Agbalumo",
-          "Lemon"
+          "Lemon",
+          "Galada"
         ]
       },
       {
@@ -576,7 +741,9 @@
           "Kumar One Outline",
           "Bungee Outline",
           "Alumni Sans Inline One",
-          "Monofett"
+          "Monofett",
+          "Bungee Inline",
+          "Rampart One"
         ]
       },
       {
@@ -630,7 +797,9 @@
           "Jersey 10",
           "Coral Pixels",
           "Jersey 15",
-          "Micro 5"
+          "Micro 5",
+          "Jersey 25",
+          "VT323"
         ]
       },
       {
@@ -646,7 +815,16 @@
           "IM Fell English",
           "Vast Shadow",
           "IM Fell DW Pica",
-          "IM Fell Double Pica"
+          "IM Fell Double Pica",
+          "Freehand",
+          "Seaweed Script",
+          "Orelega One",
+          "Sarina",
+          "Taprom",
+          "Tagesschrift",
+          "Hanalei Fill",
+          "Moul",
+          "Estonia"
         ]
       },
       {
@@ -663,11 +841,47 @@
         ]
       },
       {
+        "name": "Barcode",
+        "fonts": [
+          "Libre Barcode 128 Text",
+          "Libre Barcode 39 Text",
+          "Libre Barcode 39 Extended Text",
+          "Libre Barcode EAN13 Text",
+          "Flow Rounded",
+          "Wavefont",
+          "Flow Block",
+          "Libre Barcode 128",
+          "Redacted",
+          "Libre Barcode 39",
+          "Flow Circular",
+          "Libre Barcode 39 Extended"
+        ]
+      },
+      {
+        "name": "All Caps",
+        "fonts": [
+          "Bungee",
+          "Staatliches",
+          "Syncopate",
+          "Luckiest Guy",
+          "Bebas Neue",
+          "Bowlby One SC",
+          "Koulen",
+          "Vina Sans",
+          "Crushed",
+          "Phudu",
+          "Cinzel Decorative",
+          "Bangers",
+          "Yuji Hentaigana Akebono"
+        ]
+      },
+      {
         "name": "Experimental",
         "fonts": [
           "Blaka",
           "Snowburst One",
-          "Megrim"
+          "Megrim",
+          "Redacted Script"
         ]
       }
     ]

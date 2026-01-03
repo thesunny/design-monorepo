@@ -129,7 +129,7 @@ export const fontCategories: Category[] = baseFontCategories.map(
         // Top 50 fonts by popularity
         {
           id: `${categoryId}-top-50`,
-          name: category.name,
+          name: "Favorites",
           fonts: popularFonts,
         },
         ...category.subcategories.map((subcategory) => ({
