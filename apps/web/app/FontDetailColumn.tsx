@@ -5,7 +5,11 @@ import { IconClipboard, IconCheck, IconRefresh } from "@tabler/icons-react";
 import { Slider } from "@mantine/core";
 import type { Font } from "../data/types";
 import { FontWeightRow } from "./FontWeightRow";
+import { NormalizedText } from "./components/NormalizedText";
 import { isMonospaceFont } from "./utils";
+
+const PARAGRAPH_NORMALIZATION_TEXT =
+  "this is a simple sample text that represents average spacing and letter frequency";
 
 type FontDetailColumnProps = {
   font: Font | null;
@@ -203,6 +207,31 @@ export function FontDetailColumn({ font, previewText }: FontDetailColumnProps) {
             </div>
           </>
         )}
+
+        {/* Body text preview */}
+        <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider mb-4 mt-8">
+          Body Text
+        </h3>
+        <div>
+          <NormalizedText
+            fontFamily={font.name}
+            fontWeight={400}
+            fontStyle="normal"
+            lineHeight={1.5}
+            letterSpacing={0}
+            normalizedFontSize={16}
+            normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+            isMonospace={isMonospace}
+          >
+            Typography is the art and technique of arranging type to make
+            written language legible, readable, and visually appealing when
+            displayed. It involves selecting typefaces, point sizes, line
+            lengths, line spacing, and letter spacing. <br />
+            <br />
+            Good design uses <strong>bold</strong> for emphasis,{" "}
+            <em>italics</em> for tone, and <u>underlines</u> for links.
+          </NormalizedText>
+        </div>
       </div>
 
       {/* Variable font axis sliders - pinned to bottom */}

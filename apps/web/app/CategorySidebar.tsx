@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { ArrowLeft } from "lucide-react";
 import type { Category, Subcategory } from "../data/types";
 
@@ -28,16 +23,16 @@ export function CategorySidebar({
 }: CategorySidebarProps) {
   const hasCheckedFonts = checkedFontNames.length > 0;
   return (
-    <div className="w-40 flex-shrink-0 bg-[#2f251a] flex flex-col">
-      <div className="h-12 flex items-center px-4">
+    <div className="w-40 bg-[#2f251a] flex flex-col">
+      <div className="flex items-center px-4 pt-2 pb-2">
         <span
-          className="font-[family-name:var(--font-poppins)]"
-          style={{ fontSize: 18, color: "#9A8A9B" }}
+          className="font-[family-name:var(--font-pacifico)]"
+          style={{ fontSize: 24, color: "rgba(255, 255, 255, 0.6)" }}
         >
-          Font Picker
+          Yam Fonts
         </span>
       </div>
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto py-4 px-3">
         {fontCategories.map((category) => (
           <div key={category.id} className="mb-6">
             <h2
@@ -64,7 +59,9 @@ export function CategorySidebar({
                   </button>
                   {hasCheckedFonts && (
                     <button
-                      onClick={() => onMoveFonts(category.name, subcategory.name)}
+                      onClick={() =>
+                        onMoveFonts(category.name, subcategory.name)
+                      }
                       className="absolute -right-3 top-0 bottom-0 px-2 flex items-center text-white/50 hover:text-white bg-[#382d1f] hover:bg-[#3d3022] rounded transition-colors cursor-pointer"
                       title={`Move ${checkedFontNames.length} font${checkedFontNames.length > 1 ? "s" : ""} to ${subcategory.name}`}
                     >

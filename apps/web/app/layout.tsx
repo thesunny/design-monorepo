@@ -2,7 +2,7 @@ import "@mantine/core/styles.css";
 import "@repo/ui/styles.css";
 import "./globals.css";
 import type { Metadata } from "next";
-import { Noto_Sans, Poppins, Inconsolata } from "next/font/google";
+import { Noto_Sans, Poppins, Inconsolata, Pacifico } from "next/font/google";
 import { MantineProvider, ColorSchemeScript } from "@mantine/core";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ConvexClientProvider } from "./ConvexClientProvider";
@@ -10,6 +10,7 @@ import { ConvexClientProvider } from "./ConvexClientProvider";
 const notoSans = Noto_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
 const poppins = Poppins({ subsets: ["latin"], weight: "800", variable: "--font-poppins" });
 const inconsolata = Inconsolata({ subsets: ["latin"], variable: "--font-inconsolata" });
+const pacifico = Pacifico({ subsets: ["latin"], weight: "400", variable: "--font-pacifico" });
 
 export const metadata: Metadata = {
   title: "Create Turborepo",
@@ -26,7 +27,7 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
       </head>
-      <body className={`${notoSans.className} ${poppins.variable} ${inconsolata.variable}`}>
+      <body className={`${notoSans.className} ${poppins.variable} ${inconsolata.variable} ${pacifico.variable}`}>
         <ClerkProvider>
           <ConvexClientProvider>
             <MantineProvider>{children}</MantineProvider>
