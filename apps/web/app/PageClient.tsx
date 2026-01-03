@@ -26,8 +26,8 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@repo/convex/convex/_generated/api";
 import type { Category, Subcategory, Font } from "../data/types";
 import { CategorySidebar } from "./CategorySidebar";
-import { FavoritesColumn } from "./FavoritesColumn";
-import { FontDrawer } from "./FontDrawer";
+import { FontDetailColumn } from "./FontDetailColumn";
+import { FavoritesDrawer } from "./FavoritesDrawer";
 import { moveFontsToSubcategory } from "./actions/moveFonts";
 import { useFontLoader } from "./hooks/useFontLoader";
 import { FontWeightRow } from "./FontWeightRow";
@@ -151,7 +151,8 @@ export default function PageClient({
     return hs ? parseInt(hs, 10) : DEFAULTS.headingsFontSize;
   });
   const [compactMode, setCompactMode] = useState(false);
-  const [drawerFont, setDrawerFont] = useState<Font | null>(null);
+  const [hoveredFont, setHoveredFont] = useState<Font | null>(null);
+  const [favoritesDrawerOpen, setFavoritesDrawerOpen] = useState(false);
   const [textFontSize, setTextFontSize] = useState(() => {
     const ts = searchParams.get("textSize");
     return ts ? parseInt(ts, 10) : DEFAULTS.textFontSize;
@@ -719,7 +720,11 @@ export default function PageClient({
                           return next;
                         });
                       }}
-                      onFontClick={() => setDrawerFont(font)}
+                      onFontClick={() => {
+                        setHoveredFont(font);
+                        setFavoritesDrawerOpen(false);
+                      }}
+                      onFavoriteAdd={() => setFavoritesDrawerOpen(true)}
                     />
                   ))}
                 </div>
@@ -737,6 +742,7 @@ export default function PageClient({
                       letterSpacing={letterSpacing}
                       fontSize={fontSize}
                       compactMode={compactMode}
+                      onFavoriteAdd={() => setFavoritesDrawerOpen(true)}
                     />
                   ))}
                 </div>
@@ -968,19 +974,19 @@ export default function PageClient({
         )}
       </div>
 
-      <FavoritesColumn
+      <FontDetailColumn
+        font={hoveredFont}
+        previewText={previewText}
+      />
+
+      <FavoritesDrawer
         favorites={favorites}
         failedFonts={failedFonts}
         previewText={previewText}
         fontSize={FAVORITES_FONT_SIZE}
         fontByIdMap={fontByIdMap}
-      />
-
-      <FontDrawer
-        font={drawerFont}
-        isOpen={drawerFont !== null}
-        onClose={() => setDrawerFont(null)}
-        previewText={previewText}
+        isOpen={favoritesDrawerOpen}
+        onClose={() => setFavoritesDrawerOpen(false)}
       />
     </main>
   );
@@ -1090,6 +1096,7 @@ function HeadingPreview({
   anyChecked,
   compactMode,
   onFontClick,
+  onFavoriteAdd,
 }: {
   font: Font;
   isFailed?: boolean;
@@ -1106,6 +1113,7 @@ function HeadingPreview({
   anyChecked?: boolean;
   compactMode?: boolean;
   onFontClick?: () => void;
+  onFavoriteAdd?: () => void;
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const { isSignedIn } = useAuth();
@@ -1213,6 +1221,7 @@ function HeadingPreview({
                     letterSpacing,
                     type: "heading",
                   });
+                  onFavoriteAdd?.();
                 }
               }}
             />
@@ -1237,6 +1246,7 @@ function TextPreview({
   letterSpacing,
   fontSize,
   compactMode,
+  onFavoriteAdd,
 }: {
   font: Font;
   selectedWeight: number;
@@ -1246,6 +1256,7 @@ function TextPreview({
   letterSpacing: number;
   fontSize: number;
   compactMode?: boolean;
+  onFavoriteAdd?: () => void;
 }) {
   const { isSignedIn } = useAuth();
   const favorites = useQuery(api.favorites.getFavorites);
@@ -1289,6 +1300,7 @@ function TextPreview({
         letterSpacing: 0,
         type: "paragraph",
       });
+      onFavoriteAdd?.();
     }
   };
 
