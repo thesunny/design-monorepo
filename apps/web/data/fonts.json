@@ -24,14 +24,14 @@
           "Red Hat Text",
           "Urbanist",
           "Josefin Sans",
-          "Raleway"
+          "Raleway",
+          "Poppins"
         ]
       },
       {
         "name": "Geometric",
         "fonts": [
           "Montserrat",
-          "Poppins",
           "Lato",
           "Nunito",
           "Rubik",
@@ -184,8 +184,6 @@
           "Rokkitt",
           "Aleo",
           "Bree Serif",
-          "Poppins",
-          "Courier Prime",
           "Alfa Slab One",
           "Ultra",
           "Bevan",
@@ -234,7 +232,8 @@
           "Cutive Mono",
           "Special Elite",
           "Workbench",
-          "Sixtyfour"
+          "Sixtyfour",
+          "Courier Prime"
         ]
       }
     ]
@@ -243,7 +242,7 @@
     "name": "Handwriting",
     "subcategories": [
       {
-        "name": "Casual",
+        "name": "Printing",
         "fonts": [
           "Caveat",
           "Patrick Hand",
@@ -255,22 +254,57 @@
           "Reenie Beanie",
           "Covered By Your Grace",
           "Waiting for the Sunrise",
-          "Just Another Hand",
           "Coming Soon",
           "Gowun Batang",
-          "Kalam"
+          "Kalam",
+          "Momo Signature",
+          "Amatic SC",
+          "Homemade Apple",
+          "Nanum Pen Script",
+          "Gochi Hand",
+          "Zeyada",
+          "Neucha",
+          "Delius",
+          "Edu SA Beginner",
+          "Nanum Brush Script",
+          "Annie Use Your Telescope",
+          "La Belle Aurore",
+          "Mansalva",
+          "Kristi",
+          "Fuzzy Bubbles",
+          "Sunshiney",
+          "Gamja Flower",
+          "Crafty Girls",
+          "Square Peg",
+          "Give You Glory",
+          "Just Me Again Down Here",
+          "Gaegu",
+          "Loved by the King",
+          "Beth Ellen",
+          "Edu TAS Beginner",
+          "Comic Neue",
+          "Itim",
+          "Rock Salt",
+          "Shantell Sans",
+          "Bad Script",
+          "Cedarville Cursive",
+          "Nothing You Could Do",
+          "Yuji Boku"
         ]
       },
       {
         "name": "Marker",
         "fonts": [
           "Permanent Marker",
-          "Rock Salt",
           "Bangers",
           "Luckiest Guy",
           "Chewy",
-          "Itim",
-          "Comic Neue"
+          "Caveat Brush",
+          "East Sea Dokdo",
+          "Just Another Hand",
+          "Delicious Handrawn",
+          "Zhi Mang Xing",
+          "Protest Riot"
         ]
       },
       {
@@ -293,7 +327,6 @@
         "name": "Calligraphy",
         "fonts": [
           "Dancing Script",
-          "Great Vibes",
           "Alex Brush",
           "Parisienne",
           "Tangerine",
@@ -302,12 +335,12 @@
           "Rouge Script",
           "Italianno",
           "Marck Script",
-          "Bad Script",
-          "Cookie"
+          "Cookie",
+          "Great Vibes"
         ]
       },
       {
-        "name": "Lined",
+        "name": "Lined Paper",
         "fonts": [
           "Playwrite CZ Guides",
           "Playwrite DE SAS Guides",
@@ -318,7 +351,29 @@
           "Playwrite IS Guides",
           "Playwrite SK Guides",
           "Playwrite CA Guides",
-          "Playwrite IN Guides"
+          "Playwrite IN Guides",
+          "Playwrite BE VLG Guides",
+          "Playwrite HR Lijeva Guides",
+          "Playwrite AT Guides",
+          "Playwrite HU Guides",
+          "Playwrite ID Guides",
+          "Playwrite AU TAS Guides",
+          "Playwrite ES Guides",
+          "Playwrite CL Guides",
+          "Playwrite DE LA Guides",
+          "Playwrite AU QLD Guides",
+          "Playwrite GB S Guides",
+          "Playwrite NG Modern Guides",
+          "Playwrite DK Uloopet Guides",
+          "Playwrite DK Loopet Guides",
+          "Playwrite CU Guides",
+          "Playwrite AU SA Guides",
+          "Playwrite BR Guides",
+          "Playwrite HR Guides",
+          "Playwrite FR Trad Guides",
+          "Playwrite GB J Guides",
+          "Playwrite IT Trad Guides",
+          "Playwrite US Modern Guides"
         ]
       }
     ]
@@ -334,7 +389,6 @@
           "Orbitron",
           "Audiowide",
           "Syncopate",
-          "Black Ops One",
           "Titan One",
           "Righteous",
           "Bungee",
@@ -349,12 +403,9 @@
           "Limelight",
           "Bowlby One",
           "Bowlby One SC",
-          "Bungee Shade",
           "Bebas Neue",
           "Alfa Slab One",
-          "Monoton",
           "Fascinate",
-          "Rye",
           "Jomhuria",
           "Luckiest Guy"
         ]
@@ -365,18 +416,12 @@
           "Kablammo",
           "Fontdiner Swanky",
           "Finger Paint",
-          "Rubik Gemstones",
           "Freckle Face",
           "Astloch",
           "Fruktur",
-          "Butcherman",
-          "Piedra",
-          "Rubik Vinyl",
           "Bigelow Rules",
-          "Eater",
           "Potta One",
           "Protest Revolution",
-          "Cabin Sketch",
           "Koulen",
           "DynaPuff",
           "Rampart One",
@@ -396,7 +441,84 @@
           "Barrio",
           "Rammetto One",
           "Hi Melody",
-          "Rancho"
+          "Rancho",
+          "Sankofa Display",
+          "Boogaloo",
+          "Londrina Solid",
+          "Caprasimo",
+          "Grandstander",
+          "Irish Grover",
+          "Original Surfer",
+          "Cherry Swash",
+          "Chicle",
+          "Macondo Swash Caps",
+          "Road Rage",
+          "Reggae One",
+          "Henny Penny",
+          "Vampiro One",
+          "Pompiere",
+          "Germania One",
+          "Angkor",
+          "Ranchers",
+          "Sevillana",
+          "Chelsea Market",
+          "Sansita Swashed",
+          "Badeen Display",
+          "Poetsen One",
+          "Codystar",
+          "Ribeye",
+          "Dokdo",
+          "Spicy Rice",
+          "Kirang Haerang",
+          "Chela One",
+          "Yuji Mai"
+        ]
+      },
+      {
+        "name": "Scary",
+        "fonts": [
+          "Nosifer",
+          "Rubik Wet Paint",
+          "Butcherman",
+          "Cabin Sketch",
+          "Rubik Glitch",
+          "Fredericka the Great",
+          "Creepster",
+          "Rubik Beastly",
+          "Rubik Bubbles",
+          "Eater",
+          "Rubik Lines",
+          "Piedra",
+          "Metal Mania",
+          "Fasthand",
+          "Trade Winds",
+          "Miniver",
+          "Jolly Lodger",
+          "Lacquer"
+        ]
+      },
+      {
+        "name": "Distressed",
+        "fonts": [
+          "Rubik Broken Fax",
+          "Palette Mosaic",
+          "Rubik Doodle Triangles",
+          "Rubik Maps",
+          "Rubik 80s Fade",
+          "Rubik Maze",
+          "Rubik Pixels",
+          "Rubik Glitch Pop",
+          "Londrina Sketch",
+          "Rubik Gemstones",
+          "Rubik Moonrocks",
+          "Rubik Vinyl",
+          "Frijole",
+          "Moo Lah Lah",
+          "Rubik Burned",
+          "Rubik Microbe",
+          "Rubik Storm",
+          "Rubik Distressed",
+          "Rubik Dirt"
         ]
       },
       {
@@ -404,13 +526,12 @@
         "fonts": [
           "Bungee Spice",
           "Honk",
-          "Sixtyfour Convergence"
-        ]
-      },
-      {
-        "name": "Blocks",
-        "fonts": [
-          "Monofett"
+          "Sixtyfour Convergence",
+          "Bitcount Prop Double Ink",
+          "Nabla",
+          "Blaka Ink",
+          "Bungee Tint",
+          "Kalnia Glaze"
         ]
       },
       {
@@ -421,7 +542,41 @@
           "Shrikhand",
           "Faster One",
           "Allan",
-          "Fugaz One"
+          "Fugaz One",
+          "Contrail One",
+          "Knewave",
+          "Carter One",
+          "Agbalumo",
+          "Lemon"
+        ]
+      },
+      {
+        "name": "Outline",
+        "fonts": [
+          "Ribeye Marrow",
+          "Fascinate Inline",
+          "Blaka Hollow",
+          "Kranky",
+          "Train One",
+          "Rubik Doodle Shadow",
+          "Miltonian",
+          "Zen Tokyo Zoo",
+          "Jacques Francois Shadow",
+          "Londrina Shadow",
+          "Tourney",
+          "Londrina Outline",
+          "Rubik Scribble",
+          "Tilt Prism",
+          "Monoton",
+          "Bungee Shade",
+          "Big Shoulders Inline",
+          "Shizuru",
+          "Geostar",
+          "Moirai One",
+          "Kumar One Outline",
+          "Bungee Outline",
+          "Alumni Sans Inline One",
+          "Monofett"
         ]
       },
       {
@@ -432,7 +587,14 @@
           "Saira Stencil One",
           "Sirin Stencil",
           "Stardos Stencil",
-          "Keania One"
+          "Keania One",
+          "Black Ops One",
+          "Tilt Neon",
+          "Wallpoet",
+          "Protest Guerrilla",
+          "Emblema One",
+          "Kenia",
+          "Plaster"
         ]
       },
       {
@@ -443,7 +605,6 @@
           "Bitcount",
           "Bitcount Prop Single",
           "Jersey 25 Charted",
-          "Bitcount Prop Double Ink",
           "Jersey 10 Charted",
           "Jersey 20 Charted",
           "Jersey 15 Charted",
@@ -466,32 +627,47 @@
           "Silkscreen",
           "Bitcount Grid Double",
           "Pixelify Sans",
-          "Jersey 10"
+          "Jersey 10",
+          "Coral Pixels",
+          "Jersey 15",
+          "Micro 5"
         ]
       },
       {
-        "name": "Gothic",
+        "name": "Western",
+        "fonts": [
+          "Sancreek",
+          "Bigshot One",
+          "Smokum",
+          "Ewert",
+          "Rye",
+          "Diplomata SC",
+          "IM Fell English SC",
+          "IM Fell English",
+          "Vast Shadow",
+          "IM Fell DW Pica",
+          "IM Fell Double Pica"
+        ]
+      },
+      {
+        "name": "Medieval",
         "fonts": [
           "UnifrakturMaguntia",
           "UnifrakturCook",
           "Pirata One",
-          "Manufacturing Consent"
+          "Manufacturing Consent",
+          "New Rocker",
+          "Grenze Gotisch",
+          "Bokor",
+          "Jacquard 24"
         ]
       },
       {
         "name": "Experimental",
         "fonts": [
-          "Fascinate Inline",
-          "Creepster",
           "Blaka",
-          "Fredericka the Great",
           "Snowburst One",
-          "Megrim",
-          "Wallpoet",
-          "Ribeye Marrow",
-          "Rubik Beastly",
-          "Rubik Glitch",
-          "Rubik Bubbles"
+          "Megrim"
         ]
       }
     ]

@@ -89,6 +89,13 @@ const getMoreFonts = (categoryName: string): string[] => {
   return fonts.filter((font) => !usedFonts.has(font) && !notoFonts.has(font));
 };
 
+// Get top 50 most popular fonts for a category (excluding Noto fonts)
+const POPULAR_COUNT = 50;
+const getPopularFonts = (categoryName: string): string[] => {
+  const fonts = fontsByCategory.get(categoryName) || [];
+  return fonts.filter((font) => !notoFonts.has(font)).slice(0, POPULAR_COUNT);
+};
+
 // Break fonts into chunks of 50 for performance, creating subcategories like
 // "50 More", "100 More", "150 More", etc.
 const CHUNK_SIZE = 50;
@@ -109,21 +116,29 @@ const createMoreSubcategories = (
   return subcategories;
 };
 
-// Extend baseFontCategories with "More" subcategories and sort all fonts by popularity
+// Extend baseFontCategories with "Popular" and "More" subcategories and sort all fonts by popularity
 export const fontCategories: Category[] = baseFontCategories.map(
-  (category) => ({
-    id: dasherize(category.name),
-    name: category.name,
-    subcategories: [
-      ...category.subcategories.map((subcategory) => ({
-        id: `${dasherize(category.name)}-${dasherize(subcategory.name)}`,
-        name: subcategory.name,
-        fonts: sortByPopularity(subcategory.fonts),
-      })),
-      ...createMoreSubcategories(
-        dasherize(category.name),
-        getMoreFonts(category.name)
-      ),
-    ],
-  })
+  (category) => {
+    const categoryId = dasherize(category.name);
+    const popularFonts = getPopularFonts(category.name);
+
+    return {
+      id: categoryId,
+      name: category.name,
+      subcategories: [
+        // Top 50 fonts by popularity
+        {
+          id: `${categoryId}-top-50`,
+          name: category.name,
+          fonts: popularFonts,
+        },
+        ...category.subcategories.map((subcategory) => ({
+          id: `${categoryId}-${dasherize(subcategory.name)}`,
+          name: subcategory.name,
+          fonts: sortByPopularity(subcategory.fonts),
+        })),
+        ...createMoreSubcategories(categoryId, getMoreFonts(category.name)),
+      ],
+    };
+  }
 );
