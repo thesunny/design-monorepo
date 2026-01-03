@@ -23,7 +23,7 @@ export function CategorySidebar({
 }: CategorySidebarProps) {
   const hasCheckedFonts = checkedFontNames.length > 0;
   return (
-    <div className="w-40 bg-[#3b260f] flex flex-col">
+    <div className="w-40 bg-[#321938] flex flex-col">
       <div className="flex items-center px-4 pt-2 pb-2">
         <span
           className="font-[family-name:var(--font-pacifico)]"
