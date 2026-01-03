@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { IconX, IconClipboard, IconCheck } from "@tabler/icons-react";
+import { IconX, IconClipboard, IconCheck, IconRefresh } from "@tabler/icons-react";
+import { Slider } from "@mantine/core";
 import type { Font } from "../data/types";
 import { FontWeightRow } from "./FontWeightRow";
 import { isMonospaceFont } from "./utils";
@@ -46,6 +47,41 @@ function generateCssExample(font: Font): string {
 }`;
 }
 
+// Helper to build font-variation-settings string
+function buildFontVariationSettings(
+  axisValues: Record<string, number>
+): string {
+  return Object.entries(axisValues)
+    .map(([tag, value]) => `"${tag}" ${value}`)
+    .join(", ");
+}
+
+// Helper to get display name for common axes
+function getAxisDisplayName(tag: string): string {
+  const names: Record<string, string> = {
+    wght: "Weight",
+    wdth: "Width",
+    slnt: "Slant",
+    ital: "Italic",
+    opsz: "Optical Size",
+    GRAD: "Grade",
+    XTRA: "X-Height",
+    YOPQ: "Y Opacity",
+    XOPQ: "X Opacity",
+    YTLC: "Lowercase Height",
+    YTUC: "Uppercase Height",
+    YTAS: "Ascender Height",
+    YTDE: "Descender Depth",
+    YTFI: "Figure Height",
+    FILL: "Fill",
+    SOFT: "Softness",
+    MONO: "Monospace",
+    CASL: "Casual",
+    CRSV: "Cursive",
+  };
+  return names[tag] || tag;
+}
+
 export function FontDrawer({
   font,
   isOpen,
@@ -53,6 +89,22 @@ export function FontDrawer({
   previewText,
 }: FontDrawerProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
+
+  // State for variable font axis values
+  const [axisValues, setAxisValues] = useState<Record<string, number>>({});
+
+  // Reset axis values when font changes
+  useEffect(() => {
+    if (font?.variable && font.metadata.axes.length > 0) {
+      const defaults: Record<string, number> = {};
+      for (const axis of font.metadata.axes) {
+        defaults[axis.tag] = axis.defaultValue;
+      }
+      setAxisValues(defaults);
+    } else {
+      setAxisValues({});
+    }
+  }, [font]);
 
   // Close on escape key
   useEffect(() => {
@@ -85,6 +137,24 @@ export function FontDrawer({
   const displayWeights = getAllAvailableWeights(font.weights);
   const hasItalic = font.styles.includes("italic");
   const isMonospace = isMonospaceFont(font);
+
+  // Get non-wght axes for variable fonts
+  const variableAxes = font.variable
+    ? font.metadata.axes.filter((axis) => axis.tag !== "wght")
+    : [];
+
+  // Build font-variation-settings string (excluding wght which is handled by font-weight)
+  const fontVariationSettings =
+    variableAxes.length > 0
+      ? buildFontVariationSettings(
+          Object.fromEntries(
+            variableAxes.map((axis) => [
+              axis.tag,
+              axisValues[axis.tag] ?? axis.defaultValue,
+            ])
+          )
+        )
+      : undefined;
 
   return (
     <>
@@ -145,6 +215,7 @@ export function FontDrawer({
                 previewText={previewText}
                 fontSize={28}
                 isMonospace={isMonospace}
+                fontVariationSettings={fontVariationSettings}
               />
             ))}
           </div>
@@ -168,12 +239,77 @@ export function FontDrawer({
                     isMonospace={isMonospace}
                     showItalics={true}
                     hasItalic={true}
+                    fontVariationSettings={fontVariationSettings}
                   />
                 ))}
               </div>
             </>
           )}
         </div>
+
+        {/* Variable font axis sliders */}
+        {variableAxes.length > 0 && (
+          <div className="border-t border-neutral-200 px-6 py-4 flex-shrink-0">
+            <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider mb-4">
+              Variable Axes
+            </h3>
+            <div className="space-y-4">
+              {variableAxes.map((axis) => {
+                const currentValue = axisValues[axis.tag] ?? axis.defaultValue;
+                const isDefault = currentValue === axis.defaultValue;
+                return (
+                  <div key={axis.tag}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs text-neutral-600">
+                        {getAxisDisplayName(axis.tag)}
+                      </span>
+                      <span className="text-xs text-neutral-400">
+                        {currentValue}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Slider
+                        className="flex-1"
+                        value={currentValue}
+                        onChange={(value) =>
+                          setAxisValues((prev) => ({ ...prev, [axis.tag]: value }))
+                        }
+                        min={axis.min}
+                        max={axis.max}
+                        step={axis.tag === "opsz" ? 0.1 : 1}
+                        size="sm"
+                        color="dark"
+                        marks={[
+                          { value: axis.min, label: String(axis.min) },
+                          { value: axis.defaultValue, label: String(axis.defaultValue) },
+                          { value: axis.max, label: String(axis.max) },
+                        ]}
+                        styles={{ markLabel: { fontSize: "10px" } }}
+                      />
+                      <button
+                        onClick={() =>
+                          setAxisValues((prev) => ({
+                            ...prev,
+                            [axis.tag]: axis.defaultValue,
+                          }))
+                        }
+                        className={`p-1 rounded transition-colors ${
+                          isDefault
+                            ? "text-neutral-300 cursor-default"
+                            : "text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 cursor-pointer"
+                        }`}
+                        disabled={isDefault}
+                        title="Reset to default"
+                      >
+                        <IconRefresh size={21} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Copy buttons */}
         <div className="border-t border-neutral-200 px-6 py-5 flex-shrink-0 bg-neutral-50">

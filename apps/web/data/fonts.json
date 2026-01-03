@@ -43,11 +43,18 @@
           "Epilogue",
           "Sora",
           "Prompt",
-          "Questrial",
-          "Alata",
           "Readex Pro",
           "BIZ UDPGothic",
-          "Lexend Deca"
+          "Lexend Deca",
+          "Google Sans Flex",
+          "Rethink Sans",
+          "Comfortaa",
+          "Lexend",
+          "Geist",
+          "Reddit Sans",
+          "Afacad",
+          "Elms Sans",
+          "Wix Madefor Text"
         ]
       },
       {
@@ -72,7 +79,12 @@
           "Russo One",
           "Exo",
           "Orbitron",
-          "Turret Road"
+          "Turret Road",
+          "Saira Semi Condensed",
+          "Chathura",
+          "Anek Odia",
+          "Science Gothic",
+          "Blinker"
         ]
       },
       {
@@ -94,7 +106,23 @@
           "News Cycle",
           "Noto Sans Display",
           "Fira Sans",
-          "Ubuntu"
+          "Ubuntu",
+          "Encode Sans",
+          "Encode Sans Condensed",
+          "Vazirmatn",
+          "Commissioner",
+          "Atkinson Hyperlegible",
+          "Mitr",
+          "Saira Extra Condensed",
+          "Golos Text",
+          "Lexend Giga",
+          "Hind Vadodara",
+          "Palanquin Dark",
+          "Sofia Sans Extra Condensed",
+          "Murecho",
+          "TASA Orbiter",
+          "Stack Sans Headline",
+          "Epunda Sans"
         ]
       },
       {
@@ -109,7 +137,9 @@
           "Yantramanav",
           "Rajdhani",
           "Teko",
-          "Big Shoulders"
+          "Big Shoulders",
+          "Antonio",
+          "Khand"
         ]
       },
       {
@@ -117,16 +147,53 @@
         "fonts": [
           "Anton",
           "League Spartan",
-          "Lexend",
           "Archivo Black",
           "Righteous",
           "Fredoka",
-          "Comfortaa",
           "Archivo",
-          "Cinzel",
           "Poiret One",
           "Rubik Mono One",
-          "League Gothic"
+          "League Gothic",
+          "Dhurjati",
+          "Preahvihear",
+          "New Amsterdam",
+          "Kite One",
+          "Meera Inimai",
+          "Liter",
+          "Cagliostro",
+          "Alumni Sans Pinstripe",
+          "Questrial",
+          "Alata",
+          "Francois One",
+          "Gruppo",
+          "Paytone One",
+          "Viga",
+          "Ubuntu Condensed",
+          "Julius Sans One",
+          "Sawarabi Gothic",
+          "Tenor Sans",
+          "Hammersmith One",
+          "Actor",
+          "Pathway Gothic One",
+          "Kosugi Maru",
+          "Electrolize",
+          "Dorsa",
+          "Orbit",
+          "Tac One",
+          "Seymour One",
+          "Faculty Glyphic",
+          "Siemreap",
+          "Text Me One",
+          "Shippori Antique B1",
+          "Qahiri",
+          "Port Lligat Sans",
+          "Gasoek One",
+          "Hubballi",
+          "Momo Trust Display",
+          "Story Script",
+          "Do Hyeon",
+          "Varela",
+          "Secular One"
         ]
       }
     ]
@@ -179,7 +246,9 @@
           "DM Serif Text",
           "Fanwood Text",
           "GFS Didot",
-          "Rozha One"
+          "Rozha One",
+          "Cinzel",
+          "Libre Bodoni"
         ]
       },
       {
@@ -571,7 +640,8 @@
           "Iceland",
           "Kelly Slab",
           "Geostar Fill",
-          "Gajraj One"
+          "Gajraj One",
+          "Michroma"
         ]
       },
       {

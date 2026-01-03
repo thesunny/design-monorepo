@@ -18,6 +18,8 @@ type FontWeightRowProps = {
   showStar?: boolean;
   isFavorited?: boolean;
   onStarClick?: () => void;
+  // Variable font axes
+  fontVariationSettings?: string;
 };
 
 export function FontWeightRow({
@@ -34,6 +36,7 @@ export function FontWeightRow({
   showStar,
   isFavorited,
   onStarClick,
+  fontVariationSettings,
 }: FontWeightRowProps) {
   const italicUnavailable = showItalics && !hasItalic;
   const fontStyle = showItalics && hasItalic ? "italic" : "normal";
@@ -69,6 +72,7 @@ export function FontWeightRow({
           normalizationText={previewText}
           isMonospace={isMonospace}
           className={italicUnavailable ? "opacity-30" : ""}
+          style={fontVariationSettings ? { fontVariationSettings } : undefined}
         >
           {renderText(previewText)}
         </NormalizedText>

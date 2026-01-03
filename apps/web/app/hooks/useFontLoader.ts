@@ -1,10 +1,34 @@
 import { useEffect, useRef, useState } from "react";
 import FontFaceObserver from "fontfaceobserver";
-import type { Font } from "../../data/types";
+import type { Font, FontAxis } from "../../data/types";
+
+/**
+ * Sorts axes according to Google Fonts API requirements:
+ * - ital always comes first (if present)
+ * - Then lowercase registered axes (opsz, slnt, wdth, wght) alphabetically
+ * - Then uppercase custom axes (GRAD, XTRA, etc.) alphabetically
+ */
+function sortAxes(axes: FontAxis[]): FontAxis[] {
+  return [...axes].sort((a, b) => {
+    // ital always first
+    if (a.tag === "ital") return -1;
+    if (b.tag === "ital") return 1;
+
+    const aIsUpper = a.tag[0]!.toUpperCase() === a.tag[0];
+    const bIsUpper = b.tag[0]!.toUpperCase() === b.tag[0];
+
+    // Lowercase (registered) axes come before uppercase (custom) axes
+    if (!aIsUpper && bIsUpper) return -1;
+    if (aIsUpper && !bIsUpper) return 1;
+
+    // Within same case, sort alphabetically
+    return a.tag.localeCompare(b.tag);
+  });
+}
 
 /**
  * Builds a stable Google Fonts URL for a single font family.
- * The URL includes all weights and italic variants if available.
+ * The URL includes all weights, italic variants, and variable axes if available.
  */
 function buildFontUrl(font: Font): string {
   const encodedName = font.name.replace(/ /g, "+");
@@ -13,13 +37,29 @@ function buildFontUrl(font: Font): string {
   let familyParam: string;
 
   if (font.variable) {
-    const min = Math.min(...font.weights);
-    const max = Math.max(...font.weights);
-    if (hasItalic) {
-      // Variable font with italic: ital,wght@0,min..max;1,min..max
-      familyParam = `${encodedName}:ital,wght@0,${min}..${max};1,${min}..${max}`;
+    const axes = font.metadata.axes;
+    const hasItalAxis = axes.some((a) => a.tag === "ital");
+
+    // Sort axes according to Google Fonts requirements
+    const sortedAxes = sortAxes(axes);
+
+    if (hasItalAxis) {
+      // Font has ital axis - use ranges for all axes including ital
+      const axisTags = sortedAxes.map((a) => a.tag).join(",");
+      const axisRanges = sortedAxes.map((a) => `${a.min}..${a.max}`).join(",");
+      familyParam = `${encodedName}:${axisTags}@${axisRanges}`;
+    } else if (hasItalic) {
+      // Font has italic styles but no ital axis - enumerate 0 and 1 for ital
+      const axisTags = ["ital", ...sortedAxes.map((a) => a.tag)].join(",");
+      const axisRanges = sortedAxes.map((a) => `${a.min}..${a.max}`).join(",");
+      const normalRanges = `0,${axisRanges}`;
+      const italicRanges = `1,${axisRanges}`;
+      familyParam = `${encodedName}:${axisTags}@${normalRanges};${italicRanges}`;
     } else {
-      familyParam = `${encodedName}:wght@${min}..${max}`;
+      // No italic at all
+      const axisTags = sortedAxes.map((a) => a.tag).join(",");
+      const axisRanges = sortedAxes.map((a) => `${a.min}..${a.max}`).join(",");
+      familyParam = `${encodedName}:${axisTags}@${axisRanges}`;
     }
   } else {
     if (hasItalic) {
