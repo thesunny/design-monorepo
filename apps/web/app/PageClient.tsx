@@ -1038,6 +1038,10 @@ function getFontLineHeight(
 
 function FontMetadata({ font, isFailed }: { font: Font; isFailed?: boolean }) {
   const hasItalic = font.styles.includes("italic");
+  // Get axes excluding wght (weight is already shown separately)
+  const displayAxes = font.variable
+    ? font.metadata.axes.filter((axis) => axis.tag !== "wght")
+    : [];
 
   return (
     <div className="flex items-center justify-between mt-2">
@@ -1054,6 +1058,15 @@ function FontMetadata({ font, isFailed }: { font: Font; isFailed?: boolean }) {
         )}
       </div>
       <div className="flex items-center gap-2">
+        {displayAxes.map((axis) => (
+          <span
+            key={axis.tag}
+            className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded"
+            title={`${axis.tag}: ${axis.min} - ${axis.max}`}
+          >
+            {axis.tag}
+          </span>
+        ))}
         {hasItalic && (
           <span className="text-xs px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
             Italic
