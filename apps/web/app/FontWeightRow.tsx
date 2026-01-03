@@ -81,7 +81,10 @@ export function FontWeightRow({
         </span>
         {showStar && (
           <button
-            onClick={onStarClick}
+            onClick={(e) => {
+              e.stopPropagation();
+              onStarClick?.();
+            }}
             className="p-1 rounded hover:bg-neutral-200 transition-colors"
             title={isFavorited ? "Remove from favorites" : "Add to favorites"}
           >

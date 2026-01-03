@@ -68,7 +68,11 @@
           "Quantico",
           "WDXL Lubrifont JP N",
           "Space Grotesk",
-          "Oxanium"
+          "Oxanium",
+          "Russo One",
+          "Exo",
+          "Orbitron",
+          "Turret Road"
         ]
       },
       {
@@ -104,7 +108,8 @@
           "Cabin Condensed",
           "Yantramanav",
           "Rajdhani",
-          "Teko"
+          "Teko",
+          "Big Shoulders"
         ]
       },
       {
@@ -261,10 +266,8 @@
           "Kalam",
           "Momo Signature",
           "Amatic SC",
-          "Homemade Apple",
           "Nanum Pen Script",
           "Gochi Hand",
-          "Zeyada",
           "Neucha",
           "Delius",
           "Edu SA Beginner",
@@ -272,7 +275,6 @@
           "Annie Use Your Telescope",
           "La Belle Aurore",
           "Mansalva",
-          "Kristi",
           "Fuzzy Bubbles",
           "Sunshiney",
           "Gamja Flower",
@@ -321,7 +323,11 @@
           "Shadows Into Light Two",
           "Playwrite DE Grund",
           "LXGW WenKai TC",
-          "Edu AU VIC WA NT Hand"
+          "Edu AU VIC WA NT Hand",
+          "Atma",
+          "Margarine",
+          "Grandstander",
+          "Gluten"
         ]
       },
       {
@@ -380,7 +386,10 @@
           "Carattere",
           "Ballet",
           "MonteCarlo",
-          "Clicker Script"
+          "Clicker Script",
+          "Sail",
+          "Dynalight",
+          "Playball"
         ]
       },
       {
@@ -464,7 +473,10 @@
           "Comforter Brush",
           "Water Brush",
           "Passions Conflict",
-          "Zhi Mang Xing"
+          "Zhi Mang Xing",
+          "Kristi",
+          "Homemade Apple",
+          "Zeyada"
         ]
       },
       {
@@ -533,9 +545,6 @@
         "name": "Modern",
         "fonts": [
           "Abril Fatface",
-          "Exo",
-          "Orbitron",
-          "Audiowide",
           "Titan One",
           "Righteous",
           "Anton",
@@ -548,18 +557,29 @@
           "Limelight",
           "Bowlby One",
           "Alfa Slab One",
-          "Fascinate",
           "Jomhuria"
+        ]
+      },
+      {
+        "name": "Future",
+        "fonts": [
+          "Audiowide",
+          "Goldman",
+          "Coda",
+          "Atomic Age",
+          "Zen Dots",
+          "Iceland",
+          "Kelly Slab",
+          "Geostar Fill",
+          "Gajraj One"
         ]
       },
       {
         "name": "Fun",
         "fonts": [
-          "Kablammo",
           "Fontdiner Swanky",
           "Finger Paint",
           "Freckle Face",
-          "Astloch",
           "Fruktur",
           "Bigelow Rules",
           "Potta One",
@@ -575,16 +595,13 @@
           "Slackey",
           "Bubblegum Sans",
           "Coiny",
-          "Akronim",
           "Barrio",
           "Rammetto One",
           "Hi Melody",
           "Rancho",
-          "Sankofa Display",
           "Boogaloo",
           "Londrina Solid",
           "Caprasimo",
-          "Grandstander",
           "Irish Grover",
           "Original Surfer",
           "Cherry Swash",
@@ -598,20 +615,16 @@
           "Germania One",
           "Angkor",
           "Ranchers",
-          "Sevillana",
           "Chelsea Market",
           "Sansita Swashed",
           "Badeen Display",
           "Poetsen One",
-          "Codystar",
           "Ribeye",
           "Dokdo",
           "Spicy Rice",
           "Kirang Haerang",
           "Chela One",
           "Yuji Mai",
-          "Griffy",
-          "Flavors",
           "Oleo Script Swash Caps",
           "Bagel Fat One",
           "Akaya Telivigala",
@@ -619,14 +632,11 @@
           "Poor Story",
           "Gugi",
           "Karantina",
-          "Mystery Quest",
           "Lily Script One",
           "Spirax",
           "Unlock",
-          "Bonbon",
           "Are You Serious",
           "Ingrid Darling",
-          "Ruge Boogie",
           "Pangolin",
           "Hachi Maru Pop",
           "Schoolbell",
@@ -634,7 +644,63 @@
           "Lakki Reddy",
           "Princess Sofia",
           "Mrs Sheppards",
-          "Butterfly Kids"
+          "Emilys Candy",
+          "Miltonian Tattoo",
+          "Shojumaru",
+          "Fascinate",
+          "Sigmar",
+          "Rubik Spray Paint",
+          "Danfo",
+          "Gravitas One",
+          "Asset"
+        ]
+      },
+      {
+        "name": "Friendly",
+        "fonts": [
+          "Tilt Warp",
+          "Nixie One",
+          "Squada One",
+          "Dela Gothic One",
+          "Yeseva One",
+          "Concert One",
+          "Passion One",
+          "Patua One",
+          "Rowdies",
+          "Lilita One",
+          "Changa One",
+          "Forum",
+          "Baloo 2",
+          "Modern Antiqua",
+          "Life Savers",
+          "McLaren"
+        ]
+      },
+      {
+        "name": "Quirky",
+        "fonts": [
+          "Ruge Boogie",
+          "Butterfly Kids",
+          "Chokokutai",
+          "Agu Display",
+          "Flavors",
+          "Rubik Puddles",
+          "Bonbon",
+          "Griffy",
+          "Kablammo",
+          "Codystar",
+          "Sevillana",
+          "Akronim",
+          "Mystery Quest",
+          "Astloch",
+          "Sankofa Display",
+          "Cabin Sketch",
+          "Fredericka the Great",
+          "Black And White Picture",
+          "Hanalei",
+          "Rock 3D",
+          "Libertinus Keyboard",
+          "Exile"
         ]
       },
       {
@@ -643,9 +709,7 @@
           "Nosifer",
           "Rubik Wet Paint",
           "Butcherman",
-          "Cabin Sketch",
           "Rubik Glitch",
-          "Fredericka the Great",
           "Creepster",
           "Rubik Beastly",
           "Rubik Bubbles",
@@ -653,7 +717,6 @@
           "Rubik Lines",
           "Piedra",
           "Metal Mania",
-          "Fasthand",
           "Trade Winds",
           "Miniver",
           "Jolly Lodger",
@@ -690,12 +753,12 @@
         "fonts": [
           "Bungee Spice",
           "Honk",
-          "Sixtyfour Convergence",
           "Bitcount Prop Double Ink",
           "Nabla",
           "Blaka Ink",
           "Bungee Tint",
-          "Kalnia Glaze"
+          "Kalnia Glaze",
+          "Sixtyfour Convergence"
         ]
       },
       {
@@ -817,18 +880,25 @@
           "IM Fell English SC",
           "IM Fell English",
           "Vast Shadow",
-          "IM Fell DW Pica",
           "IM Fell Double Pica",
-          "Freehand",
-          "Seaweed Script",
           "Orelega One",
-          "Sarina",
-          "Taprom",
           "Tagesschrift",
           "Hanalei Fill",
           "Moul",
+          "Peralta",
+          "Arbutus"
+        ]
+      },
+      {
+        "name": "Rustic",
+        "fonts": [
+          "IM Fell DW Pica",
+          "Seaweed Script",
+          "Freehand",
+          "Sarina",
           "Estonia",
-          "Peralta"
+          "Taprom",
+          "Fasthand"
         ]
       },
       {
@@ -841,7 +911,9 @@
           "New Rocker",
           "Grenze Gotisch",
           "Bokor",
-          "Jacquard 24"
+          "Jacquard 24",
+          "Jacquard 24 Charted",
+          "Metamorphous"
         ]
       },
       {
@@ -877,7 +949,9 @@
           "Cinzel Decorative",
           "Bangers",
           "Yuji Hentaigana Akebono",
-          "BBH Bartle"
+          "BBH Bartle",
+          "Unica One",
+          "BBH Bogle"
         ]
       },
       {
@@ -886,7 +960,10 @@
           "Blaka",
           "Snowburst One",
           "Megrim",
-          "Redacted Script"
+          "Redacted Script",
+          "Linefont",
+          "Yarndings 20",
+          "Yarndings 12"
         ]
       }
     ]

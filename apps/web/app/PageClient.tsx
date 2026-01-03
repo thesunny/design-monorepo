@@ -27,6 +27,7 @@ import { api } from "@repo/convex/convex/_generated/api";
 import type { Category, Subcategory, Font } from "../data/types";
 import { CategorySidebar } from "./CategorySidebar";
 import { FavoritesColumn } from "./FavoritesColumn";
+import { FontDrawer } from "./FontDrawer";
 import { moveFontsToSubcategory } from "./actions/moveFonts";
 import { useFontLoader } from "./hooks/useFontLoader";
 import { FontWeightRow } from "./FontWeightRow";
@@ -150,6 +151,7 @@ export default function PageClient({
     return hs ? parseInt(hs, 10) : DEFAULTS.headingsFontSize;
   });
   const [compactMode, setCompactMode] = useState(false);
+  const [drawerFont, setDrawerFont] = useState<Font | null>(null);
   const [textFontSize, setTextFontSize] = useState(() => {
     const ts = searchParams.get("textSize");
     return ts ? parseInt(ts, 10) : DEFAULTS.textFontSize;
@@ -717,6 +719,7 @@ export default function PageClient({
                           return next;
                         });
                       }}
+                      onFontClick={() => setDrawerFont(font)}
                     />
                   ))}
                 </div>
@@ -978,6 +981,13 @@ export default function PageClient({
         fontSize={FAVORITES_FONT_SIZE}
         fontByIdMap={fontByIdMap}
       />
+
+      <FontDrawer
+        font={drawerFont}
+        isOpen={drawerFont !== null}
+        onClose={() => setDrawerFont(null)}
+        previewText={previewText}
+      />
     </main>
   );
 }
@@ -1072,6 +1082,7 @@ function HeadingPreview({
   onCheckChange,
   anyChecked,
   compactMode,
+  onFontClick,
 }: {
   font: Font;
   isFailed?: boolean;
@@ -1087,6 +1098,7 @@ function HeadingPreview({
   onCheckChange?: (checked: boolean) => void;
   anyChecked?: boolean;
   compactMode?: boolean;
+  onFontClick?: () => void;
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const { isSignedIn } = useAuth();
@@ -1135,13 +1147,17 @@ function HeadingPreview({
     <div
       className={`relative pl-12 pr-8 ${compactMode ? "py-2" : "pt-4 pb-5"} ${
         isInexactMatch ? "bg-neutral-100" : ""
-      }`}
+      } cursor-pointer hover:bg-neutral-50 transition-colors`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={onFontClick}
     >
       {showCheckbox && (
         <button
-          onClick={() => onCheckChange?.(!isChecked)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onCheckChange?.(!isChecked);
+          }}
           className={`absolute left-0 top-0 bottom-0 w-10 flex items-center justify-center transition-colors cursor-pointer ${isChecked ? "bg-blue-100" : "hover:bg-neutral-100"}`}
         >
           {isChecked ? (
