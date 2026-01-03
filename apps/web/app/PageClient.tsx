@@ -925,10 +925,7 @@ export default function PageClient({
                     <input
                       type="text"
                       value={previewText}
-                      onChange={(e) => {
-                        setPreviewText(e.target.value);
-                        updateUrlDebounced({ text: e.target.value });
-                      }}
+                      onChange={(e) => setPreviewText(e.target.value)}
                       placeholder="Enter preview text..."
                       className="w-full px-3 py-1.5 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-400"
                     />
@@ -946,10 +943,7 @@ export default function PageClient({
                         return (
                           <button
                             key={label}
-                            onClick={() => {
-                              setPreviewText(value);
-                              updateUrl({ text: value });
-                            }}
+                            onClick={() => setPreviewText(value)}
                             className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
                               isActive
                                 ? "bg-neutral-300 text-neutral-700"
