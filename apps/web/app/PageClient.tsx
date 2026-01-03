@@ -1270,13 +1270,13 @@ function TextPreview({
   };
 
   return (
-    <div className="px-8 py-4">
+    <div className="pl-8 pr-12 pt-6 pb-4">
       <div className="relative">
         {isSignedIn && (
           <button
             onClick={handleStarClick}
             className="absolute p-1 rounded hover:bg-neutral-100 transition-colors z-10"
-            style={{ top: -10, right: -28 }}
+            style={{ top: -10, right: -40 }}
             title={isFavorited ? "Remove from favorites" : "Add to favorites"}
           >
             {isFavorited ? (
@@ -1286,113 +1286,44 @@ function TextPreview({
             )}
           </button>
         )}
-        <div className="flex gap-6">
-          {/* Left: Paragraph preview */}
-          <div className="flex-1 min-w-0">
-            <NormalizedText
-              fontFamily={font.name}
-              fontWeight={weight}
-              fontStyle={fontStyle}
-              lineHeight={effectiveLineHeight}
-              letterSpacing={letterSpacing}
-              normalizedFontSize={fontSize}
-              normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
-              isMonospace={isMonospace}
-              className={italicUnavailable ? "opacity-30" : ""}
-            >
-              Typography is the art of arranging type. It makes text legible and
-              appealing when displayed.
-              <br />
-              <br />
-              Good design uses <strong>contrast</strong> and <em>spacing</em>.
-            </NormalizedText>
-          </div>
-          {/* Right: Code preview (monospace) or UI sample (non-monospace) */}
-          <div className="flex-1 min-w-0">
-            {isMonospace ? (
-              <div className="overflow-x-auto bg-neutral-50 rounded p-3">
-                <NormalizedText
-                  fontFamily={font.name}
-                  fontWeight={weight}
-                  fontStyle={fontStyle}
-                  lineHeight={effectiveLineHeight}
-                  letterSpacing={letterSpacing}
-                  normalizedFontSize={fontSize}
-                  normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
-                  isMonospace={true}
-                  className={italicUnavailable ? "opacity-30" : ""}
-                  style={{ display: "block", whiteSpace: "pre" }}
-                >{`function fibonacci(n) {
-  if (n <= 1) return n;
-  return fibonacci(n - 1);
-}
-
-const result = fibonacci(10);`}</NormalizedText>
-              </div>
+        <div className="">
+          <NormalizedText
+            fontFamily={font.name}
+            fontWeight={weight}
+            fontStyle={fontStyle}
+            lineHeight={effectiveLineHeight}
+            letterSpacing={letterSpacing}
+            normalizedFontSize={fontSize}
+            normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+            isMonospace={isMonospace}
+            className={italicUnavailable ? "opacity-30" : ""}
+          >
+            {compactMode ? (
+              <>
+                Typography is the art and technique of arranging type to make
+                written language legible, readable, and visually appealing when
+                displayed.
+              </>
             ) : (
-              <div className="space-y-4 pt-2">
-                <div className="flex flex-col gap-0.5">
-                  <NormalizedText
-                    fontFamily={font.name}
-                    fontWeight={weight}
-                    fontStyle={fontStyle}
-                    lineHeight={effectiveLineHeight}
-                    letterSpacing={letterSpacing}
-                    normalizedFontSize={fontSize * FORM_LABEL_SIZE_SCALE}
-                    normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
-                    isMonospace={false}
-                    className={italicUnavailable ? "opacity-30" : ""}
-                    style={{
-                      display: "block",
-                      marginBottom: 4,
-                      color: "#525252",
-                    }}
-                  >
-                    Email address
-                  </NormalizedText>
-                  <NormalizedText
-                    fontFamily={font.name}
-                    fontWeight={weight}
-                    fontStyle={fontStyle}
-                    lineHeight={effectiveLineHeight}
-                    letterSpacing={letterSpacing}
-                    normalizedFontSize={fontSize}
-                    normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
-                    isMonospace={false}
-                    className={`block w-full border border-neutral-300 rounded px-3 py-2 ${italicUnavailable ? "opacity-30" : ""}`}
-                    style={{ color: "#a3a3a3" }}
-                  >
-                    you@example.com
-                  </NormalizedText>
-                </div>
-                <div
-                  className={`flex items-center gap-2 ${italicUnavailable ? "opacity-30" : ""}`}
-                >
-                  <input
-                    type="checkbox"
-                    readOnly
-                    className="rounded border-neutral-300"
-                  />
-                  <NormalizedText
-                    fontFamily={font.name}
-                    fontWeight={weight}
-                    fontStyle={fontStyle}
-                    lineHeight={effectiveLineHeight}
-                    letterSpacing={letterSpacing}
-                    normalizedFontSize={fontSize * FORM_LABEL_SIZE_SCALE}
-                    normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
-                    isMonospace={false}
-                    style={{ color: "#525252" }}
-                  >
-                    Keep me signed in
-                  </NormalizedText>
-                </div>
-              </div>
+              <>
+                Typography is the art and technique of arranging type to make
+                written language legible, readable, and visually appealing when
+                displayed. It involves selecting typefaces, point sizes, line
+                lengths, line spacing, and letter spacing. <br />
+                <br />
+                Good design uses <strong>bold</strong> for emphasis,{" "}
+                <em>italics</em> for tone, and <u>underlines</u> for links.
+              </>
             )}
-          </div>
+          </NormalizedText>
         </div>
       </div>
-      {!compactMode && <FontMetadata font={font} />}
+      {!compactMode && (
+        <>
+          <hr className="border-neutral-200 mt-6 mb-2" />
+          <FontMetadata font={font} />
+        </>
+      )}
     </div>
   );
 }
