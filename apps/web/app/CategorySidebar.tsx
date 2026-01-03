@@ -2,6 +2,7 @@
 
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { ArrowLeft } from "lucide-react";
+import { IconSearch, IconX } from "@tabler/icons-react";
 import type { Category, Subcategory } from "../data/types";
 
 type CategorySidebarProps = {
@@ -11,6 +12,12 @@ type CategorySidebarProps = {
   onHoverSubcategory: (subcategory: Subcategory | null) => void;
   checkedFontNames: string[];
   onMoveFonts: (categoryName: string, subcategoryName: string) => void;
+  searchInput: string;
+  onSearchChange: (value: string) => void;
+  onSearchClear: () => void;
+  searchInputRef: React.RefObject<HTMLInputElement | null>;
+  isSearchPending: boolean;
+  isMac: boolean;
 };
 
 export function CategorySidebar({
@@ -20,6 +27,12 @@ export function CategorySidebar({
   onHoverSubcategory,
   checkedFontNames,
   onMoveFonts,
+  searchInput,
+  onSearchChange,
+  onSearchClear,
+  searchInputRef,
+  isSearchPending,
+  isMac,
 }: CategorySidebarProps) {
   const hasCheckedFonts = checkedFontNames.length > 0;
   return (
@@ -27,10 +40,39 @@ export function CategorySidebar({
       <div className="flex items-center px-4 pt-2 pb-2">
         <span
           className="font-[family-name:var(--font-pacifico)]"
-          style={{ fontSize: 24, color: "rgba(255, 255, 255, 0.6)" }}
+          style={{ fontSize: 25, color: "rgba(255, 255, 255, 0.7)" }}
         >
           Yam Fonts
         </span>
+      </div>
+      <div className="px-3 pb-3 pt-1">
+        <div className="relative">
+          <IconSearch
+            size={14}
+            className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${isSearchPending ? "text-white/30" : "text-white/50"}`}
+          />
+          <input
+            ref={searchInputRef}
+            type="text"
+            value={searchInput}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search"
+            style={{ fontSize: 13 }}
+            className={`w-full pl-7 pr-8 py-1.5 bg-white/10 rounded text-white placeholder-white/50 focus:outline-none focus:border-white/40 ${isSearchPending ? "opacity-70" : ""}`}
+          />
+          {searchInput ? (
+            <button
+              onClick={onSearchClear}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 cursor-pointer"
+            >
+              <IconX size={14} />
+            </button>
+          ) : (
+            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] text-white/40 pointer-events-none">
+              {isMac ? "⌘K" : "^K"}
+            </span>
+          )}
+        </div>
       </div>
       <div className="flex-1 overflow-y-auto py-4 px-3">
         {fontCategories.map((category) => (

@@ -549,6 +549,18 @@ export default function PageClient({
         onHoverSubcategory={setHoveredSubcategory}
         checkedFontNames={checkedFontNames}
         onMoveFonts={handleMoveFonts}
+        searchInput={searchInput}
+        onSearchChange={(value) => {
+          setSearchInput(value);
+          updateUrlDebounced({ q: value });
+        }}
+        onSearchClear={() => {
+          setSearchInput("");
+          updateUrl({ q: "" });
+        }}
+        searchInputRef={searchInputRef}
+        isSearchPending={isSearchPending}
+        isMac={isMac}
       />
 
       {/* Column 2: Font List */}
@@ -589,42 +601,7 @@ export default function PageClient({
                 <IconAlignLeft size={16} className="mr-1.5" />
                 Text
               </button>
-              <div className="flex items-center ml-auto mr-4">
-                <div className="relative">
-                  <IconSearch
-                    size={14}
-                    className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${isSearchPending ? "text-neutral-300" : "text-neutral-400"}`}
-                  />
-                  <input
-                    ref={searchInputRef}
-                    type="text"
-                    value={searchInput}
-                    onChange={(e) => {
-                      setSearchInput(e.target.value);
-                      updateUrlDebounced({ q: e.target.value });
-                    }}
-                    placeholder="Search fonts..."
-                    style={{ fontSize: 13 }}
-                    className={`w-48 pl-7 pr-12 py-1.5 border border-neutral-200 rounded focus:outline-none focus:border-neutral-400 ${isSearchPending ? "bg-neutral-50" : ""}`}
-                  />
-                  {searchInput ? (
-                    <button
-                      onClick={() => {
-                        setSearchInput("");
-                        updateUrl({ q: "" });
-                      }}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
-                    >
-                      <IconX size={14} />
-                    </button>
-                  ) : (
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[13px] text-neutral-400 pointer-events-none">
-                      {isMac ? "⌘K" : "Ctrl+K"}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center ml-auto gap-2">
                 <button
                   onClick={() => {
                     const newValue = !filterBold;
