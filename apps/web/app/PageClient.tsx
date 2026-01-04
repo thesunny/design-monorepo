@@ -10,37 +10,9 @@ import {
 } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";
-import Slider from "@mui/material/Slider";
 import Switch, { SwitchProps } from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";
-
-const sliderSx = {
-  color: '#5b3a70',
-  height: 4,
-  maxWidth: 400,
-  '& .MuiSlider-thumb': {
-    width: 14,
-    height: 14,
-    '&:hover, &.Mui-focusVisible': {
-      boxShadow: '0 0 0 6px rgba(91,58,112,0.2)',
-    },
-  },
-  '& .MuiSlider-markLabel': {
-    fontSize: '12px',
-    color: '#737373',
-    top: '24px',
-  },
-  '& .MuiSlider-rail': {
-    backgroundColor: '#e5e5e5',
-    opacity: 1,
-  },
-  '& .MuiSlider-mark': {
-    backgroundColor: '#d4d4d4',
-  },
-  '&.Mui-disabled': {
-    color: '#d4d4d4',
-  },
-};
+import { StyledSlider } from "./components/StyledSlider";
 
 const IOSSwitch = styled((props: SwitchProps) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -740,6 +712,17 @@ export default function PageClient({
                   />
                   <span className="text-xs text-neutral-500">All Weights</span>
                 </label>
+                <label className="flex items-center gap-1.5 cursor-pointer ml-2">
+                  <IOSSwitch
+                    checked={showItalics}
+                    onChange={() => {
+                      const newValue = !showItalics;
+                      setShowItalics(newValue);
+                      updateUrl({ italics: newValue });
+                    }}
+                  />
+                  <span className="text-xs text-neutral-500">Italics</span>
+                </label>
               </div>
             </div>
 
@@ -809,12 +792,12 @@ export default function PageClient({
             <div className="bg-white border-t border-neutral-200 px-4 py-3">
               {/* Controls grid: label | control | optional toggle */}
               <div
-                className="grid gap-x-3 gap-y-1 mb-2 items-center"
+                className="grid gap-x-3 gap-y-0 mb-2 items-center"
                 style={{ gridTemplateColumns: "5rem 1fr auto" }}
               >
                 {/* Weight row */}
                 <span className="text-xs text-neutral-500">Weight</span>
-                <Slider
+                <StyledSlider
                   value={selectedWeight}
                   onChange={(_, value) => setSelectedWeight(value as number)}
                   onChangeCommitted={(_, value) => updateUrl({ weight: value as number })}
@@ -832,13 +815,11 @@ export default function PageClient({
                     { value: 800, label: "800" },
                     { value: 900, label: "900" },
                   ]}
-                  size="small"
-                  sx={sliderSx}
                 />
                 <div /> {/* Empty cell for grid alignment */}
                 {/* Size row */}
                 <span className="text-xs text-neutral-500">Size</span>
-                <Slider
+                <StyledSlider
                   value={fontSize}
                   onChange={(_, value) => setFontSize(value as number)}
                   onChangeCommitted={(_, value) =>
@@ -859,25 +840,11 @@ export default function PageClient({
                     { value: 60, label: "60" },
                     { value: 72, label: "72" },
                   ]}
-                  size="small"
-                  sx={sliderSx}
                 />
-                <label className="flex items-center gap-1.5 cursor-pointer ml-3">
-                  <IOSSwitch
-                    checked={showItalics}
-                    onChange={() => {
-                      const newValue = !showItalics;
-                      setShowItalics(newValue);
-                      updateUrl({ italics: newValue });
-                    }}
-                  />
-                  <span className="text-xs text-neutral-500 whitespace-nowrap">
-                    Italics
-                  </span>
-                </label>
+                <div /> {/* Empty cell for grid alignment */}
                 {/* Tracking row */}
                 <span className="text-xs text-neutral-500">Tracking</span>
-                <Slider
+                <StyledSlider
                   value={letterSpacing}
                   onChange={(_, value) => setLetterSpacing(value as number)}
                   onChangeCommitted={(_, value) => updateUrl({ tracking: value as number })}
@@ -891,8 +858,6 @@ export default function PageClient({
                     { value: 0.2, label: "0.2" },
                     { value: 0.3, label: "0.3" },
                   ]}
-                  size="small"
-                  sx={sliderSx}
                 />
                 <div /> {/* Empty cell for grid alignment */}
                 {/* Line Height row - hidden for headings tab */}
@@ -901,7 +866,7 @@ export default function PageClient({
                     <span className="text-xs text-neutral-500">
                       Line Height
                     </span>
-                    <Slider
+                    <StyledSlider
                       value={lineHeight}
                       onChange={(_, value) => setLineHeight(value as number)}
                       onChangeCommitted={(_, value) => updateUrl({ lineHeight: value as number })}
@@ -916,9 +881,7 @@ export default function PageClient({
                         { value: 2.0, label: "2.0" },
                         { value: 2.5, label: "2.5" },
                       ]}
-                      size="small"
                       disabled={lineHeightAuto}
-                      sx={sliderSx}
                     />
                     <label className="flex items-center gap-1.5 cursor-pointer ml-3">
                       <IOSSwitch

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { IconClipboard, IconCheck, IconRefresh } from "@tabler/icons-react";
-import { Slider } from "@mantine/core";
+import { StyledSlider } from "./components/StyledSlider";
 import type { Font } from "../data/types";
 import { FontWeightRow } from "./FontWeightRow";
 import { NormalizedText } from "./components/NormalizedText";
@@ -258,20 +258,18 @@ export function FontDetailColumn({ font, previewText, isPreview }: FontDetailCol
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Slider
+                    <StyledSlider
                       className="flex-1"
                       value={currentValue}
-                      onChange={(value) =>
+                      onChange={(_, value) =>
                         setAxisValues((prev) => ({
                           ...prev,
-                          [axis.tag]: value,
+                          [axis.tag]: value as number,
                         }))
                       }
                       min={axis.min}
                       max={axis.max}
                       step={axis.tag === "opsz" ? 0.1 : 1}
-                      size="sm"
-                      color="dark"
                       marks={[
                         { value: axis.min, label: String(axis.min) },
                         {
@@ -280,7 +278,6 @@ export function FontDetailColumn({ font, previewText, isPreview }: FontDetailCol
                         },
                         { value: axis.max, label: String(axis.max) },
                       ]}
-                      styles={{ markLabel: { fontSize: "10px" } }}
                     />
                     <button
                       onClick={() =>
