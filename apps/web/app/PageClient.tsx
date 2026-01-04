@@ -11,7 +11,41 @@ import {
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Slider } from "@mantine/core";
-import Switch from "@mui/material/Switch";
+import Switch, { SwitchProps } from "@mui/material/Switch";
+import { styled } from "@mui/material/styles";
+
+const IOSSwitch = styled((props: SwitchProps) => (
+  <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
+))(({ theme }) => ({
+  width: 34,
+  height: 20,
+  padding: 0,
+  '& .MuiSwitch-switchBase': {
+    padding: 0,
+    margin: 2,
+    transitionDuration: '300ms',
+    '&.Mui-checked': {
+      transform: 'translateX(14px)',
+      color: '#fff',
+      '& + .MuiSwitch-track': {
+        backgroundColor: '#171717',
+        opacity: 1,
+        border: 0,
+      },
+    },
+  },
+  '& .MuiSwitch-thumb': {
+    boxSizing: 'border-box',
+    width: 16,
+    height: 16,
+    boxShadow: '0 1px 2px 0 rgba(0,0,0,0.2)',
+  },
+  '& .MuiSwitch-track': {
+    borderRadius: 20 / 2,
+    backgroundColor: '#d4d4d4',
+    opacity: 1,
+  },
+}));
 import {
   IconHeading,
   IconAlignLeft,
@@ -660,38 +694,20 @@ export default function PageClient({
                 >
                   Variable
                 </button>
-                <label className="flex items-center gap-0 cursor-pointer ml-2">
-                  <Switch
+                <label className="flex items-center gap-1.5 cursor-pointer ml-2">
+                  <IOSSwitch
                     checked={compactMode}
                     onChange={() => setCompactMode(!compactMode)}
-                    size="small"
-                    sx={{
-                      '& .MuiSwitch-switchBase.Mui-checked': {
-                        color: '#171717',
-                      },
-                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                        backgroundColor: '#171717',
-                      },
-                    }}
                   />
                   <span className="text-xs text-neutral-500">Compact</span>
                 </label>
-                <label className="flex items-center gap-0 cursor-pointer ml-2">
-                  <Switch
+                <label className="flex items-center gap-1.5 cursor-pointer ml-2">
+                  <IOSSwitch
                     checked={showAllWeights}
                     onChange={() => {
                       const newValue = !showAllWeights;
                       setShowAllWeights(newValue);
                       updateUrl({ allWeights: newValue });
-                    }}
-                    size="small"
-                    sx={{
-                      '& .MuiSwitch-switchBase.Mui-checked': {
-                        color: '#171717',
-                      },
-                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                        backgroundColor: '#171717',
-                      },
                     }}
                   />
                   <span className="text-xs text-neutral-500">All Weights</span>
@@ -820,22 +836,13 @@ export default function PageClient({
                   color="dark"
                   styles={{ markLabel: { fontSize: "12px" } }}
                 />
-                <label className="flex items-center gap-0 cursor-pointer ml-3">
-                  <Switch
+                <label className="flex items-center gap-1.5 cursor-pointer ml-3">
+                  <IOSSwitch
                     checked={showItalics}
                     onChange={() => {
                       const newValue = !showItalics;
                       setShowItalics(newValue);
                       updateUrl({ italics: newValue });
-                    }}
-                    size="small"
-                    sx={{
-                      '& .MuiSwitch-switchBase.Mui-checked': {
-                        color: '#171717',
-                      },
-                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                        backgroundColor: '#171717',
-                      },
                     }}
                   />
                   <span className="text-xs text-neutral-500 whitespace-nowrap">
@@ -889,22 +896,13 @@ export default function PageClient({
                       disabled={lineHeightAuto}
                       styles={{ markLabel: { fontSize: "12px" } }}
                     />
-                    <label className="flex items-center gap-0 cursor-pointer ml-3">
-                      <Switch
+                    <label className="flex items-center gap-1.5 cursor-pointer ml-3">
+                      <IOSSwitch
                         checked={lineHeightAuto}
                         onChange={() => {
                           const newValue = !lineHeightAuto;
                           setLineHeightAuto(newValue);
                           updateUrl({ lineHeightAuto: newValue });
-                        }}
-                        size="small"
-                        sx={{
-                          '& .MuiSwitch-switchBase.Mui-checked': {
-                            color: '#171717',
-                          },
-                          '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                            backgroundColor: '#171717',
-                          },
                         }}
                       />
                       <span className="text-xs text-neutral-500 whitespace-nowrap">
