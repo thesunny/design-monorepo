@@ -20,7 +20,8 @@
 **Estimated time: 30-60 minutes**
 *(Depends on complexity of schema changes; migrations may require manual data handling)*
 
-**>>> TARGET: 4:00 PM <<<**
+**>>> ORIGINAL: 4:00 PM <<<**
+**>>> ADJUSTED: 4:00 PM <<<**
 **>>> ACTUAL:  <<<**
 
 ---
@@ -35,7 +36,8 @@
 **Estimated time: 30-45 minutes**
 *(Account creation, understanding dashboard, domain verification if custom)*
 
-**>>> TARGET: 4:45 PM <<<**
+**>>> ORIGINAL: 4:45 PM <<<**
+**>>> ADJUSTED: 4:45 PM <<<**
 **>>> ACTUAL:  <<<**
 
 ---
@@ -54,7 +56,8 @@
 **Estimated time: 20-30 minutes**
 *(First production deploy, potential schema review)*
 
-**>>> TARGET: 5:15 PM <<<**
+**>>> ORIGINAL: 5:15 PM <<<**
+**>>> ADJUSTED: 5:15 PM <<<**
 **>>> ACTUAL:  <<<**
 
 ---
@@ -77,7 +80,8 @@
 **Estimated time: 15-20 minutes**
 *(Finding correct domain, testing auth flow)*
 
-**>>> TARGET: 5:35 PM <<<**
+**>>> ORIGINAL: 5:35 PM <<<**
+**>>> ADJUSTED: 5:35 PM <<<**
 **>>> ACTUAL:  <<<**
 
 ---
@@ -92,7 +96,8 @@
 
 **Estimated time: 10-15 minutes**
 
-**>>> TARGET: 5:50 PM <<<**
+**>>> ORIGINAL: 5:50 PM <<<**
+**>>> ADJUSTED: 5:50 PM <<<**
 **>>> ACTUAL:  <<<**
 
 ---
@@ -106,7 +111,8 @@
 **Estimated time: 15-30 minutes**
 *(Monorepo builds can be tricky; may need iteration)*
 
-**>>> TARGET: 6:20 PM <<<**
+**>>> ORIGINAL: 6:20 PM <<<**
+**>>> ADJUSTED: 6:20 PM <<<**
 **>>> ACTUAL:  <<<**
 
 ---
@@ -120,7 +126,8 @@
 
 **Estimated time: 10-15 minutes**
 
-**>>> TARGET: 6:35 PM <<<**
+**>>> ORIGINAL: 6:35 PM <<<**
+**>>> ADJUSTED: 6:35 PM <<<**
 **>>> ACTUAL:  <<<**
 
 ---
@@ -136,7 +143,8 @@
 **Estimated time: 20-45 minutes**
 *(Build failures, debugging, cache issues)*
 
-**>>> TARGET: 7:20 PM <<<**
+**>>> ORIGINAL: 7:20 PM <<<**
+**>>> ADJUSTED: 7:20 PM <<<**
 **>>> ACTUAL:  <<<**
 
 ---
@@ -153,7 +161,8 @@
 **Estimated time: 30-60 minutes**
 *(DNS propagation can take time)*
 
-**>>> TARGET: 8:20 PM <<<**
+**>>> ORIGINAL: 8:20 PM <<<**
+**>>> ADJUSTED: 8:20 PM <<<**
 **>>> ACTUAL:  <<<**
 
 ---
@@ -167,7 +176,8 @@
 
 **Estimated time: 20-30 minutes**
 
-**>>> TARGET: 7:50 PM (without custom domain) / 8:50 PM (with custom domain) <<<**
+**>>> ORIGINAL: 7:50 PM (without custom domain) / 8:50 PM (with custom domain) <<<**
+**>>> ADJUSTED: 7:50 PM (without custom domain) / 8:50 PM (with custom domain) <<<**
 **>>> ACTUAL:  <<<**
 
 ---
@@ -194,23 +204,26 @@ If database doesn't work:
 
 ## Time Estimates Summary
 
-| Task | Pessimistic Estimate | Target |
-|------|---------------------|--------|
-| Database Schema Updates | 60 min | 4:00 PM |
-| Clerk Production Setup | 45 min | 4:45 PM |
-| Convex Production Deployment | 30 min | 5:15 PM |
-| Update Auth Config | 20 min | 5:35 PM |
-| Connect to Vercel | 15 min | 5:50 PM |
-| Configure Build Settings | 30 min | 6:20 PM |
-| Set Environment Variables | 15 min | 6:35 PM |
-| Deploy and Verify | 45 min | 7:20 PM |
-| Custom Domain (optional) | 60 min | 8:20 PM |
-| Final Verification | 30 min | 7:50 / 8:50 PM |
+| Task | Est. | Original | Adjusted |
+|------|------|----------|----------|
+| Database Schema Updates | 60 min | 4:00 PM | 4:00 PM |
+| Clerk Production Setup | 45 min | 4:45 PM | 4:45 PM |
+| Convex Production Deployment | 30 min | 5:15 PM | 5:15 PM |
+| Update Auth Config | 20 min | 5:35 PM | 5:35 PM |
+| Connect to Vercel | 15 min | 5:50 PM | 5:50 PM |
+| Configure Build Settings | 30 min | 6:20 PM | 6:20 PM |
+| Set Environment Variables | 15 min | 6:35 PM | 6:35 PM |
+| Deploy and Verify | 45 min | 7:20 PM | 7:20 PM |
+| Custom Domain (optional) | 60 min | 8:20 PM | 8:20 PM |
+| Final Verification | 30 min | 7:50 / 8:50 PM | 7:50 / 8:50 PM |
 
 ---
 
-## **TARGET FINISH: 7:50 PM** (without custom domain)
-## **TARGET FINISH: 8:50 PM** (with custom domain)
+## **ORIGINAL FINISH: 7:50 PM** (without custom domain)
+## **ORIGINAL FINISH: 8:50 PM** (with custom domain)
+
+## **ADJUSTED FINISH: 7:50 PM** (without custom domain)
+## **ADJUSTED FINISH: 8:50 PM** (with custom domain)
 
 ## **ACTUAL FINISH:  **
 
