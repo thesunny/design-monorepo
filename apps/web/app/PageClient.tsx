@@ -789,154 +789,139 @@ export default function PageClient({
               )}
             </div>
             {/* Preview Controls */}
-            <div className="bg-white border-t border-neutral-200 px-4 py-3">
-              {/* Controls grid: label | control | optional toggle */}
-              <div
-                className="grid gap-x-3 gap-y-0 mb-2 items-center"
-                style={{ gridTemplateColumns: "5rem 1fr auto" }}
-              >
-                {/* Weight row */}
-                <span className="text-xs text-neutral-500">Weight</span>
-                <StyledSlider
-                  value={selectedWeight}
-                  onChange={(_, value) => setSelectedWeight(value as number)}
-                  onChangeCommitted={(_, value) => updateUrl({ weight: value as number })}
-                  min={100}
-                  max={900}
-                  step={100}
-                  marks={[
-                    { value: 100, label: "100" },
-                    { value: 200, label: "200" },
-                    { value: 300, label: "300" },
-                    { value: 400, label: "400" },
-                    { value: 500, label: "500" },
-                    { value: 600, label: "600" },
-                    { value: 700, label: "700" },
-                    { value: 800, label: "800" },
-                    { value: 900, label: "900" },
-                  ]}
-                />
-                <div /> {/* Empty cell for grid alignment */}
-                {/* Size row */}
-                <span className="text-xs text-neutral-500">Size</span>
-                <StyledSlider
-                  value={fontSize}
-                  onChange={(_, value) => setFontSize(value as number)}
-                  onChangeCommitted={(_, value) =>
-                    updateUrl(
-                      previewMode === "headings"
-                        ? { headingSize: value as number }
-                        : { textSize: value as number }
-                    )
-                  }
-                  min={12}
-                  max={72}
-                  step={1}
-                  marks={[
-                    { value: 12, label: "12" },
-                    { value: 24, label: "24" },
-                    { value: 36, label: "36" },
-                    { value: 48, label: "48" },
-                    { value: 60, label: "60" },
-                    { value: 72, label: "72" },
-                  ]}
-                />
-                <div /> {/* Empty cell for grid alignment */}
-                {/* Tracking row */}
-                <span className="text-xs text-neutral-500">Tracking</span>
-                <StyledSlider
-                  value={letterSpacing}
-                  onChange={(_, value) => setLetterSpacing(value as number)}
-                  onChangeCommitted={(_, value) => updateUrl({ tracking: value as number })}
-                  min={-0.1}
-                  max={0.3}
-                  step={0.01}
-                  marks={[
-                    { value: -0.1, label: "-0.1" },
-                    { value: 0, label: "0" },
-                    { value: 0.1, label: "0.1" },
-                    { value: 0.2, label: "0.2" },
-                    { value: 0.3, label: "0.3" },
-                  ]}
-                />
-                <div /> {/* Empty cell for grid alignment */}
-                {/* Line Height row - hidden for headings tab */}
-                {previewMode !== "headings" && (
-                  <>
-                    <span className="text-xs text-neutral-500">
-                      Line Height
-                    </span>
+            <div className="bg-white border-t border-neutral-200 px-8 py-6">
+              {/* Left: Sliders, Right: Text */}
+              <div className="flex gap-10">
+                {/* Left column: Sliders */}
+                <div className="flex-1 space-y-2">
+                  {/* Weight */}
+                  <div className="flex items-start">
+                    <span className="text-[11px] text-neutral-500 uppercase w-20 shrink-0">Weight</span>
                     <StyledSlider
-                      value={lineHeight}
-                      onChange={(_, value) => setLineHeight(value as number)}
-                      onChangeCommitted={(_, value) => updateUrl({ lineHeight: value as number })}
-                      min={0.8}
-                      max={2.5}
-                      step={0.1}
+                      value={selectedWeight}
+                      onChange={(_, value) => setSelectedWeight(value as number)}
+                      onChangeCommitted={(_, value) => updateUrl({ weight: value as number })}
+                      min={100}
+                      max={900}
+                      step={100}
                       marks={[
-                        { value: 0.8, label: "0.8" },
-                        { value: 1.0, label: "1.0" },
-                        { value: 1.2, label: "1.2" },
-                        { value: 1.5, label: "1.5" },
-                        { value: 2.0, label: "2.0" },
-                        { value: 2.5, label: "2.5" },
+                        { value: 100, label: "100" },
+                        { value: 400, label: "400" },
+                        { value: 700, label: "700" },
+                        { value: 900, label: "900" },
                       ]}
-                      disabled={lineHeightAuto}
                     />
-                    <label className="flex items-center gap-1.5 cursor-pointer ml-3">
-                      <IOSSwitch
-                        checked={lineHeightAuto}
-                        onChange={() => {
-                          const newValue = !lineHeightAuto;
-                          setLineHeightAuto(newValue);
-                          updateUrl({ lineHeightAuto: newValue });
-                        }}
+                  </div>
+                  {/* Size */}
+                  <div className="flex items-start">
+                    <span className="text-[11px] text-neutral-500 uppercase w-20 shrink-0 mt-0.5">Size</span>
+                    <StyledSlider
+                      value={fontSize}
+                      onChange={(_, value) => setFontSize(value as number)}
+                      onChangeCommitted={(_, value) =>
+                        updateUrl(
+                          previewMode === "headings"
+                            ? { headingSize: value as number }
+                            : { textSize: value as number }
+                        )
+                      }
+                      min={12}
+                      max={72}
+                      step={1}
+                      marks={[
+                        { value: 12, label: "12" },
+                        { value: 36, label: "36" },
+                        { value: 72, label: "72" },
+                      ]}
+                    />
+                  </div>
+                  {/* Tracking */}
+                  <div className="flex items-start">
+                    <span className="text-[11px] text-neutral-500 uppercase w-20 shrink-0 mt-0.5">Tracking</span>
+                    <StyledSlider
+                      value={letterSpacing}
+                      onChange={(_, value) => setLetterSpacing(value as number)}
+                      onChangeCommitted={(_, value) => updateUrl({ tracking: value as number })}
+                      min={-0.1}
+                      max={0.3}
+                      step={0.01}
+                      marks={[
+                        { value: -0.1, label: "-0.1" },
+                        { value: 0.1, label: "0.1" },
+                        { value: 0.3, label: "0.3" },
+                      ]}
+                    />
+                  </div>
+                  {/* Line Height (only for paragraphs) */}
+                  {previewMode !== "headings" && (
+                    <div className="flex items-start gap-2">
+                      <span className="text-[11px] text-neutral-500 uppercase w-20 shrink-0 mt-0.5">Line Height</span>
+                      <StyledSlider
+                        value={lineHeight}
+                        onChange={(_, value) => setLineHeight(value as number)}
+                        onChangeCommitted={(_, value) => updateUrl({ lineHeight: value as number })}
+                        min={0.8}
+                        max={2.5}
+                        step={0.1}
+                        marks={[
+                          { value: 0.8, label: "0.8" },
+                          { value: 1.5, label: "1.5" },
+                          { value: 2.5, label: "2.5" },
+                        ]}
+                        disabled={lineHeightAuto}
                       />
-                      <span className="text-xs text-neutral-500 whitespace-nowrap">
-                        Auto
-                      </span>
-                    </label>
-                  </>
-                )}
-                {/* Preview Text row - hidden for paragraphs/text tab */}
-                {previewMode !== "paragraphs" && (
-                  <>
-                    <span className="text-xs text-neutral-500">Text</span>
+                      <label className="flex items-center gap-1.5 cursor-pointer shrink-0 pl-4">
+                        <IOSSwitch
+                          checked={lineHeightAuto}
+                          onChange={() => {
+                            const newValue = !lineHeightAuto;
+                            setLineHeightAuto(newValue);
+                            updateUrl({ lineHeightAuto: newValue });
+                          }}
+                        />
+                        <span className="text-xs text-neutral-500">Auto</span>
+                      </label>
+                    </div>
+                  )}
+                </div>
+                {/* Right column: Text (only for headings) */}
+                {previewMode === "headings" && (
+                  <div className="w-80">
+                    <div className="flex items-center justify-between mb-0">
+                      <span className="text-xs text-neutral-500">Text</span>
+                      <div className="flex gap-1.5">
+                        {[
+                          { label: "Title", value: "The Quick Brown Fox Jumps" },
+                          { label: "Kerning", value: "AVATAR Hamburgefontsiv" },
+                          { label: "Numbers", value: "0123456789 $€£¥" },
+                          { label: "Alphabet", value: "abcdefghijklmnopqrstuvwxyz" },
+                        ].map(({ label, value }) => {
+                          const isActive = previewText === value;
+                          return (
+                            <button
+                              key={label}
+                              onClick={() => setPreviewText(value)}
+                              className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
+                                isActive
+                                  ? "bg-neutral-300 text-neutral-700"
+                                  : "bg-neutral-100 hover:bg-neutral-200 text-neutral-600"
+                              }`}
+                              style={{ fontSize: 10 }}
+                            >
+                              {label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                     <input
                       type="text"
                       value={previewText}
                       onChange={(e) => setPreviewText(e.target.value)}
                       placeholder="Enter preview text..."
-                      className="w-full px-3 py-1.5 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-400"
+                      className="w-full px-3 py-1.5 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-400 mt-1"
                     />
-                    <div className="grid grid-cols-2 gap-1.5 ml-3">
-                      {[
-                        { label: "Title", value: "The Quick Brown Fox Jumps" },
-                        { label: "Kerning", value: "AVATAR Hamburgefontsiv" },
-                        { label: "Numbers", value: "0123456789 $€£¥" },
-                        {
-                          label: "Alphabet",
-                          value: "abcdefghijklmnopqrstuvwxyz",
-                        },
-                      ].map(({ label, value }) => {
-                        const isActive = previewText === value;
-                        return (
-                          <button
-                            key={label}
-                            onClick={() => setPreviewText(value)}
-                            className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
-                              isActive
-                                ? "bg-neutral-300 text-neutral-700"
-                                : "bg-neutral-100 hover:bg-neutral-200 text-neutral-600"
-                            }`}
-                            style={{ fontSize: 10 }}
-                          >
-                            {label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </>
+                  </div>
                 )}
               </div>
             </div>
