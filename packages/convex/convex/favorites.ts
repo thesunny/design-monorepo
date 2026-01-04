@@ -18,12 +18,9 @@ export const getFavorites = query({
 
 export const addFavorite = mutation({
   args: {
-    fontId: v.string(),
     fontName: v.string(),
     weight: v.number(),
-    lineHeight: v.number(),
-    letterSpacing: v.number(),
-    type: v.union(v.literal("heading"), v.literal("paragraph"), v.literal("code")),
+    type: v.union(v.literal("heading"), v.literal("text")),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -38,10 +35,8 @@ export const addFavorite = mutation({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .filter((q) =>
         q.and(
-          q.eq(q.field("fontId"), args.fontId),
+          q.eq(q.field("fontName"), args.fontName),
           q.eq(q.field("weight"), args.weight),
-          q.eq(q.field("lineHeight"), args.lineHeight),
-          q.eq(q.field("letterSpacing"), args.letterSpacing),
           q.eq(q.field("type"), args.type)
         )
       )
@@ -53,24 +48,18 @@ export const addFavorite = mutation({
 
     return await ctx.db.insert("favorites", {
       userId,
-      fontId: args.fontId,
       fontName: args.fontName,
       weight: args.weight,
-      lineHeight: args.lineHeight,
-      letterSpacing: args.letterSpacing,
       type: args.type,
-      createdAt: Date.now(),
     });
   },
 });
 
 export const removeFavorite = mutation({
   args: {
-    fontId: v.string(),
+    fontName: v.string(),
     weight: v.number(),
-    lineHeight: v.number(),
-    letterSpacing: v.number(),
-    type: v.union(v.literal("heading"), v.literal("paragraph"), v.literal("code")),
+    type: v.union(v.literal("heading"), v.literal("text")),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -84,10 +73,8 @@ export const removeFavorite = mutation({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .filter((q) =>
         q.and(
-          q.eq(q.field("fontId"), args.fontId),
+          q.eq(q.field("fontName"), args.fontName),
           q.eq(q.field("weight"), args.weight),
-          q.eq(q.field("lineHeight"), args.lineHeight),
-          q.eq(q.field("letterSpacing"), args.letterSpacing),
           q.eq(q.field("type"), args.type)
         )
       )

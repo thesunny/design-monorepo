@@ -6,8 +6,8 @@ import { NormalizedText } from "./components/NormalizedText";
 type FontWeightRowProps = {
   fontName: string;
   weight: number;
-  lineHeight: number;
-  letterSpacing: number;
+  lineHeight?: number;
+  letterSpacing?: number;
   previewText: string;
   fontSize: number;
   isMonospace?: boolean;
@@ -25,8 +25,8 @@ type FontWeightRowProps = {
 export function FontWeightRow({
   fontName,
   weight,
-  lineHeight,
-  letterSpacing,
+  lineHeight = 1.2,
+  letterSpacing = 0,
   previewText,
   fontSize,
   isMonospace,

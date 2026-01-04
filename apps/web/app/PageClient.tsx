@@ -550,13 +550,13 @@ export default function PageClient({
       }
     }
 
-    // Add fonts from favorites (look up full Font object)
+    // Add fonts from favorites (look up full Font object by name)
     if (favorites) {
       for (const fav of favorites) {
-        if (!seenIds.has(fav.fontId)) {
-          const font = fontByIdMap.get(fav.fontId);
+        if (!seenIds.has(fav.fontName)) {
+          const font = fontByNameMap.get(fav.fontName);
           if (font) {
-            seenIds.add(fav.fontId);
+            seenIds.add(fav.fontName);
             fonts.push(font);
           }
         }
@@ -564,7 +564,7 @@ export default function PageClient({
     }
 
     return fonts;
-  }, [baseFonts, favorites, fontByIdMap]);
+  }, [baseFonts, favorites, fontByNameMap]);
 
   // Load fonts using the optimized hook (one link per font)
   const { failedFonts } = useFontLoader(fontsToLoad);
@@ -944,7 +944,7 @@ export default function PageClient({
         failedFonts={failedFonts}
         previewText={previewText}
         fontSize={FAVORITES_FONT_SIZE}
-        fontByIdMap={fontByIdMap}
+        fontByNameMap={fontByNameMap}
         isOpen={favoritesDrawerOpen}
         onClose={() => setFavoritesDrawerOpen(false)}
       />
@@ -1098,10 +1098,8 @@ function HeadingPreview({
   const isWeightFavorited = (weight: number) =>
     favorites?.some(
       (fav) =>
-        fav.fontId === font.id &&
+        fav.fontName === font.name &&
         fav.weight === weight &&
-        fav.lineHeight === lineHeight &&
-        fav.letterSpacing === letterSpacing &&
         (fav.type === "heading" || fav.type === undefined)
     ) ?? false;
 
@@ -1176,19 +1174,14 @@ function HeadingPreview({
               onStarClick={() => {
                 if (isWeightFavorited(weight)) {
                   removeFavorite({
-                    fontId: font.id,
+                    fontName: font.name,
                     weight,
-                    lineHeight,
-                    letterSpacing,
                     type: "heading",
                   });
                 } else {
                   addFavorite({
-                    fontId: font.id,
                     fontName: font.name,
                     weight,
-                    lineHeight,
-                    letterSpacing,
                     type: "heading",
                   });
                   onFavoriteAdd?.();
@@ -1247,32 +1240,27 @@ function TextPreview({
     : lineHeight;
   const isMonospace = isMonospaceFont(font);
 
-  // Check if current font+weight is favorited as a paragraph
+  // Check if current font+weight is favorited as text
   const isFavorited =
     favorites?.some(
       (fav) =>
-        fav.fontId === font.id &&
+        fav.fontName === font.name &&
         fav.weight === weight &&
-        fav.type === "paragraph"
+        fav.type === "text"
     ) ?? false;
 
   const handleStarClick = () => {
     if (isFavorited) {
       removeFavorite({
-        fontId: font.id,
+        fontName: font.name,
         weight,
-        lineHeight: 1.4,
-        letterSpacing: 0,
-        type: "paragraph",
+        type: "text",
       });
     } else {
       addFavorite({
-        fontId: font.id,
         fontName: font.name,
         weight,
-        lineHeight: 1.4,
-        letterSpacing: 0,
-        type: "paragraph",
+        type: "text",
       });
       onFavoriteAdd?.();
     }

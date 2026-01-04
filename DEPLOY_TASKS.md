@@ -43,15 +43,15 @@
 ---
 
 ### 3. Convex Production Deployment
-- [ ] Log into Convex dashboard: https://dashboard.convex.dev
-- [ ] Create a new production deployment for "design-monorepo-6b6b0" project
-- [ ] Run schema deployment from `packages/convex`:
+- [x] Log into Convex dashboard: https://dashboard.convex.dev
+- [x] Create a new production deployment for "design-monorepo-6b6b0" project
+- [x] Run schema deployment from `packages/convex`:
   ```bash
   cd packages/convex
   npx convex deploy --prod
   ```
-- [ ] Note the production `CONVEX_URL` (will be different from dev URL)
-- [ ] Note the production `CONVEX_DEPLOYMENT` identifier
+- [x] Note the production `CONVEX_URL` (will be different from dev URL)
+- [x] Note the production `CONVEX_DEPLOYMENT` identifier
 
 **Estimated time: 20-30 minutes**
 *(First production deploy, potential schema review)*

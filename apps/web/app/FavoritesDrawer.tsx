@@ -11,30 +11,22 @@ import { isMonospaceFont } from "./utils";
 
 type Favorite = {
   _id: string;
-  fontId: string;
   fontName: string;
   weight: number;
-  lineHeight: number;
-  letterSpacing: number;
-  type?: "heading" | "paragraph" | "code";
-  createdAt: number;
+  type?: "heading" | "text";
 };
 
 type FavoriteWeight = {
   weight: number;
-  lineHeight: number;
-  letterSpacing: number;
   _id: string;
-  type: "heading" | "paragraph" | "code";
+  type: "heading" | "text";
 };
 
-// Group favorites by fontId, with separate headings, paragraphs, and codes
+// Group favorites by fontName, with separate headings and texts
 type GroupedFavorite = {
-  fontId: string;
   fontName: string;
   headings: FavoriteWeight[];
-  paragraphs: FavoriteWeight[];
-  codes: FavoriteWeight[];
+  texts: FavoriteWeight[];
 };
 
 type FavoritesDrawerProps = {
@@ -42,26 +34,24 @@ type FavoritesDrawerProps = {
   failedFonts: Set<string>;
   previewText: string;
   fontSize: number;
-  fontByIdMap: Map<string, Font>;
+  fontByNameMap: Map<string, Font>;
   isOpen: boolean;
   onClose: () => void;
 };
 
-const PARAGRAPH_PREVIEW_TEXT = "Typography gives language a visual form, shaping how we experience text.";
-const CODE_PREVIEW_TEXT = `const sum = (a, b) => a + b;`;
-const PARAGRAPH_NORMALIZATION_TEXT = "this is a simple sample text that represents average spacing and letter frequency";
-const CODE_NORMALIZATION_TEXT = "0000000000";
+const TEXT_PREVIEW_TEXT = "Typography gives language a visual form, shaping how we experience text.";
+const TEXT_NORMALIZATION_TEXT = "this is a simple sample text that represents average spacing and letter frequency";
 
 export function FavoritesDrawer({
   favorites,
   failedFonts,
   previewText,
   fontSize,
-  fontByIdMap,
+  fontByNameMap,
   isOpen,
   onClose,
 }: FavoritesDrawerProps) {
-  // Group favorites by fontId, separating headings and paragraphs
+  // Group favorites by fontName, separating headings and texts
   const groupedFavorites = useMemo(() => {
     if (!favorites) return [];
 
@@ -71,28 +61,22 @@ export function FavoritesDrawer({
       const favType = fav.type || "heading";
       const weightData: FavoriteWeight = {
         weight: fav.weight,
-        lineHeight: fav.lineHeight,
-        letterSpacing: fav.letterSpacing,
         _id: fav._id,
         type: favType,
       };
 
-      const existing = groups.get(fav.fontId);
+      const existing = groups.get(fav.fontName);
       if (existing) {
-        if (favType === "paragraph") {
-          existing.paragraphs.push(weightData);
-        } else if (favType === "code") {
-          existing.codes.push(weightData);
+        if (favType === "text") {
+          existing.texts.push(weightData);
         } else {
           existing.headings.push(weightData);
         }
       } else {
-        groups.set(fav.fontId, {
-          fontId: fav.fontId,
+        groups.set(fav.fontName, {
           fontName: fav.fontName,
           headings: favType === "heading" ? [weightData] : [],
-          paragraphs: favType === "paragraph" ? [weightData] : [],
-          codes: favType === "code" ? [weightData] : [],
+          texts: favType === "text" ? [weightData] : [],
         });
       }
     }
@@ -100,8 +84,7 @@ export function FavoritesDrawer({
     // Sort weights within each group
     for (const group of groups.values()) {
       group.headings.sort((a, b) => a.weight - b.weight);
-      group.paragraphs.sort((a, b) => a.weight - b.weight);
-      group.codes.sort((a, b) => a.weight - b.weight);
+      group.texts.sort((a, b) => a.weight - b.weight);
     }
 
     return Array.from(groups.values());
@@ -131,16 +114,19 @@ export function FavoritesDrawer({
           </p>
         ) : (
           <div className="space-y-2">
-            {groupedFavorites.map((group) => (
-              <GroupedFavoriteItem
-                key={group.fontId}
-                group={group}
-                isFailed={failedFonts.has(group.fontId)}
-                previewText={previewText}
-                fontSize={fontSize}
-                fontByIdMap={fontByIdMap}
-              />
-            ))}
+            {groupedFavorites.map((group) => {
+              const fontData = fontByNameMap.get(group.fontName);
+              return (
+                <GroupedFavoriteItem
+                  key={group.fontName}
+                  group={group}
+                  isFailed={fontData ? failedFonts.has(fontData.id) : false}
+                  previewText={previewText}
+                  fontSize={fontSize}
+                  fontByNameMap={fontByNameMap}
+                />
+              );
+            })}
           </div>
         )}
       </div>
@@ -153,46 +139,32 @@ function GroupedFavoriteItem({
   isFailed,
   previewText,
   fontSize,
-  fontByIdMap,
+  fontByNameMap,
 }: {
   group: GroupedFavorite;
   isFailed?: boolean;
   previewText: string;
   fontSize: number;
-  fontByIdMap: Map<string, Font>;
+  fontByNameMap: Map<string, Font>;
 }) {
   const removeFavorite = useMutation(api.favorites.removeFavorite);
 
   // Look up font data from the map
-  const fontData = fontByIdMap.get(group.fontId);
+  const fontData = fontByNameMap.get(group.fontName);
 
   const handleRemoveHeading = (weightData: FavoriteWeight) => {
     removeFavorite({
-      fontId: group.fontId,
+      fontName: group.fontName,
       weight: weightData.weight,
-      lineHeight: weightData.lineHeight,
-      letterSpacing: weightData.letterSpacing,
       type: "heading",
     });
   };
 
-  const handleRemoveParagraph = (weightData: FavoriteWeight) => {
+  const handleRemoveText = (weightData: FavoriteWeight) => {
     removeFavorite({
-      fontId: group.fontId,
+      fontName: group.fontName,
       weight: weightData.weight,
-      lineHeight: weightData.lineHeight,
-      letterSpacing: weightData.letterSpacing,
-      type: "paragraph",
-    });
-  };
-
-  const handleRemoveCode = (weightData: FavoriteWeight) => {
-    removeFavorite({
-      fontId: group.fontId,
-      weight: weightData.weight,
-      lineHeight: weightData.lineHeight,
-      letterSpacing: weightData.letterSpacing,
-      type: "code",
+      type: "text",
     });
   };
 
@@ -205,8 +177,6 @@ function GroupedFavoriteItem({
             key={weightData._id}
             fontName={group.fontName}
             weight={weightData.weight}
-            lineHeight={weightData.lineHeight}
-            letterSpacing={weightData.letterSpacing}
             previewText={previewText}
             fontSize={fontSize}
             isMonospace={isMonospaceFont(fontData)}
@@ -216,26 +186,15 @@ function GroupedFavoriteItem({
             onStarClick={() => handleRemoveHeading(weightData)}
           />
         ))}
-        {/* Paragraphs below headings */}
-        {group.paragraphs.map((weightData) => (
-          <ParagraphFavoriteRow
+        {/* Texts below headings */}
+        {group.texts.map((weightData) => (
+          <TextFavoriteRow
             key={weightData._id}
             fontName={group.fontName}
             weight={weightData.weight}
             isMonospace={isMonospaceFont(fontData)}
             isFailed={isFailed}
-            onRemove={() => handleRemoveParagraph(weightData)}
-          />
-        ))}
-        {/* Code below paragraphs */}
-        {group.codes.map((weightData) => (
-          <CodeFavoriteRow
-            key={weightData._id}
-            fontName={group.fontName}
-            weight={weightData.weight}
-            isMonospace={isMonospaceFont(fontData)}
-            isFailed={isFailed}
-            onRemove={() => handleRemoveCode(weightData)}
+            onRemove={() => handleRemoveText(weightData)}
           />
         ))}
       </div>
@@ -269,7 +228,7 @@ function GroupedFavoriteItem({
   );
 }
 
-function ParagraphFavoriteRow({
+function TextFavoriteRow({
   fontName,
   weight,
   isMonospace,
@@ -284,7 +243,7 @@ function ParagraphFavoriteRow({
 }) {
   return (
     <div className="flex items-start gap-3">
-      {/* Paragraph preview with multiline text */}
+      {/* Text preview with multiline text */}
       <div className="flex-1 min-w-0">
         <NormalizedText
           fontFamily={fontName}
@@ -293,65 +252,10 @@ function ParagraphFavoriteRow({
           lineHeight={1.4}
           letterSpacing={0}
           normalizedFontSize={16}
-          normalizationText={PARAGRAPH_NORMALIZATION_TEXT}
+          normalizationText={TEXT_NORMALIZATION_TEXT}
           isMonospace={isMonospace}
         >
-          {PARAGRAPH_PREVIEW_TEXT}
-        </NormalizedText>
-      </div>
-
-      {/* Weight and star grouped on the right */}
-      <div className="flex items-center gap-3 flex-shrink-0">
-        <span className={`text-xs w-8 text-right ${isFailed ? "text-red-400" : "text-neutral-400"}`}>
-          {weight}
-        </span>
-        <button
-          onClick={onRemove}
-          className="p-1 rounded hover:bg-neutral-200 transition-colors"
-          title="Remove from favorites"
-        >
-          <IconStarFilled size={16} className="text-yellow-500" />
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function CodeFavoriteRow({
-  fontName,
-  weight,
-  isMonospace,
-  isFailed,
-  onRemove,
-}: {
-  fontName: string;
-  weight: number;
-  isMonospace?: boolean;
-  isFailed?: boolean;
-  onRemove: () => void;
-}) {
-  return (
-    <div className="flex items-center gap-3">
-      {/* Code preview */}
-      <div
-        className="flex-1 min-w-0 overflow-hidden"
-        style={{
-          maskImage: "linear-gradient(to right, black calc(100% - 40px), transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to right, black calc(100% - 40px), transparent 100%)",
-        }}
-      >
-        <NormalizedText
-          fontFamily={fontName}
-          fontWeight={weight}
-          fontStyle="normal"
-          lineHeight={1.4}
-          letterSpacing={0}
-          normalizedFontSize={15}
-          normalizationText={CODE_NORMALIZATION_TEXT}
-          isMonospace={isMonospace}
-          style={{ whiteSpace: "nowrap" }}
-        >
-          {CODE_PREVIEW_TEXT}
+          {TEXT_PREVIEW_TEXT}
         </NormalizedText>
       </div>
 
