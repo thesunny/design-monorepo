@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { fontCategories } from "../data/fontCategories";
 import { googleFontsMetadata } from "../data/googleFontsMetadata";
 import type { Font, FamilyMetadata } from "../data/types";
@@ -55,5 +56,9 @@ function processFontMetadata(metadata: FamilyMetadata): Font {
 const allFonts: Font[] = googleFontsMetadata.familyMetadataList.map(processFontMetadata);
 
 export default function Page() {
-  return <PageClient fontCategories={fontCategories} allFonts={allFonts} />;
+  return (
+    <Suspense fallback={null}>
+      <PageClient fontCategories={fontCategories} allFonts={allFonts} />
+    </Suspense>
+  );
 }
