@@ -18,5 +18,8 @@
     "-- open": "# open",
     "open": "convex dashboard",
     "-- end": "# end"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.12"
   }
 }
