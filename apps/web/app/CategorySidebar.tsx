@@ -99,17 +99,19 @@ export function CategorySidebar({
                   >
                     {subcategory.name}
                   </button>
-                  {hasCheckedFonts && (
-                    <button
-                      onClick={() =>
-                        onMoveFonts(category.name, subcategory.name)
-                      }
-                      className="absolute -right-3 top-0 bottom-0 px-2 flex items-center text-white/50 hover:text-white bg-[#412346] hover:bg-[#522653] rounded transition-colors cursor-pointer"
-                      title={`Move ${checkedFontNames.length} font${checkedFontNames.length > 1 ? "s" : ""} to ${subcategory.name}`}
-                    >
-                      <ArrowLeft size={16} />
-                    </button>
-                  )}
+                  {hasCheckedFonts &&
+                    !subcategory.id.endsWith("-top-50") &&
+                    !subcategory.id.includes("-more-") && (
+                      <button
+                        onClick={() =>
+                          onMoveFonts(category.name, subcategory.name)
+                        }
+                        className="absolute -right-3 top-0 bottom-0 px-2 flex items-center text-white/50 hover:text-white bg-[#412346] hover:bg-[#522653] rounded transition-colors cursor-pointer"
+                        title={`Move ${checkedFontNames.length} font${checkedFontNames.length > 1 ? "s" : ""} to ${subcategory.name}`}
+                      >
+                        <ArrowLeft size={16} />
+                      </button>
+                    )}
                 </li>
               ))}
             </ul>
