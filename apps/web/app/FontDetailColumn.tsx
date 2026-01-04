@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { IconClipboard, IconCheck, IconRefresh } from "@tabler/icons-react";
-import { StyledSlider } from "./components/StyledSlider";
+import { IconClipboard, IconCheck } from "@tabler/icons-react";
+import { LabeledSlider } from "./components/LabeledSlider";
 import type { Font } from "../data/types";
 import { FontWeightRow } from "./FontWeightRow";
 import { NormalizedText } from "./components/NormalizedText";
@@ -243,61 +243,30 @@ export function FontDetailColumn({ font, previewText, isPreview }: FontDetailCol
           <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider mb-4">
             Variable Axes
           </h3>
-          <div className="space-y-4">
+          <div className="space-y-2">
             {variableAxes.map((axis) => {
               const currentValue = axisValues[axis.tag] ?? axis.defaultValue;
-              const isDefault = currentValue === axis.defaultValue;
               return (
-                <div key={axis.tag}>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-neutral-600">
-                      {getAxisDisplayName(axis.tag)}
-                    </span>
-                    <span className="text-xs text-neutral-400">
-                      {currentValue}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <StyledSlider
-                      className="flex-1"
-                      value={currentValue}
-                      onChange={(_, value) =>
-                        setAxisValues((prev) => ({
-                          ...prev,
-                          [axis.tag]: value as number,
-                        }))
-                      }
-                      min={axis.min}
-                      max={axis.max}
-                      step={axis.tag === "opsz" ? 0.1 : 1}
-                      marks={[
-                        { value: axis.min, label: String(axis.min) },
-                        {
-                          value: axis.defaultValue,
-                          label: String(axis.defaultValue),
-                        },
-                        { value: axis.max, label: String(axis.max) },
-                      ]}
-                    />
-                    <button
-                      onClick={() =>
-                        setAxisValues((prev) => ({
-                          ...prev,
-                          [axis.tag]: axis.defaultValue,
-                        }))
-                      }
-                      className={`p-1 rounded transition-colors ${
-                        isDefault
-                          ? "text-neutral-300 cursor-default"
-                          : "text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 cursor-pointer"
-                      }`}
-                      disabled={isDefault}
-                      title="Reset to default"
-                    >
-                      <IconRefresh size={21} />
-                    </button>
-                  </div>
-                </div>
+                <LabeledSlider
+                  key={axis.tag}
+                  label={getAxisDisplayName(axis.tag)}
+                  value={currentValue}
+                  defaultValue={axis.defaultValue}
+                  onChange={(value) =>
+                    setAxisValues((prev) => ({
+                      ...prev,
+                      [axis.tag]: value,
+                    }))
+                  }
+                  min={axis.min}
+                  max={axis.max}
+                  step={axis.tag === "opsz" ? 0.1 : 1}
+                  marks={[
+                    { value: axis.min, label: String(axis.min) },
+                    { value: axis.defaultValue, label: String(axis.defaultValue) },
+                    { value: axis.max, label: String(axis.max) },
+                  ]}
+                />
               );
             })}
           </div>

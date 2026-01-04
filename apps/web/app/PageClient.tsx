@@ -12,7 +12,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";
 import Switch, { SwitchProps } from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";
-import { StyledSlider } from "./components/StyledSlider";
+import { LabeledSlider } from "./components/LabeledSlider";
 
 const IOSSwitch = styled((props: SwitchProps) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -795,93 +795,91 @@ export default function PageClient({
                 {/* Left column: Sliders */}
                 <div className="flex-1 space-y-2">
                   {/* Weight */}
-                  <div className="flex items-start">
-                    <span className="text-[11px] text-neutral-500 uppercase w-20 shrink-0">Weight</span>
-                    <StyledSlider
-                      value={selectedWeight}
-                      onChange={(_, value) => setSelectedWeight(value as number)}
-                      onChangeCommitted={(_, value) => updateUrl({ weight: value as number })}
-                      min={100}
-                      max={900}
-                      step={100}
-                      marks={[
-                        { value: 100, label: "100" },
-                        { value: 400, label: "400" },
-                        { value: 700, label: "700" },
-                        { value: 900, label: "900" },
-                      ]}
-                    />
-                  </div>
+                  <LabeledSlider
+                    label="Weight"
+                    value={selectedWeight}
+                    defaultValue={DEFAULTS.selectedWeight}
+                    onChange={setSelectedWeight}
+                    onChangeCommitted={(value) => updateUrl({ weight: value })}
+                    min={100}
+                    max={900}
+                    step={100}
+                    marks={[
+                      { value: 100, label: "100" },
+                      { value: 400, label: "400" },
+                      { value: 700, label: "700" },
+                      { value: 900, label: "900" },
+                    ]}
+                  />
                   {/* Size */}
-                  <div className="flex items-start">
-                    <span className="text-[11px] text-neutral-500 uppercase w-20 shrink-0 mt-0.5">Size</span>
-                    <StyledSlider
-                      value={fontSize}
-                      onChange={(_, value) => setFontSize(value as number)}
-                      onChangeCommitted={(_, value) =>
-                        updateUrl(
-                          previewMode === "headings"
-                            ? { headingSize: value as number }
-                            : { textSize: value as number }
-                        )
-                      }
-                      min={12}
-                      max={72}
-                      step={1}
-                      marks={[
-                        { value: 12, label: "12" },
-                        { value: 36, label: "36" },
-                        { value: 72, label: "72" },
-                      ]}
-                    />
-                  </div>
+                  <LabeledSlider
+                    label="Size"
+                    value={fontSize}
+                    defaultValue={previewMode === "headings" ? DEFAULTS.headingsFontSize : DEFAULTS.textFontSize}
+                    onChange={setFontSize}
+                    onChangeCommitted={(value) =>
+                      updateUrl(
+                        previewMode === "headings"
+                          ? { headingSize: value }
+                          : { textSize: value }
+                      )
+                    }
+                    min={12}
+                    max={72}
+                    step={1}
+                    marks={[
+                      { value: 12, label: "12" },
+                      { value: 36, label: "36" },
+                      { value: 72, label: "72" },
+                    ]}
+                  />
                   {/* Tracking */}
-                  <div className="flex items-start">
-                    <span className="text-[11px] text-neutral-500 uppercase w-20 shrink-0 mt-0.5">Tracking</span>
-                    <StyledSlider
-                      value={letterSpacing}
-                      onChange={(_, value) => setLetterSpacing(value as number)}
-                      onChangeCommitted={(_, value) => updateUrl({ tracking: value as number })}
-                      min={-0.1}
-                      max={0.3}
-                      step={0.01}
-                      marks={[
-                        { value: -0.1, label: "-0.1" },
-                        { value: 0.1, label: "0.1" },
-                        { value: 0.3, label: "0.3" },
-                      ]}
-                    />
-                  </div>
+                  <LabeledSlider
+                    label="Tracking"
+                    value={letterSpacing}
+                    defaultValue={DEFAULTS.letterSpacing}
+                    onChange={setLetterSpacing}
+                    onChangeCommitted={(value) => updateUrl({ tracking: value })}
+                    min={-0.1}
+                    max={0.3}
+                    step={0.01}
+                    marks={[
+                      { value: -0.1, label: "-0.1" },
+                      { value: 0.1, label: "0.1" },
+                      { value: 0.3, label: "0.3" },
+                    ]}
+                  />
                   {/* Line Height (only for paragraphs) */}
                   {previewMode !== "headings" && (
-                    <div className="flex items-start gap-2">
-                      <span className="text-[11px] text-neutral-500 uppercase w-20 shrink-0 mt-0.5">Line Height</span>
-                      <StyledSlider
-                        value={lineHeight}
-                        onChange={(_, value) => setLineHeight(value as number)}
-                        onChangeCommitted={(_, value) => updateUrl({ lineHeight: value as number })}
-                        min={0.8}
-                        max={2.5}
-                        step={0.1}
-                        marks={[
-                          { value: 0.8, label: "0.8" },
-                          { value: 1.5, label: "1.5" },
-                          { value: 2.5, label: "2.5" },
-                        ]}
-                        disabled={lineHeightAuto}
-                      />
-                      <label className="flex items-center gap-1.5 cursor-pointer shrink-0 pl-4">
-                        <IOSSwitch
-                          checked={lineHeightAuto}
-                          onChange={() => {
-                            const newValue = !lineHeightAuto;
-                            setLineHeightAuto(newValue);
-                            updateUrl({ lineHeightAuto: newValue });
-                          }}
-                        />
-                        <span className="text-xs text-neutral-500">Auto</span>
-                      </label>
-                    </div>
+                    <LabeledSlider
+                      label="Line Height"
+                      value={lineHeight}
+                      defaultValue={DEFAULTS.lineHeight}
+                      onChange={setLineHeight}
+                      onChangeCommitted={(value) => updateUrl({ lineHeight: value })}
+                      min={0.8}
+                      max={2.5}
+                      step={0.1}
+                      marks={[
+                        { value: 0.8, label: "0.8" },
+                        { value: 1.5, label: "1.5" },
+                        { value: 2.5, label: "2.5" },
+                      ]}
+                      disabled={lineHeightAuto}
+                      suffix={
+                        <label className="flex items-center gap-1.5 cursor-pointer shrink-0 pl-4">
+                          <IOSSwitch
+                            checked={lineHeightAuto}
+                            onChange={() => {
+                              const newValue = !lineHeightAuto;
+                              setLineHeightAuto(newValue);
+                              updateUrl({ lineHeightAuto: newValue });
+                            }}
+                          />
+                          <span className="text-xs text-neutral-500">Auto</span>
+                        </label>
+                      }
+                    />
                   )}
                 </div>
                 {/* Right column: Text (only for headings) */}
