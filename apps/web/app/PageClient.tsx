@@ -10,9 +10,37 @@ import {
 } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";
-import { Slider } from "@mantine/core";
+import Slider from "@mui/material/Slider";
 import Switch, { SwitchProps } from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";
+
+const sliderSx = {
+  color: '#5b3a70',
+  height: 4,
+  maxWidth: 400,
+  '& .MuiSlider-thumb': {
+    width: 14,
+    height: 14,
+    '&:hover, &.Mui-focusVisible': {
+      boxShadow: '0 0 0 6px rgba(91,58,112,0.2)',
+    },
+  },
+  '& .MuiSlider-markLabel': {
+    fontSize: '12px',
+    color: '#737373',
+    top: '24px',
+  },
+  '& .MuiSlider-rail': {
+    backgroundColor: '#e5e5e5',
+    opacity: 1,
+  },
+  '& .MuiSlider-mark': {
+    backgroundColor: '#d4d4d4',
+  },
+  '&.Mui-disabled': {
+    color: '#d4d4d4',
+  },
+};
 
 const IOSSwitch = styled((props: SwitchProps) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -781,15 +809,15 @@ export default function PageClient({
             <div className="bg-white border-t border-neutral-200 px-4 py-3">
               {/* Controls grid: label | control | optional toggle */}
               <div
-                className="grid gap-x-3 gap-y-6 mb-2 items-center"
+                className="grid gap-x-3 gap-y-1 mb-2 items-center"
                 style={{ gridTemplateColumns: "5rem 1fr auto" }}
               >
                 {/* Weight row */}
                 <span className="text-xs text-neutral-500">Weight</span>
                 <Slider
                   value={selectedWeight}
-                  onChange={setSelectedWeight}
-                  onChangeEnd={(value) => updateUrl({ weight: value })}
+                  onChange={(_, value) => setSelectedWeight(value as number)}
+                  onChangeCommitted={(_, value) => updateUrl({ weight: value as number })}
                   min={100}
                   max={900}
                   step={100}
@@ -804,21 +832,20 @@ export default function PageClient({
                     { value: 800, label: "800" },
                     { value: 900, label: "900" },
                   ]}
-                  size="sm"
-                  color="dark"
-                  styles={{ markLabel: { fontSize: "12px" } }}
+                  size="small"
+                  sx={sliderSx}
                 />
                 <div /> {/* Empty cell for grid alignment */}
                 {/* Size row */}
                 <span className="text-xs text-neutral-500">Size</span>
                 <Slider
                   value={fontSize}
-                  onChange={setFontSize}
-                  onChangeEnd={(value) =>
+                  onChange={(_, value) => setFontSize(value as number)}
+                  onChangeCommitted={(_, value) =>
                     updateUrl(
                       previewMode === "headings"
-                        ? { headingSize: value }
-                        : { textSize: value }
+                        ? { headingSize: value as number }
+                        : { textSize: value as number }
                     )
                   }
                   min={12}
@@ -832,9 +859,8 @@ export default function PageClient({
                     { value: 60, label: "60" },
                     { value: 72, label: "72" },
                   ]}
-                  size="sm"
-                  color="dark"
-                  styles={{ markLabel: { fontSize: "12px" } }}
+                  size="small"
+                  sx={sliderSx}
                 />
                 <label className="flex items-center gap-1.5 cursor-pointer ml-3">
                   <IOSSwitch
@@ -853,8 +879,8 @@ export default function PageClient({
                 <span className="text-xs text-neutral-500">Tracking</span>
                 <Slider
                   value={letterSpacing}
-                  onChange={setLetterSpacing}
-                  onChangeEnd={(value) => updateUrl({ tracking: value })}
+                  onChange={(_, value) => setLetterSpacing(value as number)}
+                  onChangeCommitted={(_, value) => updateUrl({ tracking: value as number })}
                   min={-0.1}
                   max={0.3}
                   step={0.01}
@@ -865,9 +891,8 @@ export default function PageClient({
                     { value: 0.2, label: "0.2" },
                     { value: 0.3, label: "0.3" },
                   ]}
-                  size="sm"
-                  color="dark"
-                  styles={{ markLabel: { fontSize: "12px" } }}
+                  size="small"
+                  sx={sliderSx}
                 />
                 <div /> {/* Empty cell for grid alignment */}
                 {/* Line Height row - hidden for headings tab */}
@@ -878,8 +903,8 @@ export default function PageClient({
                     </span>
                     <Slider
                       value={lineHeight}
-                      onChange={setLineHeight}
-                      onChangeEnd={(value) => updateUrl({ lineHeight: value })}
+                      onChange={(_, value) => setLineHeight(value as number)}
+                      onChangeCommitted={(_, value) => updateUrl({ lineHeight: value as number })}
                       min={0.8}
                       max={2.5}
                       step={0.1}
@@ -891,10 +916,9 @@ export default function PageClient({
                         { value: 2.0, label: "2.0" },
                         { value: 2.5, label: "2.5" },
                       ]}
-                      size="sm"
-                      color="dark"
+                      size="small"
                       disabled={lineHeightAuto}
-                      styles={{ markLabel: { fontSize: "12px" } }}
+                      sx={sliderSx}
                     />
                     <label className="flex items-center gap-1.5 cursor-pointer ml-3">
                       <IOSSwitch
