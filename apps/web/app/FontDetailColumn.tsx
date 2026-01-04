@@ -184,8 +184,8 @@ export function FontDetailColumn({ font, previewText }: FontDetailColumnProps) {
 
         {/* Italic variants if available */}
         {hasItalic && (
-          <>
-            <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider mb-4 mt-8">
+          <div className="border-t border-neutral-200 mt-6 pt-6">
+            <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider mb-4">
               Italic Weights
             </h3>
             <div className="space-y-3">
@@ -205,13 +205,14 @@ export function FontDetailColumn({ font, previewText }: FontDetailColumnProps) {
                 />
               ))}
             </div>
-          </>
+          </div>
         )}
 
         {/* Body text preview */}
-        <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider mb-4 mt-8">
-          Body Text
-        </h3>
+        <div className="border-t border-neutral-200 mt-6 pt-6">
+          <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider mb-4">
+            Body Text
+          </h3>
         <div>
           <NormalizedText
             fontFamily={font.name}
@@ -231,6 +232,7 @@ export function FontDetailColumn({ font, previewText }: FontDetailColumnProps) {
             Good design uses <strong>bold</strong> for emphasis,{" "}
             <em>italics</em> for tone, and <u>underlines</u> for links.
           </NormalizedText>
+        </div>
         </div>
       </div>
 
