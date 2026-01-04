@@ -7,15 +7,15 @@
 ## Pre-Deployment Setup
 
 ### 1. Database Schema Updates
-- [ ] Review current schema in `/packages/convex/convex/schema.ts`
-- [ ] Make any pending schema changes
-- [ ] Test schema changes locally with `npx convex dev`
-- [ ] Deploy schema to production:
+- [x] Review current schema in `/packages/convex/convex/schema.ts`
+- [x] Make any pending schema changes
+- [x] Test schema changes locally with `npx convex dev`
+- [x] Deploy schema to production:
   ```bash
   cd packages/convex
   npx convex deploy --prod
   ```
-- [ ] Verify schema deployed correctly in Convex dashboard
+- [x] Verify schema deployed correctly in Convex dashboard
 
 **Estimated time: 30-60 minutes**
 *(Depends on complexity of schema changes; migrations may require manual data handling)*
