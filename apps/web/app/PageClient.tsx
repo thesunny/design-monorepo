@@ -11,6 +11,7 @@ import {
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Slider } from "@mantine/core";
+import Switch from "@mui/material/Switch";
 import {
   IconHeading,
   IconAlignLeft,
@@ -659,42 +660,40 @@ export default function PageClient({
                 >
                   Variable
                 </button>
-                <label className="flex items-center gap-1.5 cursor-pointer ml-2">
-                  <button
-                    role="switch"
-                    aria-checked={compactMode}
-                    onClick={() => setCompactMode(!compactMode)}
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                      compactMode ? "bg-neutral-900" : "bg-neutral-300"
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        compactMode ? "translate-x-4" : "translate-x-0.5"
-                      }`}
-                    />
-                  </button>
+                <label className="flex items-center gap-0 cursor-pointer ml-2">
+                  <Switch
+                    checked={compactMode}
+                    onChange={() => setCompactMode(!compactMode)}
+                    size="small"
+                    sx={{
+                      '& .MuiSwitch-switchBase.Mui-checked': {
+                        color: '#171717',
+                      },
+                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                        backgroundColor: '#171717',
+                      },
+                    }}
+                  />
                   <span className="text-xs text-neutral-500">Compact</span>
                 </label>
-                <label className="flex items-center gap-1.5 cursor-pointer ml-2">
-                  <button
-                    role="switch"
-                    aria-checked={showAllWeights}
-                    onClick={() => {
+                <label className="flex items-center gap-0 cursor-pointer ml-2">
+                  <Switch
+                    checked={showAllWeights}
+                    onChange={() => {
                       const newValue = !showAllWeights;
                       setShowAllWeights(newValue);
                       updateUrl({ allWeights: newValue });
                     }}
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                      showAllWeights ? "bg-neutral-900" : "bg-neutral-300"
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        showAllWeights ? "translate-x-4" : "translate-x-0.5"
-                      }`}
-                    />
-                  </button>
+                    size="small"
+                    sx={{
+                      '& .MuiSwitch-switchBase.Mui-checked': {
+                        color: '#171717',
+                      },
+                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                        backgroundColor: '#171717',
+                      },
+                    }}
+                  />
                   <span className="text-xs text-neutral-500">All Weights</span>
                 </label>
               </div>
@@ -821,25 +820,24 @@ export default function PageClient({
                   color="dark"
                   styles={{ markLabel: { fontSize: "12px" } }}
                 />
-                <label className="flex items-center gap-2 cursor-pointer ml-3">
-                  <button
-                    role="switch"
-                    aria-checked={showItalics}
-                    onClick={() => {
+                <label className="flex items-center gap-0 cursor-pointer ml-3">
+                  <Switch
+                    checked={showItalics}
+                    onChange={() => {
                       const newValue = !showItalics;
                       setShowItalics(newValue);
                       updateUrl({ italics: newValue });
                     }}
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                      showItalics ? "bg-neutral-900" : "bg-neutral-300"
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        showItalics ? "translate-x-4" : "translate-x-0.5"
-                      }`}
-                    />
-                  </button>
+                    size="small"
+                    sx={{
+                      '& .MuiSwitch-switchBase.Mui-checked': {
+                        color: '#171717',
+                      },
+                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                        backgroundColor: '#171717',
+                      },
+                    }}
+                  />
                   <span className="text-xs text-neutral-500 whitespace-nowrap">
                     Italics
                   </span>
@@ -891,25 +889,24 @@ export default function PageClient({
                       disabled={lineHeightAuto}
                       styles={{ markLabel: { fontSize: "12px" } }}
                     />
-                    <label className="flex items-center gap-2 cursor-pointer ml-3">
-                      <button
-                        role="switch"
-                        aria-checked={lineHeightAuto}
-                        onClick={() => {
+                    <label className="flex items-center gap-0 cursor-pointer ml-3">
+                      <Switch
+                        checked={lineHeightAuto}
+                        onChange={() => {
                           const newValue = !lineHeightAuto;
                           setLineHeightAuto(newValue);
                           updateUrl({ lineHeightAuto: newValue });
                         }}
-                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                          lineHeightAuto ? "bg-neutral-900" : "bg-neutral-300"
-                        }`}
-                      >
-                        <span
-                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                            lineHeightAuto ? "translate-x-4" : "translate-x-0.5"
-                          }`}
-                        />
-                      </button>
+                        size="small"
+                        sx={{
+                          '& .MuiSwitch-switchBase.Mui-checked': {
+                            color: '#171717',
+                          },
+                          '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                            backgroundColor: '#171717',
+                          },
+                        }}
+                      />
                       <span className="text-xs text-neutral-500 whitespace-nowrap">
                         Auto
                       </span>

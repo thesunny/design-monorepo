@@ -12,8 +12,11 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.36.5",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@mantine/core": "^8.3.10",
     "@mantine/hooks": "^8.3.10",
+    "@mui/material": "^7.3.6",
     "@repo/convex": "workspace:*",
     "@repo/ui": "workspace:*",
     "@tabler/icons-react": "^3.36.0",
