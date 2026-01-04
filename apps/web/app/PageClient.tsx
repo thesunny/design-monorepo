@@ -676,6 +676,27 @@ export default function PageClient({
                   </button>
                   <span className="text-xs text-neutral-500">Compact</span>
                 </label>
+                <label className="flex items-center gap-1.5 cursor-pointer ml-2">
+                  <button
+                    role="switch"
+                    aria-checked={showAllWeights}
+                    onClick={() => {
+                      const newValue = !showAllWeights;
+                      setShowAllWeights(newValue);
+                      updateUrl({ allWeights: newValue });
+                    }}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                      showAllWeights ? "bg-neutral-900" : "bg-neutral-300"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        showAllWeights ? "translate-x-4" : "translate-x-0.5"
+                      }`}
+                    />
+                  </button>
+                  <span className="text-xs text-neutral-500">All Weights</span>
+                </label>
               </div>
             </div>
 
@@ -772,29 +793,7 @@ export default function PageClient({
                   color="dark"
                   styles={{ markLabel: { fontSize: "12px" } }}
                 />
-                <label className="flex items-center gap-2 cursor-pointer ml-3">
-                  <button
-                    role="switch"
-                    aria-checked={showAllWeights}
-                    onClick={() => {
-                      const newValue = !showAllWeights;
-                      setShowAllWeights(newValue);
-                      updateUrl({ allWeights: newValue });
-                    }}
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                      showAllWeights ? "bg-neutral-900" : "bg-neutral-300"
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        showAllWeights ? "translate-x-4" : "translate-x-0.5"
-                      }`}
-                    />
-                  </button>
-                  <span className="text-xs text-neutral-500 whitespace-nowrap">
-                    All Weights
-                  </span>
-                </label>
+                <div /> {/* Empty cell for grid alignment */}
                 {/* Size row */}
                 <span className="text-xs text-neutral-500">Size</span>
                 <Slider
