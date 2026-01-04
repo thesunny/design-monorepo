@@ -544,7 +544,8 @@ export default function PageClient({
         onSelectSubcategory={(subcategory) => {
           setSelectedSubcategory(subcategory);
           setCheckedFonts(new Set());
-          updateUrl({ category: subcategory?.id ?? null });
+          setSearchInput("");
+          updateUrl({ category: subcategory?.id ?? null, q: "" });
         }}
         onHoverSubcategory={setHoveredSubcategory}
         checkedFontNames={checkedFontNames}
