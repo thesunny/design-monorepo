@@ -151,6 +151,7 @@ export default function PageClient({
     return hs ? parseInt(hs, 10) : DEFAULTS.headingsFontSize;
   });
   const [compactMode, setCompactMode] = useState(false);
+  const [selectedFont, setSelectedFont] = useState<Font | null>(null);
   const [hoveredFont, setHoveredFont] = useState<Font | null>(null);
   const [favoritesDrawerOpen, setFavoritesDrawerOpen] = useState(false);
   const [textFontSize, setTextFontSize] = useState(() => {
@@ -699,9 +700,11 @@ export default function PageClient({
                         });
                       }}
                       onFontClick={() => {
-                        setHoveredFont(font);
+                        setSelectedFont(font);
                         setFavoritesDrawerOpen(false);
                       }}
+                      onFontHover={() => setHoveredFont(font)}
+                      onFontLeave={() => setHoveredFont(null)}
                       onFavoriteAdd={() => setFavoritesDrawerOpen(true)}
                     />
                   ))}
@@ -720,6 +723,8 @@ export default function PageClient({
                       letterSpacing={letterSpacing}
                       fontSize={fontSize}
                       compactMode={compactMode}
+                      onFontHover={() => setHoveredFont(font)}
+                      onFontLeave={() => setHoveredFont(null)}
                       onFavoriteAdd={() => setFavoritesDrawerOpen(true)}
                     />
                   ))}
@@ -953,8 +958,9 @@ export default function PageClient({
       </div>
 
       <FontDetailColumn
-        font={hoveredFont}
+        font={hoveredFont ?? selectedFont}
         previewText={previewText}
+        isPreview={hoveredFont !== null && hoveredFont.id !== selectedFont?.id}
       />
 
       <FavoritesDrawer
@@ -1074,6 +1080,8 @@ function HeadingPreview({
   anyChecked,
   compactMode,
   onFontClick,
+  onFontHover,
+  onFontLeave,
   onFavoriteAdd,
 }: {
   font: Font;
@@ -1091,6 +1099,8 @@ function HeadingPreview({
   anyChecked?: boolean;
   compactMode?: boolean;
   onFontClick?: () => void;
+  onFontHover?: () => void;
+  onFontLeave?: () => void;
   onFavoriteAdd?: () => void;
 }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -1141,8 +1151,14 @@ function HeadingPreview({
       className={`relative pl-12 pr-8 ${compactMode ? "py-2" : "pt-4 pb-5"} ${
         isInexactMatch ? "bg-neutral-100" : ""
       } cursor-pointer hover:bg-neutral-50 transition-colors`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => {
+        setIsHovered(true);
+        onFontHover?.();
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        onFontLeave?.();
+      }}
       onClick={onFontClick}
     >
       {showCheckbox && (
@@ -1224,6 +1240,8 @@ function TextPreview({
   letterSpacing,
   fontSize,
   compactMode,
+  onFontHover,
+  onFontLeave,
   onFavoriteAdd,
 }: {
   font: Font;
@@ -1234,6 +1252,8 @@ function TextPreview({
   letterSpacing: number;
   fontSize: number;
   compactMode?: boolean;
+  onFontHover?: () => void;
+  onFontLeave?: () => void;
   onFavoriteAdd?: () => void;
 }) {
   const { isSignedIn } = useAuth();
@@ -1283,7 +1303,7 @@ function TextPreview({
   };
 
   return (
-    <div className="pl-8 pr-12 pt-6 pb-4">
+    <div className="pl-8 pr-12 pt-6 pb-4" onMouseEnter={onFontHover} onMouseLeave={onFontLeave}>
       <div className="relative">
         {isSignedIn && (
           <button

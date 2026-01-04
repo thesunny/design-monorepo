@@ -14,6 +14,7 @@ const PARAGRAPH_NORMALIZATION_TEXT =
 type FontDetailColumnProps = {
   font: Font | null;
   previewText: string;
+  isPreview?: boolean;
 };
 
 function getAllAvailableWeights(weights: number[]): number[] {
@@ -84,7 +85,7 @@ function getAxisDisplayName(tag: string): string {
   return names[tag] || tag;
 }
 
-export function FontDetailColumn({ font, previewText }: FontDetailColumnProps) {
+export function FontDetailColumn({ font, previewText, isPreview }: FontDetailColumnProps) {
   // State for variable font axis values
   const [axisValues, setAxisValues] = useState<Record<string, number>>({});
 
@@ -141,7 +142,7 @@ export function FontDetailColumn({ font, previewText }: FontDetailColumnProps) {
       : undefined;
 
   return (
-    <div className="w-[480px] shrink-0 flex flex-col border-l border-neutral-200">
+    <div className={`w-[480px] shrink-0 flex flex-col border-l border-neutral-200 transition-opacity duration-150 ${isPreview ? "opacity-60" : ""}`}>
       {/* Header */}
       <div className="flex items-center justify-between px-6 h-12 border-b border-neutral-200 shrink-0">
         <div className="flex items-center gap-3">

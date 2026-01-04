@@ -104,7 +104,7 @@ export function CategorySidebar({
                       onClick={() =>
                         onMoveFonts(category.name, subcategory.name)
                       }
-                      className="absolute -right-3 top-0 bottom-0 px-2 flex items-center text-white/50 hover:text-white bg-[#382d1f] hover:bg-[#3d3022] rounded transition-colors cursor-pointer"
+                      className="absolute -right-3 top-0 bottom-0 px-2 flex items-center text-white/50 hover:text-white bg-[#412346] hover:bg-[#522653] rounded transition-colors cursor-pointer"
                       title={`Move ${checkedFontNames.length} font${checkedFontNames.length > 1 ? "s" : ""} to ${subcategory.name}`}
                     >
                       <ArrowLeft size={16} />
