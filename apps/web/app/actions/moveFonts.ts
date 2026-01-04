@@ -66,3 +66,34 @@ export async function moveFontsToSubcategory(input: MoveFontsInput) {
 
   return { success: true };
 }
+
+const RemoveFontsInputSchema = z.object({
+  fontNames: z.array(z.string().min(1)).min(1),
+});
+
+type RemoveFontsInput = z.infer<typeof RemoveFontsInputSchema>;
+
+export async function removeFontsFromSubcategory(input: RemoveFontsInput) {
+  const parsed = RemoveFontsInputSchema.parse(input);
+  const { fontNames } = parsed;
+
+  const fontsJsonPath = path.join(process.cwd(), "data", "fonts.json");
+  const fileContents = await readFile(fontsJsonPath, "utf-8");
+  const fontsData = FontsJsonSchema.parse(JSON.parse(fileContents));
+
+  const fontNamesSet = new Set(fontNames);
+
+  // Remove fonts from all subcategories
+  for (const category of fontsData) {
+    for (const subcategory of category.subcategories) {
+      subcategory.fonts = subcategory.fonts.filter(
+        (font) => !fontNamesSet.has(font)
+      );
+    }
+  }
+
+  // Write back to fonts.json
+  await writeFile(fontsJsonPath, JSON.stringify(fontsData, null, 2) + "\n");
+
+  return { success: true };
+}

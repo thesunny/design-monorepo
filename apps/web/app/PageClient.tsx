@@ -28,7 +28,7 @@ import type { Category, Subcategory, Font } from "../data/types";
 import { CategorySidebar } from "./CategorySidebar";
 import { FontDetailColumn } from "./FontDetailColumn";
 import { FavoritesDrawer } from "./FavoritesDrawer";
-import { moveFontsToSubcategory } from "./actions/moveFonts";
+import { moveFontsToSubcategory, removeFontsFromSubcategory } from "./actions/moveFonts";
 import { useFontLoader } from "./hooks/useFontLoader";
 import { FontWeightRow } from "./FontWeightRow";
 import { NormalizedText } from "./components/NormalizedText";
@@ -449,6 +449,15 @@ export default function PageClient({
     [checkedFontNames]
   );
 
+  // Handler to remove checked fonts from subcategory
+  const handleRemoveFonts = useCallback(async () => {
+    if (checkedFontNames.length === 0) return;
+    await removeFontsFromSubcategory({
+      fontNames: checkedFontNames,
+    });
+    setCheckedFonts(new Set());
+  }, [checkedFontNames]);
+
   // Get Font objects for a subcategory's font names
   const getFontsForSubcategory = useCallback(
     (subcategory: Subcategory): Font[] => {
@@ -551,6 +560,7 @@ export default function PageClient({
         onHoverSubcategory={setHoveredSubcategory}
         checkedFontNames={checkedFontNames}
         onMoveFonts={handleMoveFonts}
+        onRemoveFonts={handleRemoveFonts}
         searchInput={searchInput}
         onSearchChange={(value) => {
           setSearchInput(value);

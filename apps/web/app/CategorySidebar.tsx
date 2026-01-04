@@ -1,7 +1,7 @@
 "use client";
 
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { IconSearch, IconX } from "@tabler/icons-react";
 import type { Category, Subcategory } from "../data/types";
 
@@ -12,6 +12,7 @@ type CategorySidebarProps = {
   onHoverSubcategory: (subcategory: Subcategory | null) => void;
   checkedFontNames: string[];
   onMoveFonts: (categoryName: string, subcategoryName: string) => void;
+  onRemoveFonts: () => void;
   searchInput: string;
   onSearchChange: (value: string) => void;
   onSearchClear: () => void;
@@ -27,6 +28,7 @@ export function CategorySidebar({
   onHoverSubcategory,
   checkedFontNames,
   onMoveFonts,
+  onRemoveFonts,
   searchInput,
   onSearchChange,
   onSearchClear,
@@ -104,12 +106,22 @@ export function CategorySidebar({
                     !subcategory.id.includes("-more-") && (
                       <button
                         onClick={() =>
-                          onMoveFonts(category.name, subcategory.name)
+                          selectedSubcategory?.id === subcategory.id
+                            ? onRemoveFonts()
+                            : onMoveFonts(category.name, subcategory.name)
                         }
                         className="absolute -right-3 top-0 bottom-0 px-2 flex items-center text-white/50 hover:text-white bg-[#412346] hover:bg-[#522653] rounded transition-colors cursor-pointer"
-                        title={`Move ${checkedFontNames.length} font${checkedFontNames.length > 1 ? "s" : ""} to ${subcategory.name}`}
+                        title={
+                          selectedSubcategory?.id === subcategory.id
+                            ? `Remove ${checkedFontNames.length} font${checkedFontNames.length > 1 ? "s" : ""} from ${subcategory.name}`
+                            : `Move ${checkedFontNames.length} font${checkedFontNames.length > 1 ? "s" : ""} to ${subcategory.name}`
+                        }
                       >
-                        <ArrowLeft size={16} />
+                        {selectedSubcategory?.id === subcategory.id ? (
+                          <ArrowRight size={16} />
+                        ) : (
+                          <ArrowLeft size={16} />
+                        )}
                       </button>
                     )}
                 </li>
