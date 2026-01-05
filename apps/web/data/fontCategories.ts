@@ -107,8 +107,9 @@ const createMoreSubcategories = (
   for (let i = 0; i < fonts.length; i += CHUNK_SIZE) {
     const chunk = fonts.slice(i, i + CHUNK_SIZE);
     const end = Math.min(i + CHUNK_SIZE, fonts.length);
+    const index = Math.floor(i / CHUNK_SIZE) + 1;
     subcategories.push({
-      id: `${categoryId}-more-${end}`,
+      id: `${categoryId}-more-${index}`,
       name: `${end} More`,
       fonts: chunk,
     });
