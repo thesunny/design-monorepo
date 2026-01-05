@@ -72,6 +72,7 @@ import { isMonospaceFont } from "./utils";
 type PageClientProps = {
   fontCategories: Category[];
   allFonts: Font[];
+  isDevelopment?: boolean;
 };
 
 // Default values for URL state
@@ -110,6 +111,7 @@ function findSubcategoryById(
 export default function PageClient({
   fontCategories,
   allFonts,
+  isDevelopment = false,
 }: PageClientProps) {
   // URL state management
   const searchParams = useSearchParams();
@@ -745,6 +747,7 @@ export default function PageClient({
                       isChecked={checkedFonts.has(font.id)}
                       anyChecked={checkedFonts.size > 0}
                       compactMode={compactMode}
+                      showMultiSelect={isDevelopment}
                       onCheckChange={(checked) => {
                         setCheckedFonts((prev) => {
                           const next = new Set(prev);
@@ -1053,6 +1056,7 @@ function HeadingPreview({
   onCheckChange,
   anyChecked,
   compactMode,
+  showMultiSelect,
   onFontClick,
   onFontHover,
   onFontLeave,
@@ -1072,6 +1076,7 @@ function HeadingPreview({
   onCheckChange?: (checked: boolean) => void;
   anyChecked?: boolean;
   compactMode?: boolean;
+  showMultiSelect?: boolean;
   onFontClick?: () => void;
   onFontHover?: () => void;
   onFontLeave?: () => void;
@@ -1116,7 +1121,7 @@ function HeadingPreview({
     ? displayWeights
     : [specificWeight?.weight ?? 400];
 
-  const showCheckbox = isHovered || anyChecked;
+  const showCheckbox = showMultiSelect && (isHovered || anyChecked);
 
   return (
     <div

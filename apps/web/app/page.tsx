@@ -55,10 +55,13 @@ function processFontMetadata(metadata: FamilyMetadata): Font {
 // Process all fonts from Google Fonts metadata
 const allFonts: Font[] = googleFontsMetadata.familyMetadataList.map(processFontMetadata);
 
+// Check if we're in development mode (server-side)
+const isDevelopment = process.env.NODE_ENV === "development";
+
 export default function Page() {
   return (
     <Suspense fallback={null}>
-      <PageClient fontCategories={fontCategories} allFonts={allFonts} />
+      <PageClient fontCategories={fontCategories} allFonts={allFonts} isDevelopment={isDevelopment} />
     </Suspense>
   );
 }
